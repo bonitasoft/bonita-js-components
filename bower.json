@@ -1,0 +1,17 @@
+{
+  "name": "bonita-js-components",
+  "version": "0.0.1",
+  "homepage": "https://github.com/bonitasoft/bonita-js-components",
+  "authors": [
+    "Vincent Elcrin <vincent.elcrin@bonitasoft.com>"
+  ],
+  "description": "Several tools leading to ease web development with Bonita",
+  "license": "GPL",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
