@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/bonitasoft/bonita-js-components/issues"
   },
-  "homepage": "https://github.com/bonitasoft/bonita-js-components"
+  "homepage": "https://github.com/bonitasoft/bonita-js-components",
+  "devDependencies": {
+    "gulp": "^3.8.9",
+    "gulp-karma": "0.0.4",
+    "karma": "^0.12.24",
+    "karma-jasmine": "^0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4"
+  }
 }
