@@ -1,3 +1,15 @@
-bower_components/
-.idea/
 node_modules/
+bower_components/
+
+# editor
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Logs
+logs
+*.log
+
+# Coverage directory used by tools like istanbul
+coverage
+>>>>>>> add project config files
