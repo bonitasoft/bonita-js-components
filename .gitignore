@@ -12,4 +12,6 @@ logs
 
 # Coverage directory used by tools like istanbul
 coverage
->>>>>>> add project config files
+
+#demo folder with generated content
+demo

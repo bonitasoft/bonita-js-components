@@ -61,9 +61,13 @@ gulp.task('html2js', function() {
     .pipe(gulp.dest('demo'));
 });
 
-
+/**
+ * bundle
+ * concat generated templates and javascript files
+ */
 gulp.task('bundle:js',['jshint'], function(){
   return gulp.src(['src/**/*.js', 'demo/templates.js'])
+    .pipe(plumber())
     .pipe(ngAnnotage({
       remove: true,
       add: true,
@@ -73,17 +77,35 @@ gulp.task('bundle:js',['jshint'], function(){
     .pipe(gulp.dest('demo'));
 });
 
-
+/**
+ * uglify
+ * minifiy generated javascript bundle
+ */
 gulp.task('uglify',['bundle:js'], function(){
   return gulp.src(['demo/bundle.js'])
+    .pipe(plumber())
     .pipe(rename({ suffix:'.min' }))
     .pipe(gulp.dest('demo'));
 });
 
 
+/**
+ * assets
+ */
+gulp.task('assets:css', function(){
+  return gulp.src('src/**/*.css')
+    .pipe(concat('styles.css'))
+    .pipe(gulp.dest('demo/'));
+});
+
+gulp.task('assets:html', function(){
+  return gulp.src('misc/**/*.html')
+    .pipe(gulp.dest('demo/'));
+});
+gulp.task('assets', ['assets:css', 'assets:html']);
 
 /**
- * gulp webserver
+ * webserver
  * launch a local webserver with livereload, open
  */
 gulp.task('webserver', function() {
@@ -98,7 +120,7 @@ gulp.task('webserver', function() {
  * Open task
  * Launch default browser on local server url
  */
-gulp.task('open', function() {
+gulp.task('open', ['webserver'],function() {
   return gulp.src('demo/index.html')
     .pipe(browser('', {
       url: 'http://localhost:'+opt.port+'/index.html'
@@ -123,6 +145,7 @@ function test(done, tdd) {
 gulp.task('watch', ['jshint', 'bower'], function() {
   gulp.watch(['src/**/*.js'], ['bundle:js']);
   gulp.watch(['src/**/*.html'], ['html2js', 'bundle:js']);
+  gulp.watch(['src/**/*.css'], ['assets:css']);
 
   gulp
     .watch(['demo/**/*.*', 'demo/index.html'])
@@ -140,7 +163,7 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-gulp.task('dist', ['bower', 'uglify']);
-gulp.task('dev', ['bower', 'bundle:js', 'watch', 'webserver', 'open']);
+gulp.task('dist', ['bower', 'assets', 'uglify']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js', 'watch', 'open']);
 
 gulp.task('default', ['test']);
