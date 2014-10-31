@@ -1,0 +1,6 @@
+<button class="SortButton"
+        title="{{'Sort by ' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? ' DESC': ' ASC') : ' ASC') }}"
+        ng-class="{'SortButton--active':sortOptions.property === property}" ng-click="sort()">
+  <span class="SortButton-label" ng-transclude></span>
+  <i class="SortButton-icon" ng-class="{'icon-sort-up':sortOptions.direction || sortOptions.property !== property, 'icon-sort-down':!sortOptions.direction && sortOptions.property === property}"></i>
+</button>
