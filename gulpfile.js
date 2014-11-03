@@ -65,7 +65,7 @@ gulp.task('html2js', function() {
  * bundle
  * concat generated templates and javascript files
  */
-gulp.task('bundle:js',['jshint'], function(){
+gulp.task('bundle:js',['jshint', 'html2js'], function(){
   return gulp.src(['src/**/*.js', 'demo/templates.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
@@ -108,7 +108,7 @@ gulp.task('assets', ['assets:css', 'assets:html']);
  * webserver
  * launch a local webserver with livereload, open
  */
-gulp.task('webserver', function() {
+gulp.task('webserver',['assets'], function() {
   return connect.server({
     root: ['demo', 'bower_components'],
     port: opt.port,
@@ -144,7 +144,7 @@ function test(done, tdd) {
  */
 gulp.task('watch', ['jshint', 'bower'], function() {
   gulp.watch(['src/**/*.js'], ['bundle:js']);
-  gulp.watch(['src/**/*.html'], ['html2js', 'bundle:js']);
+  gulp.watch(['src/**/*.html', 'misc/**/*.html'], ['assets:html']);
   gulp.watch(['src/**/*.css'], ['assets:css']);
 
   gulp
