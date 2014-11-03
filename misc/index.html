@@ -10,7 +10,7 @@
 <body ng-app="demo">
   <div class="container">
     <div class="jumbotron">
-      <h1>Démo page</h1>
+      <h1>Demo page</h1>
       <pre>{{sortOptions}}</pre>
     </div>
     <table bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in items">
+        <tr ng-repeat="item in items | orderBy: sortOptions.property : sortOptions.direction ">
           <td>{{item.id}}</td>
           <td>{{item.name}}</td>
           <td>{{item.date}}</td>

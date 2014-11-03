@@ -1,21 +1,25 @@
 angular
   .module('bonita.sortable',[])
+  .controller('SortableController', function($scope){
+    this.onSort = function(params){
+      $scope.onSort({options: params});
+    };
+  })
   .directive('boSortable', function(){
     return {
-      scope:{
-        onSort:'&'
-      },
+      require:'bonitable',
+      controller:'SortableController',
     };
   })
   .directive('boSorter', function(){
     return {
       restrict: 'A',
       scope: true,
+      require:'^boSortable',
       templateUrl: 'template/sortable/sorter.tpl.html',
       transclude: true,
-      link: function($scope, iElm, attr) {
+      link: function($scope, iElm, attr, sortableController) {
         $scope.property =  attr.id || attr.boSorter;
-
         $scope.sort = function() {
           if ($scope.sortOptions.property === $scope.property){
             $scope.sortOptions.direction = !$scope.sortOptions.direction;
@@ -24,7 +28,7 @@ angular
             $scope.sortOptions.direction = true;
           }
 
-          $scope.onSort($scope.sortOptions);
+          sortableController.onSort($scope.sortOptions);
         };
       }
     };
