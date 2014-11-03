@@ -15,6 +15,9 @@ var html2js = require('gulp-ng-html2js');
 var ngAnnotage = require('gulp-ng-annotate');
 var concat = require('gulp-concat');
 
+/* css */
+var autoprefixer = require('gulp-autoprefixer');
+
 /* dev */
 var connect = require('gulp-connect');
 var browser = require('gulp-open');
@@ -95,6 +98,9 @@ gulp.task('uglify',['bundle:js'], function(){
 gulp.task('assets:css', function(){
   return gulp.src('src/**/*.css')
     .pipe(concat('styles.css'))
+    .pipe(autoprefixer({
+      browsers: ['last 3 version', 'ie 9']
+    }))
     .pipe(gulp.dest('demo/'));
 });
 
