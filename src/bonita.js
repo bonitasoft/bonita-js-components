@@ -1,11 +1,12 @@
 angular.module('bonita.ui', [
+  'bonitable',
   'bonita.templates',
   'bonita.sortable',
   'bonita.selectable'
   ]);
 
 
-angular.module('bonita.ui')
+angular.module('bonitable', [])
   .controller('BonitableController', function(){
     //allow require bonitable form child directive
   })
