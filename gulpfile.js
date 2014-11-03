@@ -169,7 +169,7 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-gulp.task('dist', ['bower', 'assets', 'uglify']);
-gulp.task('dev', ['bower', 'assets', 'bundle:js', 'watch', 'open']);
+gulp.task('dist', ['bower', 'assets', 'uglify', 'test']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js', 'tdd', 'watch', 'open']);
 
 gulp.task('default', ['test']);
