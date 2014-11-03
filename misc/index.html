@@ -13,9 +13,15 @@
       <h1>Demo page</h1>
       <pre>{{sortOptions}}</pre>
     </div>
-    <table bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
+    <table bonitable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
       <thead>
         <tr>
+          <td colspan="5">
+            <pre>{{selecter.$selectedItems|json}}</pre>
+          </td>
+        </tr>
+        <tr>
+          <td data-ignore><div bo-selectall></div></td>
           <th bo-sorter="id">Id</th>
           <th bo-sorter="name">Nom</th>
           <th bo-sorter="date">Date</th>
@@ -24,6 +30,7 @@
       </thead>
       <tbody>
         <tr ng-repeat="item in items | orderBy: sortOptions.property : sortOptions.direction ">
+          <td><input type="checkbox" bo-selector="item">{{item.truc}}</td>
           <td>{{item.id}}</td>
           <td>{{item.name}}</td>
           <td>{{item.date}}</td>

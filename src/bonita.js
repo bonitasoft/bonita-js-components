@@ -12,7 +12,6 @@ angular.module('bonitable', [])
   })
   .directive('bonitable', function(){
     return {
-      scope:true,
       controller: 'BonitableController'
     };
   });
