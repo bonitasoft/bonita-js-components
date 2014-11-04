@@ -4,7 +4,9 @@
   "description": "Several tools leading to ease web development with Bonita",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "gulp dev",
+    "dist": "gulp dist",
+    "test": "karma start --log-level debug --single-run"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,21 @@
   "homepage": "https://github.com/bonitasoft/bonita-js-components",
   "devDependencies": {
     "gulp": "^3.8.9",
-    "gulp-karma": "0.0.4",
+    "gulp-concat": "^2.4.1",
+    "gulp-ng-html2js": "^0.1.8",
+    "gulp-uglify": "^1.0.1",
+    "gulp-bower": "0.0.7",
+    "gulp-jshint": "^1.8.6",
+    "jshint-stylish": "^1.0.0",
     "karma": "^0.12.24",
     "karma-jasmine": "^0.1.5",
-    "karma-phantomjs-launcher": "^0.1.4"
+    "karma-ng-html2js-preprocessor": "^0.1.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "gulp-plumber": "^0.6.6",
+    "gulp-ng-annotate": "^0.3.3",
+    "gulp-rename": "^1.2.0",
+    "gulp-open": "^0.3.0",
+    "gulp-connect": "^2.0.6",
+    "gulp-autoprefixer": "^1.0.1"
   }
 }

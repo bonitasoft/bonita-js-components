@@ -15,19 +15,35 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/angular/*.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'src/**/*.js',
-      'test/**/*.js'
+      'test/**/*.js',
+      'src/**/*.html'
     ],
 
 
     // list of files to exclude
     exclude: [
+    '**/*.min.js'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'src/**/*.html': ['ng-html2js']
+    },
+
+    ngHtml2JsPreprocessor: {
+      // prepend this to the
+      stripPrefix: 'src/',
+      prependPrefix: 'template/',
+      // setting this option will create only a single module that contains templates
+      // from all the files, so you can load them all with module('foo')
+      moduleName: 'bonita.templates'
     },
 
 
