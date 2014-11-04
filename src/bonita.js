@@ -3,7 +3,7 @@ angular.module('bonita.ui', [
   'bonita.templates',
   'bonita.sortable',
   'bonita.selectable',
-  'bonita.columns'
+  'bonita.repeatable'
   ]);
 
 

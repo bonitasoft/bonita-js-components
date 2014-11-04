@@ -1,4 +1,4 @@
-angular.module('bonita.columns', [])
+angular.module('bonita.repeatable', [])
   .directive('columnTemplate', function ($compile) {
     return {
       restrict: 'A',
