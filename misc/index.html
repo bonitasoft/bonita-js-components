@@ -13,14 +13,17 @@
       <h1>Demo page</h1>
       <pre>{{sortOptions}}</pre>
     </div>
-    <table bonitable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
+    <table bonitable bo-repeatable="tr[data-headers]" bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
       <thead>
         <tr>
           <td colspan="5">
+            <span ng-repeat="column in $columns">
+              <input type="checkbox" ng-model="column.visible"> {{column.name}}
+            </span>
             <pre>{{selecter.$selectedItems|json}}</pre>
           </td>
         </tr>
-        <tr>
+        <tr data-headers>
           <th data-ignore><div bo-selectall></div></th>
           <th bo-sorter="id">Id</th>
           <th bo-sorter="name">Nom</th>
