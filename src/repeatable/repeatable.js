@@ -6,8 +6,6 @@ angular.module('bonita.repeatable', [])
         template: '=columnTemplate',
       },
       link: function (scope, element) {
-        console.log( scope.template);
-
         var template = angular.element(scope.template);
         var wrapper = angular.element('<div></div>');
         angular.forEach(template[0].attributes, function (attribute) {
@@ -17,24 +15,24 @@ angular.module('bonita.repeatable', [])
       }
     };
   })
-  .directive('boRepeatable', function ($document) {
+  .directive('boRepeatable', function () {
     return {
       restrict: 'A',
-      compile: function (tElement, attr) {
+      compile: function (elem, attr) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
 
-        var header = $document[0].querySelector(thSelecter);
-        var row = $document[0].querySelector(tdSelecter);
+        var header = elem[0].querySelector(thSelecter);
+        var row = elem[0].querySelector(tdSelecter);
 
-        var tdCells =  row.children;
-
-        var columns = [];
-
-        if (header.children.length !== row.children.length) {
+        if (!header || !row || header.children.length !== row.children.length) {
           throw new Error('bo-repeatable th number does not corespond to td number. please verify you html table');
         }
+
+        var columns = [];
+        var tdCells =  row.children;
+
 
         /**
          * filter helper to test if data-ignore attribute is present on a Node
