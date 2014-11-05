@@ -43,6 +43,15 @@ angular.module('bonita.repeatable', [])
           return item.th.getAttribute('data-ignore') === null;
         }
 
+        /**
+         * default filter function for filtering repeated columns
+         * @param  {Object}  column
+         * @return {Boolean}
+         */
+        function $visibilityFilter(column) {
+          return column.visible === true;
+        }
+
         columns = [].map.call(header.children, function(th, index){
             return {th: th, td: tdCells[index]};
           })
@@ -59,12 +68,13 @@ angular.module('bonita.repeatable', [])
             });
 
         angular.element(header)
-          .append('<th column-template="column.header" ng-repeat="column in $columns | filter:{visible:true}"></th>');
+          .append('<th column-template="column.header" ng-repeat="column in $columns | filter:$visibilityFilter"></th>');
         angular.element(row)
-          .append('<td column-template="column.template" ng-repeat="column in $columns | filter:{visible:true}"></td>');
+          .append('<td column-template="column.template" ng-repeat="column in $columns | filter:$visibilityFilter"></td>');
 
         return function (scope) {
           scope.$columns = columns;
+          scope.$visibilityFilter = scope.$eval(attr.visibilityFilter) || $visibilityFilter;
         };
       }
     };
