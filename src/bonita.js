@@ -16,4 +16,10 @@ angular.module('bonitable', [])
     return {
       controller: 'BonitableController'
     };
+  })
+  .filter('slice', function() {
+    return function(input, start) {
+      start = parseInt(start,10) || 0 ;
+      return input.slice(start);
+    };
   });
