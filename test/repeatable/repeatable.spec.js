@@ -16,12 +16,16 @@ describe('repeatable', function(){
       scope = $rootScope.$new();
 
       var markup =
-          '<table bo-repeatable>'+
+          '<table bo-repeatable="thead tr:first-child">'+
           '  <thead>'+
           '    <tr>'+
           '       <th data-ignore>test</th>'+
           '       <th>id</th>'+
           '       <th>name</th>'+
+          '       <th data-ignore>test</th>'+
+          '    </tr>'+
+          '    <tr>'+
+          '      <th colspan="4">another heading</th>'+
           '    </tr>'+
           '  </thead>'+
           '  <tbody>'+
@@ -29,6 +33,7 @@ describe('repeatable', function(){
           '       <td>toto</td>'+
           '       <td>{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
+          '       <td>tata</td>'+
           '    </tr>'+
           '  </tbody>'+
           '</table>';
@@ -38,10 +43,32 @@ describe('repeatable', function(){
       scope.$digest();
     }));
 
+    it('should ignore [data-ignore] columns', function(){
+      var th = element.find('tr:first-child th:not([data-ignore])')
+      expect(element.scope().$columns.length).toBe(th.length);
+    });
+
+    it('should target the correct header', function(){
+      var selector = element.attr('bo-repeatable');
+      var th = element.find( selector + ' > *:not([data-ignore])' );
+
+      expect(th.length).toBe(element.scope().$columns.length);
+    });
+
     it('should expose a $columns object', function(){
       expect(element.scope().$columns).toBeDefined();
       expect(element.scope().$columns.length).toBe(2);
     });
+
+    it('should filter visible $columns ', function(){
+      var selector =  element.attr('bo-repeatable')+' > *';
+      var cols = element.find(selector).length;
+
+      element.scope().$columns[0].visible = false;
+      scope.$digest();
+      expect(element.find(selector).length).toBe(cols - 1);
+    });
+
 
   });
 
