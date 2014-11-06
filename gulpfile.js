@@ -150,7 +150,8 @@ function test(done, tdd) {
  */
 gulp.task('watch', ['jshint', 'bower'], function() {
   gulp.watch(['src/**/*.js'], ['bundle:js']);
-  gulp.watch(['src/**/*.html', 'misc/**/*.html'], ['assets:html']);
+  gulp.watch(['src/**/*.html'], ['bundle:js']);
+  gulp.watch(['misc/**/*.html'], ['assets:html']);
   gulp.watch(['src/**/*.css'], ['assets:css']);
 
   gulp
