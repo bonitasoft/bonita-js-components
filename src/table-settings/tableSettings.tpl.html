@@ -14,7 +14,7 @@
         style="width:{{100/sizes.length}}%"
         ng-repeat="size in sizes"
         ng-model="$parent.pageSize" btn-radio="{{size}}"
-        ng-click="updatePageSize({size:size})" tabindex="0">
+        ng-change="updatePageSize({size:size})" tabindex="0">
         {{size}}
       </button>
     </div>
