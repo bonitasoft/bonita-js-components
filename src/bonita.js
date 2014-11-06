@@ -2,7 +2,8 @@ angular.module('bonita.ui', [
   'bonitable',
   'bonita.templates',
   'bonita.sortable',
-  'bonita.selectable'
+  'bonita.selectable',
+  'bonita.repeatable'
   ]);
 
 

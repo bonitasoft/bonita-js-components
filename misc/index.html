@@ -13,15 +13,18 @@
       <h1>Demo page</h1>
       <pre>{{sortOptions}}</pre>
     </div>
-    <table bonitable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
+    <table bonitable bo-repeatable="tr[data-headers]" bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
       <thead>
         <tr>
           <td colspan="5">
+            <span ng-repeat="column in $columns">
+              <input type="checkbox" ng-model="column.visible"> {{column.name}}
+            </span>
             <pre>{{selecter.$selectedItems|json}}</pre>
           </td>
         </tr>
-        <tr>
-          <td data-ignore><div bo-selectall></div></td>
+        <tr data-headers>
+          <th data-ignore><div bo-selectall></div></th>
           <th bo-sorter="id">Id</th>
           <th bo-sorter="name">Nom</th>
           <th bo-sorter="date">Date</th>
@@ -57,66 +60,67 @@
         };
 
         $rootScope.items = [
-        {
-          "id": "544fa01637ecabc1c36b47dc",
-          "name": "Microluxe",
-          "user": "Mcmillan Carroll",
-          "date": "Sat Apr 07 1984 08:14:44 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa01610a3247397b305b1",
-          "name": "Exiand",
-          "user": "Mcbride Harrington",
-          "date": "Tue Sep 22 1981 18:51:17 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa016fbdc8c0a7ab728d2",
-          "name": "Aclima",
-          "user": "Bernadine Leon",
-          "date": "Fri May 05 2006 09:09:56 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa0161bdaf6e47d2d63f1",
-          "name": "Geekfarm",
-          "user": "Rush Gates",
-          "date": "Thu Jun 06 1996 00:28:36 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa0165e2c2b9933ae87e8",
-          "name": "Cormoran",
-          "user": "Mcmahon Phillips",
-          "date": "Tue Aug 21 2012 12:38:08 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa016da6caf6cd1828a08",
-          "name": "Eargo",
-          "user": "Mullins Case",
-          "date": "Thu Jan 17 2008 21:24:30 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa01603e3f58dee3343ce",
-          "name": "Otherway",
-          "user": "Sykes Howell",
-          "date": "Sat Aug 26 1972 18:59:53 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa0167c25f168385723b4",
-          "name": "Isologics",
-          "user": "Hickman Hickman",
-          "date": "Thu Oct 09 2003 18:17:58 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa016a702537e55379a88",
-          "name": "Rodeomad",
-          "user": "Hilary Bender",
-          "date": "Sun Jul 21 1974 19:43:46 GMT+0000 (UTC)"
-        },
-        {
-          "id": "544fa016e4a1e6d528a5a456",
-          "name": "Progenex",
-          "user": "Jocelyn Knight",
-          "date": "Wed Apr 21 1999 19:05:00 GMT+0000 (UTC)"
-        }
+          {
+            "id": "544fa01637ecabc1c36b47dc",
+            "name": "Microluxe",
+            "user": "Mcmillan Carroll",
+            "selected" : true,
+            "date": "Sat Apr 07 1984 08:14:44 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa01610a3247397b305b1",
+            "name": "Exiand",
+            "user": "Mcbride Harrington",
+            "date": "Tue Sep 22 1981 18:51:17 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa016fbdc8c0a7ab728d2",
+            "name": "Aclima",
+            "user": "Bernadine Leon",
+            "date": "Fri May 05 2006 09:09:56 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa0161bdaf6e47d2d63f1",
+            "name": "Geekfarm",
+            "user": "Rush Gates",
+            "date": "Thu Jun 06 1996 00:28:36 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa0165e2c2b9933ae87e8",
+            "name": "Cormoran",
+            "user": "Mcmahon Phillips",
+            "date": "Tue Aug 21 2012 12:38:08 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa016da6caf6cd1828a08",
+            "name": "Eargo",
+            "user": "Mullins Case",
+            "date": "Thu Jan 17 2008 21:24:30 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa01603e3f58dee3343ce",
+            "name": "Otherway",
+            "user": "Sykes Howell",
+            "date": "Sat Aug 26 1972 18:59:53 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa0167c25f168385723b4",
+            "name": "Isologics",
+            "user": "Hickman Hickman",
+            "date": "Thu Oct 09 2003 18:17:58 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa016a702537e55379a88",
+            "name": "Rodeomad",
+            "user": "Hilary Bender",
+            "date": "Sun Jul 21 1974 19:43:46 GMT+0000 (UTC)"
+          },
+          {
+            "id": "544fa016e4a1e6d528a5a456",
+            "name": "Progenex",
+            "user": "Jocelyn Knight",
+            "date": "Wed Apr 21 1999 19:05:00 GMT+0000 (UTC)"
+          }
         ];
       })
   </script>
