@@ -17,7 +17,7 @@ describe('sortable directive', function(){
 
     var markup =
         '<table bonitable bo-sortable'+
-        '       sort-options="sortOptions" on-sort="onSort(options)"'+
+        '       sort-options="sortOptions" on-sort="onSort(options)">'+
         '  <thead>'+
         '    <tr>'+
         '       <th bo-sorter="id">ID</th>'+
