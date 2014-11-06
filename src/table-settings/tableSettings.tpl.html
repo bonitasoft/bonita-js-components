@@ -1,0 +1,35 @@
+<div class="btn-group pull-right" dropdown>
+  <button type="button" title="Table settings"
+    class="btn dropdown-toggle"
+    ng-disabled="tasks.length === 0">
+    <i class="icon icon-gear"></i>
+    <span class="caret"></span>
+  </button>
+
+  <div class="TableSettings dropdown-menu pull-right">
+    <h5 class="TableSettings-title">Tasks per page</h5>
+    <div class="btn-group TableSettings-pagesizes">
+      <button class="btn btn-default"
+        type="button"
+        style="width:{{100/sizes.length}}%"
+        ng-repeat="size in sizes"
+        ng-model="$parent.pageSize" btn-radio="{{size}}"
+        ng-click="updatePageSize({size:size})" tabindex="0">
+        {{size}}
+      </button>
+    </div>
+
+    <h5 class="TableSettings-title">Columns Selection</h5>
+    <ul class="TableSettings-Columns">
+      <li  ng-repeat="field in columns">
+      <label
+        class="ColumnsItem"
+        title="{{(field.selected ? 'Hide' : 'Show') +' '+ field[label] }}"
+        ng-click="$event.stopPropagation()">
+        <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
+        {{field[label]}}
+      </label>
+      </li>
+    </ul>
+  </div>
+</div>
