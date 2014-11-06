@@ -27,7 +27,7 @@ angular.module('bonita.repeatable', [])
         var row = elem[0].querySelector(tdSelecter);
 
         if (!header || !row || header.children.length !== row.children.length) {
-          throw new Error('bo-repeatable th number does not corespond to td number. please verify you html table');
+          throw new Error('bo-repeatable th number does not correspond to td number. please verify you html table');
         }
 
         var columns = [];
@@ -64,7 +64,7 @@ angular.module('bonita.repeatable', [])
               var o = {
                 name: item.th.textContent,
                 header: item.th.outerHTML,
-                template: item.td.outerHTML
+                cell: item.td.outerHTML
               };
               o[prop] = true;
               return o;
@@ -73,7 +73,7 @@ angular.module('bonita.repeatable', [])
         angular.element(header)
           .append('<th column-template="column.header" ng-repeat="column in $columns | filter:$visibilityFilter"></th>');
         angular.element(row)
-          .append('<td column-template="column.template" ng-repeat="column in $columns | filter:$visibilityFilter"></td>');
+          .append('<td column-template="column.cell" ng-repeat="column in $columns | filter:$visibilityFilter"></td>');
         return function (scope) {
           scope.$columns = columns;
           scope.$visibilityFilter = columnFilter.bind(null, prop);
