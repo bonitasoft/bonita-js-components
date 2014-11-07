@@ -1,6 +1,6 @@
 {
   "name": "bonita-js-components",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Several tools leading to ease web development with Bonita",
   "main": "index.js",
   "scripts": {
