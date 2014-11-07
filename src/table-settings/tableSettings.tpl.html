@@ -1,13 +1,15 @@
 <div class="btn-group pull-right" dropdown>
-  <button type="button" title="Table settings"
+  <button type="button btn-default"
     class="btn dropdown-toggle"
-    ng-disabled="tasks.length === 0">
+    ng-disabled="tasks.length === 0"
+    aria-labelledby="aria-tablesettings">
     <i class="icon icon-gear"></i>
+    <span class="sr-only" id="aria-tablesettings" translate>Table settings</span>
     <span class="caret"></span>
   </button>
 
-  <div class="TableSettings dropdown-menu pull-right">
-    <h5 class="TableSettings-title">Tasks per page</h5>
+  <div class="TableSettings dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">
+    <h5 class="TableSettings-title" translate>Items per page</h5>
     <div class="btn-group TableSettings-pagesizes">
       <button class="btn btn-default"
         type="button"
@@ -19,7 +21,7 @@
       </button>
     </div>
 
-    <h5 class="TableSettings-title">Columns Selection</h5>
+    <h5 class="TableSettings-title" translate>Columns Selection</h5>
     <ul class="TableSettings-Columns">
       <li  ng-repeat="field in columns">
       <label
