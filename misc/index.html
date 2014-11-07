@@ -63,7 +63,7 @@
 
   <script src="angular/angular.js"></script>
   <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
-  <script src="bonita-lib.js"></script>
+  <script src="bonita-lib-tpl.js"></script>
 
   <script>
     angular
@@ -72,6 +72,11 @@
         return function(input, start) {
           start = parseInt(start,10) || 0 ;
           return input.slice(start);
+        };
+      })
+      .filter('translate', function() {
+        return function(input) {
+          return input;
         };
       })
       .run(function($rootScope){
