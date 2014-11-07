@@ -80,4 +80,22 @@ angular.module('bonita.repeatable', [])
         };
       }
     };
+  })
+  .directive('repeatableConfig', function(){
+    return {
+      priority:1,
+      link: function(scope, elem, attr){
+        scope.$watch(attr.repeatableConfig, function(visibleConfig){
+
+          var prop = attr.visibleProp || 'visible';
+          if (visibleConfig.length !== scope.$columns.length) {
+            throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
+          }
+
+          scope.$columns.forEach(function(item, index){
+            item[prop] = visibleConfig[index];
+          });
+        });
+      }
+    };
   });
