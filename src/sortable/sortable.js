@@ -1,13 +1,12 @@
 angular
   .module('bonita.sortable',[])
   .controller('SortableController', function($scope){
-    this.onSort = function(params){
+    $scope.onSort = function(params){
       $scope.onSort(params);
     };
   })
   .directive('boSortable', function(){
     return {
-      require:'bonitable',
       controller:'SortableController',
     };
   })
