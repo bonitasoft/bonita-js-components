@@ -4,6 +4,7 @@
 var gulp = require('gulp');
 var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
+var del  = require('del');
 
 /* build */
 var bower  = require('gulp-bower');
@@ -17,6 +18,7 @@ var concat = require('gulp-concat');
 
 /* css */
 var autoprefixer = require('gulp-autoprefixer');
+var cssmin = require('gulp-csso');
 
 /* dev */
 var connect = require('gulp-connect');
@@ -68,7 +70,7 @@ gulp.task('html2js', function() {
  * bundle
  * concat generated templates and javascript files
  */
-gulp.task('bundle:js',['jshint', 'html2js'], function(){
+gulp.task('bundle:js:tpl',['jshint', 'html2js'], function(){
   return gulp.src(['src/**/*.js', 'demo/templates.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
@@ -76,19 +78,47 @@ gulp.task('bundle:js',['jshint', 'html2js'], function(){
       add: true,
       single_quotes: true
     }))
-    .pipe(concat('bundle.js'))
+    .pipe(concat('bonita-lib-tpl.js'))
+    .pipe(gulp.dest('demo'));
+});
+
+gulp.task('bundle:js',['jshint'], function(){
+  return gulp.src(['src/**/*.js'])
+    .pipe(plumber())
+    .pipe(ngAnnotage({
+      remove: true,
+      add: true,
+      single_quotes: true
+    }))
+    .pipe(concat('bonita-lib.js'))
     .pipe(gulp.dest('demo'));
 });
 
 /**
- * uglify
- * minifiy generated javascript bundle
+ * dist
  */
-gulp.task('uglify',['bundle:js'], function(){
-  return gulp.src(['demo/bundle.js'])
+gulp.task('clean', function(done){
+  del(['dist/', 'demo/'], done);
+});
+
+gulp.task('dist:files', ['bundle:js:tpl', 'bundle:js', 'assets:css'], function(){
+  return gulp.src(['demo/bonita-lib.js', 'demo/bonita-lib-tpl.js', 'demo/*.css'])
+    .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('uglify', ['dist:files'], function(){
+  return gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
     .pipe(plumber())
+    .pipe(uglify())
     .pipe(rename({ suffix:'.min' }))
-    .pipe(gulp.dest('demo'));
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('dist:css', ['dist:files'], function(){
+  return gulp.src('dist/*.css')
+    .pipe(rename({ suffix:'.min' }))
+    .pipe(cssmin())
+    .pipe(gulp.dest('dist/'));
 });
 
 
@@ -97,7 +127,7 @@ gulp.task('uglify',['bundle:js'], function(){
  */
 gulp.task('assets:css', function(){
   return gulp.src('src/**/*.css')
-    .pipe(concat('styles.css'))
+    .pipe(concat('bonita-lib.css'))
     .pipe(autoprefixer({
       browsers: ['last 3 version', 'ie 9']
     }))
@@ -149,8 +179,8 @@ function test(done, tdd) {
  * Launch a server with livereload
  */
 gulp.task('watch', ['jshint', 'bower'], function() {
-  gulp.watch(['src/**/*.js'], ['bundle:js']);
-  gulp.watch(['src/**/*.html'], ['bundle:js']);
+  gulp.watch(['src/**/*.js'], ['bundle:js:tpl']);
+  gulp.watch(['src/**/*.html'], ['bundle:js:tpl']);
   gulp.watch(['misc/**/*.html'], ['assets:html']);
   gulp.watch(['src/**/*.css'], ['assets:css']);
 
@@ -162,7 +192,7 @@ gulp.task('watch', ['jshint', 'bower'], function() {
 
 });
 
-gulp.task('test', function (done) {
+gulp.task('test', ['bower'], function (done) {
   return test(done, false);
 });
 
@@ -170,7 +200,7 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-gulp.task('dist', ['bower', 'assets', 'uglify', 'test']);
-gulp.task('dev', ['bower', 'assets', 'bundle:js', 'tdd', 'watch', 'open']);
+gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'tdd', 'watch', 'open']);
 
 gulp.task('default', ['test']);
