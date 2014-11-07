@@ -3,13 +3,13 @@ angular.module('bonita.ui', [
   'bonita.templates',
   'bonita.sortable',
   'bonita.selectable',
-  'bonita.repeatable'
-  ]);
-
+  'bonita.repeatable',
+  'bonita.settings'
+]);
 
 angular.module('bonitable', [])
   .controller('BonitableController', function(){
-    //allow require bonitable form child directive
+    //allow require bonitable child directive
   })
   .directive('bonitable', function(){
     return {

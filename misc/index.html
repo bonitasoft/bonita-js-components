@@ -6,58 +6,112 @@
   <title>Bonita demo page</title>
   <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css">
+  <style type="text/css" media="screen">
+    .pagination{
+      margin: 0;
+    }
+  </style>
 </head>
 <body ng-app="demo">
   <div class="container">
     <div class="jumbotron">
       <h1>Demo page</h1>
-      <pre>{{sortOptions}}</pre>
+      <div class="row">
+        <div class="col-sm-6">
+          <pre>{{sortOptions | json}}</pre>
+        </div>
+        <div class="col-sm-6">
+          <pre>{{pagination | json}}</pre>
+        </div>
+      </div>
     </div>
-    <table bonitable bo-repeatable="tr[data-headers]" bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
+    <table bonitable bo-repeatable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
       <thead>
         <tr>
-          <td colspan="5">
-            <span ng-repeat="column in $columns">
-              <input type="checkbox" ng-model="column.visible"> {{column.name}}
-            </span>
-            <pre>{{selecter.$selectedItems|json}}</pre>
-          </td>
+          <th colspan="{{$columns.length+1}}" style="text-align:right">
+            <table-settings columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="updateVisibility(field)" update-page-size="updatePageSize(size)"></table-settings>
+            <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
+          </th>
         </tr>
         <tr data-headers>
           <th data-ignore><div bo-selectall></div></th>
+          <!-- <th bo-sorter="{{col.id}}" ng-repeat="col in columns | filter:{_visible:true} ">{{col.label}}</th> -->
+
+
           <th bo-sorter="id">Id</th>
           <th bo-sorter="name">Nom</th>
           <th bo-sorter="date">Date</th>
           <th bo-sorter="user">Utilisateur</th>
+
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in items | orderBy: sortOptions.property : sortOptions.direction ">
-          <td><input type="checkbox" bo-selector="item">{{item.truc}}</td>
+        <tr ng-repeat="item in items | orderBy: sortOptions.property : sortOptions.direction | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">
+          <td><input type="checkbox" bo-selector="item"></td>
+          <!-- <td ng-repeat="col in columns | filter:{_visible:true}">{{item[col.id]}}</th> -->
+
+
           <td>{{item.id}}</td>
           <td>{{item.name}}</td>
           <td>{{item.date}}</td>
           <td>{{item.user}}</td>
+
         </tr>
       </tbody>
     </table>
   </div>
 
   <script src="angular/angular.js"></script>
-  <script src="angular-bootstrap/ui-bootstrap.tpls.js"></script>
+  <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bundle.js"></script>
+
   <script>
     angular
-      .module('demo', ['bonita.ui'])
+      .module('demo', ['bonita.ui','ui.bootstrap'])
+      .filter('slice', function() {
+        return function(input, start) {
+          start = parseInt(start,10) || 0 ;
+          return input.slice(start);
+        };
+      })
       .run(function($rootScope){
         $rootScope.onSort = function(options){
           console.log('sort handler', options);
         };
 
-        $rootScope.sortOptions = {
-          property: 'id',
-          direction: 'ASC'
+        $rootScope.updateVisibility = function(field){
+          console.log('update visibilty on', field);
         };
+        $rootScope.updatePageSize = function(size){
+          console.log('update page size', size);
+        };
+
+        $rootScope.sortOptions = {
+          property: 'name',
+          direction: false
+        };
+
+        $rootScope.columns=[
+          {
+            id:'id',
+            label:'Id',
+            _visible: true
+          }, {
+            id:'name',
+            label:'Nom',
+            _visible: true
+          }, {
+            id:'date',
+            label:'Date',
+            _visible: true
+          }, {
+            id:'user',
+            label:'Utilisateur',
+            _visible: true
+          }
+        ];
+
+        $rootScope.PAGE_SIZES=[5,10,100];
 
         $rootScope.items = [
           {
@@ -122,6 +176,12 @@
             "date": "Wed Apr 21 1999 19:05:00 GMT+0000 (UTC)"
           }
         ];
+
+        $rootScope.pagination = {
+          pageSize:5,
+          currentPage:1,
+          total:$rootScope.items.length
+        };
       })
   </script>
 </body>
