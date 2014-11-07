@@ -9,30 +9,30 @@ describe('sortable directive', function(){
   beforeEach(module('bonita.sortable'));
   beforeEach(module('bonita.templates'));
 
-  beforeEach(inject(function($rootScope, $compile, $httpBackend, _$timeout_) {
+  beforeEach(inject(function($rootScope, $compile, $httpBackend) {
     scope = $rootScope.$new();
-    $timeout =  _$timeout_;
 
     $httpBackend.whenGET(/^template/).respond('');
 
     var markup =
-        '<table bonitable bo-sortable'+
-        '       sort-options="sortOptions" on-sort="onSort(options)">'+
+        '<div>'+
+        '<table bonitable'+
+        '       sort-options="sortableOptions" on-sort="sortHandler(options)">'+
         '  <thead>'+
         '    <tr>'+
         '       <th bo-sorter="id">ID</th>'+
         '       <th bo-sorter="name">Name</th>'
         '    </tr>'+
         '  </thead>'+
-        '</table>';
+        '</table>'+
+        '</div>';
 
-    scope.sortOptions = {
-      direction:true,
+    scope.sortableOptions = {
+      direction:false,
       property:'name'
     };
-
-    scope.onSort = function(){};
-    spyOn(scope, 'onSort');
+    scope.sortHandler = function(){}
+    spyOn(scope, 'sortHandler').and.callThrough();
     element = $compile(markup)(scope);
     scope.$digest();
   }));
@@ -49,25 +49,24 @@ describe('sortable directive', function(){
     it('should reflect sort direction', function(){
       var icon = element.find('.SortButton--active .SortButton-icon').get(0);
       expect(icon.classList.contains('icon-sort-up')).toBe(true);
-      scope.sortOptions.direction =  false;
+      scope.sortableOptions.direction =  true;
       scope.$digest();
       expect(icon.classList.contains('icon-sort-down')).toBe(true);
     });
   });
 
   describe('sorter', function() {
-    it('should trigger onSort when click', function(){
+    it('should trigger sort handler when click bo-sorter', function(){
       var button = element.find('.SortButton:not(.SortButton--active)');
       button.click();
-      expect(scope.onSort).toHaveBeenCalledWith({property:'id', direction:true});
+      expect(scope.sortHandler).toHaveBeenCalledWith({property:'id', direction:false});
     });
 
     it('should reverse order if active th is clicked', function(){
       var button = element.find('.SortButton--active');
-      expect(scope.sortOptions).toEqual({property:'name', direction:true});
       button.click();
-      expect(scope.sortOptions).toEqual({property:'name', direction:false});
-      expect(scope.onSort).toHaveBeenCalledWith({property:'name', direction:false});
+      expect(scope.sortableOptions).toEqual({property:'name', direction:true});
+      expect(scope.sortHandler).toHaveBeenCalledWith({property:'name', direction:true});
     });
   });
 
@@ -85,7 +84,7 @@ describe('sortable directive', function(){
       var icon = element.find('.SortButton-icon');
 
       button.click();
-      expect(scope.sortOptions.direction).toBe(false);
+      expect(scope.sortableOptions.direction).toBe(true);
     });
   });
 

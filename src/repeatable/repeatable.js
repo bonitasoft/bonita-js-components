@@ -17,8 +17,9 @@ angular.module('bonita.repeatable', [])
   })
   .directive('boRepeatable', function () {
     return {
+      require:'bonitable',
       restrict: 'A',
-      compile: function (elem, attr) {
+      compile: function (elem, attr, bonitaCtrl) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
@@ -84,9 +85,9 @@ angular.module('bonita.repeatable', [])
   .directive('repeatableConfig', function(){
     return {
       priority:1,
+      require: 'bonitable',
       link: function(scope, elem, attr){
         scope.$watch(attr.repeatableConfig, function(visibleConfig){
-
           var prop = attr.visibleProp || 'visible';
           if (visibleConfig.length !== scope.$columns.length) {
             throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
