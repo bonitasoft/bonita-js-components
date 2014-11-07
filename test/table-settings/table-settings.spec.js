@@ -21,9 +21,18 @@ describe('sortable directive', function(){
     '</table-settings>';
 
 
+
   beforeEach(module('bonitable'));
   beforeEach(module('bonita.settings'));
   beforeEach(module('bonita.templates'));
+
+  beforeEach(module(function($filterProvider){
+    $filterProvider.register('translate', function(){
+      return function(input){
+        return input;
+      };
+    });
+  }));
 
   beforeEach(inject(function($rootScope, $compile, $httpBackend) {
     $httpBackend.whenGET(/^template/).respond('');
