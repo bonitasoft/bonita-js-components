@@ -6,6 +6,11 @@
   <title>Bonita demo page</title>
   <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css">
+  <style type="text/css" media="screen">
+    .pagination{
+      margin: 0;
+    }
+  </style>
 </head>
 <body ng-app="demo">
   <div class="container">
@@ -23,10 +28,9 @@
     <table bonitable bo-repeatable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
       <thead>
         <tr>
-          <th colspan="{{$columns.length+1}}">
-            <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
-            {{pagination.currentPage}}:{{pagination.pageSize}}-{{pagination.currentPage*pagination.pageSize}}
+          <th colspan="{{$columns.length+1}}" style="text-align:right">
             <table-settings columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="updateVisibility(field)" update-page-size="updatePageSize(size)"></table-settings>
+            <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
           </th>
         </tr>
         <tr data-headers>
@@ -64,6 +68,12 @@
   <script>
     angular
       .module('demo', ['bonita.ui','ui.bootstrap'])
+      .filter('slice', function() {
+        return function(input, start) {
+          start = parseInt(start,10) || 0 ;
+          return input.slice(start);
+        };
+      })
       .run(function($rootScope){
         $rootScope.onSort = function(options){
           console.log('sort handler', options);
@@ -80,6 +90,7 @@
           property: 'name',
           direction: false
         };
+
         $rootScope.columns=[
           {
             id:'id',
@@ -98,7 +109,8 @@
             label:'Utilisateur',
             _visible: true
           }
-        ]
+        ];
+
         $rootScope.PAGE_SIZES=[5,10,100];
 
         $rootScope.items = [

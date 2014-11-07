@@ -7,19 +7,12 @@ angular.module('bonita.ui', [
   'bonita.settings'
 ]);
 
-
 angular.module('bonitable', [])
   .controller('BonitableController', function(){
-    //allow require bonitable form child directive
+    //allow require bonitable child directive
   })
   .directive('bonitable', function(){
     return {
       controller: 'BonitableController'
-    };
-  })
-  .filter('slice', function() {
-    return function(input, start) {
-      start = parseInt(start,10) || 0 ;
-      return input.slice(start);
     };
   });
