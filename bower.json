@@ -7,12 +7,7 @@
     "Lionel Breduillieard <lionel@lumographe.fr>"
   ],
   "main":[
-    "dist/bonita-lib.css",
-    "dist/bonita-lib.min.css",
-    "dist/bonita-lib.js",
-    "dist/bonita-lib.min.js",
-    "dist/bonita-lib-tpl.js",
-    "dist/bonita-lib-tpl.min.js"
+    "dist/bonita-lib-tpl.js"
   ],
   "description": "Several tools leading to ease web development with Bonita",
   "license": "GPL",
