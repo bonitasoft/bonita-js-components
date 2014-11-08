@@ -103,6 +103,66 @@ angular.module('bonitable', [])
     };
   });
 
+/* jshint sub:true*/
+(function () {
+  'use strict';
+  angular.module('org.bonita.services.topurl', [])
+    .service('manageTopUrl', ['$window', function ($window) {
+      var manageTopUrlService = {};
+      manageTopUrlService.getCurrentPageToken = function() {
+        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/;
+        var pageTokenMatches = pageTokenRegExp.exec($window.top.location.hash);
+        if (pageTokenMatches && pageTokenMatches.length) {
+          return pageTokenMatches[2];
+        }
+        return '';
+      };
+
+      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
+        if (paramValue !== undefined && $window.self !== $window.top) {
+          var pageToken = manageTopUrlService.getCurrentPageToken();
+          if (!!$window.top.location.hash) {
+            var paramRegExp = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)');
+            var paramMatches = $window.top.location.hash.match(paramRegExp);
+            if (!paramMatches || !paramMatches.length) {
+              var currentHash = $window.top.location.hash;
+              if(paramValue) {
+                $window.top.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
+              }
+            } else {
+              var paramToSet = '';
+              if(paramValue){
+                paramToSet = pageToken + param + '=' + paramValue;
+              }
+              $window.top.location.hash = $window.top.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
+            }
+          } else {
+            if(paramValue) {
+              $window.top.location.hash = '#' + pageToken + param + '=' + paramValue;
+            }
+          }
+        }
+      };
+      manageTopUrlService.getCurrentProfile = function () {
+        if ($window && $window.top && $window.top.location && $window.top.location.hash) {
+          var currentProfileMatcher = $window.top.location.hash.match(/\b_pf=\d+\b/);
+          return (currentProfileMatcher && currentProfileMatcher.length) ? currentProfileMatcher[0] : '';
+        }
+      };
+      manageTopUrlService.getPath = function () {
+        return $window.top.location.pathname;
+      };
+      manageTopUrlService.getSearch = function () {
+        return $window.top.location.search || '';
+      };
+      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
+        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
+      };
+//cannot use module pattern or reveling since we would want to mock methods on test
+      return manageTopUrlService;
+    }]);
+})();
+
 angular
   .module('bonita.selectable',[])
   .directive('boSelectall', function(){
@@ -152,57 +212,6 @@ angular
 
         bonitableCtrl.registerSelector(item);
 
-      }
-    };
-  });
-
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'id';
-      }
-    };
-  });
-
-angular
-  .module('bonita.sortable',[])
-  .directive('boSorter', function(){
-    return {
-      restrict: 'A',
-      scope: true,
-      require:'^bonitable',
-      templateUrl: 'template/sortable/sorter.tpl.html',
-      transclude: true,
-      link: function($scope, iElm, attr, bonitableCtrl) {
-        $scope.property =  (attr.id || attr.boSorter).trim();
-
-        $scope.sortOptions = bonitableCtrl.getOptions();
-
-        $scope.sort = function() {
-          if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
-            $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = false;
-          }
-          bonitableCtrl.triggerSortHandler($scope.sortOptions);
-        };
       }
     };
   });
@@ -306,6 +315,57 @@ angular.module('bonita.repeatable', [])
             item[prop] = visibleConfig[index];
           });
         });
+      }
+    };
+  });
+
+angular
+  .module('bonita.sortable',[])
+  .directive('boSorter', function(){
+    return {
+      restrict: 'A',
+      scope: true,
+      require:'^bonitable',
+      templateUrl: 'template/sortable/sorter.tpl.html',
+      transclude: true,
+      link: function($scope, iElm, attr, bonitableCtrl) {
+        $scope.property =  (attr.id || attr.boSorter).trim();
+
+        $scope.sortOptions = bonitableCtrl.getOptions();
+
+        $scope.sort = function() {
+          if ($scope.sortOptions.property === $scope.property){
+            $scope.sortOptions.direction = !$scope.sortOptions.direction;
+          } else {
+            $scope.sortOptions.property = $scope.property;
+            $scope.sortOptions.direction = false;
+          }
+          bonitableCtrl.triggerSortHandler($scope.sortOptions);
+        };
+      }
+    };
+  });
+
+'use strict';
+
+angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  .directive('tableSettings', function(){
+    // Runs during compile
+    return {
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
+      replace: true,
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'id';
       }
     };
   });
