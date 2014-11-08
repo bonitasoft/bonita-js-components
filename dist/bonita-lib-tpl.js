@@ -322,7 +322,7 @@ angular.module('bonita.repeatable', [])
 (function(){
   'use strict';
   angular
-  .module('bonita.sortable',[])
+  .module('bonita.sortable',['bonita.templates'])
   .directive('boSorter', function(){
     return {
       restrict: 'A',
