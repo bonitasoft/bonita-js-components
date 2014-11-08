@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   angular
-  .module('bonita.sortable',['template/sortable/sorter.tpl.html'])
+  .module('bonita.sortable',[])
   .directive('boSorter', function(){
     return {
       restrict: 'A',
@@ -30,10 +30,4 @@
       }
     };
   });
-
-  angular.module('template/sortable/sorter.tpl.html', []).run(['$templateCache', function($templateCache) {
-    $templateCache.put('template/sortable/sorter.tpl.html',
-      '<span ng-click=\"sort()\" ng-transclude></span>'+
-      '<span ng-click=\"sort()\" class=\"glyphicon\" ng-class=\"{\'glyphicon-chevron-up\':sortOptions.ascendant &amp;&amp; sortOptions.property === property, \'glyphicon-chevron-down\':!sortOptions.ascendant &amp;&amp; sortOptions.property === property}\"></i>');
-  }]);
 })();

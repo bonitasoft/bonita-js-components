@@ -1,0 +1,74 @@
+.SortButton {
+  border: none;
+  font-weight: normal;
+  color:#666;
+  background-color: transparent;
+  min-width: 100%;
+  text-align: inherit;
+  padding:1px 0;
+  white-space: nowrap;
+}
+.SortButton-icon {
+  visibility:hidden;
+  font-style: normal;
+  font-weight: bold;
+  display: inline-block;
+  font-size:1.3em;
+  -webkit-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+
+.SortButton--active .SortButton-icon,
+.SortButton:hover .SortButton-icon,
+.SortButton-icon.Sortbutton-icon-active {
+  visibility: visible;
+}
+
+.SortButton-label {
+  margin-right:.3em;
+}
+
+.SortButton--active {
+  color: orangered;
+}
+
+.icon-sort-up:after {
+  content:"‹";
+}
+
+.icon-sort-down:after {
+  content:"›";
+}
+
+.glyphicon-none:before {
+    content: "\2122";
+    color: transparent !important;
+}
+
+.pointer{
+   cursor: pointer;
+}
+
+.TableSettings {
+  padding: .5em;
+}
+
+.TableSettings-pagesizes {
+  width:100%;
+}
+
+.TableSettings-title {
+
+}
+
+.TableSettings-Columns {
+  max-height: 10em;
+  overflow: auto;
+  list-style-type: none;
+  padding-left:0;
+}
+
+.ColumnsItem {
+  cursor: pointer;
+}
