@@ -1,36 +1,33 @@
-angular
+(function(){
+  'use strict';
+  angular
   .module('bonita.sortable',[])
-  .controller('SortableController', function($scope){
-    $scope.onSort = function(params){
-      $scope.onSort(params);
-    };
-  })
-  .directive('boSortable', function(){
-    return {
-      controller:'SortableController',
-    };
-  })
   .directive('boSorter', function(){
     return {
       restrict: 'A',
-      scope: true,
-      require:'^boSortable',
+      scope: {
+        sortOptions : '=',
+        onSort : '&'
+      },
       templateUrl: 'template/sortable/sorter.tpl.html',
       transclude: true,
-      link: function($scope, iElm, attr, sortableController) {
-        $scope.property =  (attr.id || attr.boSorter).trim();
-
+      link: function($scope, iElm, attr) {
+        $scope.property =  (attr.id || attr.boSorter || '').trim();
+        if($scope.property){
+          iElm.addClass('pointer');
+        }
 
         $scope.sort = function() {
           if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
+            $scope.sortOptions.ascendant = !$scope.sortOptions.ascendant;
+          } else if ($scope.property){
             $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = true;
+            $scope.sortOptions.ascendant = true;
           }
+          $scope.onSort()($scope.sortOptions);
 
-          sortableController.onSort($scope.sortOptions);
         };
       }
     };
   });
+})();
