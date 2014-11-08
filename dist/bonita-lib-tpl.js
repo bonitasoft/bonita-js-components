@@ -8,19 +8,19 @@ angular.module('bonita.ui', [
 ]);
 
 angular.module('bonitable', [])
-  .controller('BonitableController', function(){
-    //allow require bonitable child directive
-  })
-  .directive('bonitable', function(){
-    return {
-      controller: 'BonitableController'
+  .controller('BonitableController', ['$scope', function($scope){
+
+    /* bo-sortable */
+    // sortOption accessors
+    this.getOptions = function() {
+      return $scope.sortOptions;
     };
-  });
 
-angular
-  .module('bonita.selectable',[])
-  .controller('SelectableController', function(){
+    this.triggerSortHandler = function(params){
+      $scope.onSort({options:params});
+    };
 
+    /* multiselect */
     var selectors = [];
     this.registerSelector = function registerSelector(item){
       selectors.push(item);
@@ -41,27 +41,30 @@ angular
       }
     };
 
-    Object.keys(getters).forEach(function(property){
-       Object.defineProperty(this, property, {
-        get: getters[property],
-        enumerable: true,
-        iterable: true
-      });
-    },this);
+    this.prepareScope = function(scope){
 
-    this.$toggleAll = function toggleAll(){
-      var selectedValue = !this.$allSelected;
+      Object.keys(getters).forEach(function(property){
+         Object.defineProperty(this, property, {
+          get: getters[property],
+          enumerable: true,
+          iterable: true
+        });
+      }, scope);
 
-      selectors.forEach( function(row){
-        row.setChecked(selectedValue);
-      });
+      scope.$toggleAll = function toggleAll(){
+        var selectedValue = !this.$allSelected;
+
+        selectors.forEach( function(row){
+          row.setChecked(selectedValue);
+        });
+      };
     };
 
-     /**
-      * helper method to check if row is checked
-      * @param  {Object}  row
-      * @return {Boolean}
-      */
+   /**
+    * helper method to check if row is checked
+    * @param  {Object}  row
+    * @return {Boolean}
+    */
     function isChecked(row){
       return row.isChecked();
     }
@@ -73,26 +76,105 @@ angular
     function getData(row){
       return row.data;
     }
-  })
-  .directive('boSelectable', function(){
-    // Runs during compile
+
+  }])
+  .directive('bonitable', function(){
     return {
-      scope:true,
-      restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
-      controller: 'SelectableController',
-      controllerAs: 'selecter',
+      // scope:true,
+      priority:100,
+      scope: {
+        //bo-sortable options
+        onSort:'&',
+        sortOptions:'=',
+
+        //bo-repeatable-config
+        repeatableConfig:'='
+      },
+      transclude:'element',
+      controller: 'BonitableController',
+      compile: function(){
+        return function($scope, $element, $attr, ctrl, $transclude){
+          $transclude( function(clone, scope){
+            ctrl.prepareScope(scope);
+            $element.after(clone);
+          });
+        };
+      }
     };
-  })
+  });
+
+/* jshint sub:true*/
+(function () {
+  'use strict';
+  angular.module('org.bonita.services.topurl', [])
+    .service('manageTopUrl', ['$window', function ($window) {
+      var manageTopUrlService = {};
+      manageTopUrlService.getCurrentPageToken = function() {
+        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/;
+        var pageTokenMatches = pageTokenRegExp.exec($window.top.location.hash);
+        if (pageTokenMatches && pageTokenMatches.length) {
+          return pageTokenMatches[2];
+        }
+        return '';
+      };
+
+      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
+        if (paramValue !== undefined && $window.self !== $window.top) {
+          var pageToken = manageTopUrlService.getCurrentPageToken();
+          if (!!$window.top.location.hash) {
+            var paramRegExp = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)');
+            var paramMatches = $window.top.location.hash.match(paramRegExp);
+            if (!paramMatches || !paramMatches.length) {
+              var currentHash = $window.top.location.hash;
+              if(paramValue) {
+                $window.top.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
+              }
+            } else {
+              var paramToSet = '';
+              if(paramValue){
+                paramToSet = pageToken + param + '=' + paramValue;
+              }
+              $window.top.location.hash = $window.top.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
+            }
+          } else {
+            if(paramValue) {
+              $window.top.location.hash = '#' + pageToken + param + '=' + paramValue;
+            }
+          }
+        }
+      };
+      manageTopUrlService.getCurrentProfile = function () {
+        if ($window && $window.top && $window.top.location && $window.top.location.hash) {
+          var currentProfileMatcher = $window.top.location.hash.match(/\b_pf=\d+\b/);
+          return (currentProfileMatcher && currentProfileMatcher.length) ? currentProfileMatcher[0] : '';
+        }
+      };
+      manageTopUrlService.getPath = function () {
+        return $window.top.location.pathname;
+      };
+      manageTopUrlService.getSearch = function () {
+        return $window.top.location.search || '';
+      };
+      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
+        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
+      };
+//cannot use module pattern or reveling since we would want to mock methods on test
+      return manageTopUrlService;
+    }]);
+})();
+
+angular
+  .module('bonita.selectable',[])
   .directive('boSelectall', function(){
     // Runs during compile
     return {
       restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
-      require: '^boSelectable',
+      require: '^bonitable',
       replace: true,
-      template: '<input type="checkbox" ng-checked="selecter.$allSelected" ng-click="selecter.$toggleAll()">',
-      link: function(scope, elem, attr, selectableCtrl){
+      template: '<input type="checkbox" ng-checked="$allSelected" ng-click="$toggleAll()">',
+      link: function(scope, elem){
         scope.$watch(function(){
-          return selectableCtrl.$indeterminate;
+          return scope.$indeterminate;
         }, function(newVal){
           elem[0].indeterminate  = newVal;
         });
@@ -103,8 +185,8 @@ angular
     // Runs during compile
     return {
       restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-      require: '^boSelectable',
-      link: function($scope, elem, attr, selectableCtrl) {
+      require: '^bonitable',
+      link: function($scope, elem, attr, bonitableCtrl) {
         var ngModel = elem.controller('ngModel');
 
          var item = {
@@ -128,7 +210,7 @@ angular
           $scope.$apply();
         }
 
-        selectableCtrl.registerSelector(item);
+        bonitableCtrl.registerSelector(item);
 
       }
     };
@@ -153,8 +235,9 @@ angular.module('bonita.repeatable', [])
   }])
   .directive('boRepeatable', function () {
     return {
+      require:'bonitable',
       restrict: 'A',
-      compile: function (elem, attr) {
+      compile: function (elem, attr, bonitaCtrl) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
@@ -220,9 +303,9 @@ angular.module('bonita.repeatable', [])
   .directive('repeatableConfig', function(){
     return {
       priority:1,
+      require: 'bonitable',
       link: function(scope, elem, attr){
         scope.$watch(attr.repeatableConfig, function(visibleConfig){
-
           var prop = attr.visibleProp || 'visible';
           if (visibleConfig.length !== scope.$columns.length) {
             throw new Error('repeatable-config size differ from $columns size. Please check your config attr');

@@ -9,6 +9,7 @@
   <style type="text/css" media="screen">
     .pagination{
       margin: 0;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -18,19 +19,23 @@
       <h1>Demo page</h1>
       <div class="row">
         <div class="col-sm-6">
-          <pre>{{sortOptions | json}}</pre>
+          <pre>{{sortableOptions | json}}</pre>
         </div>
         <div class="col-sm-6">
           <pre>{{pagination | json}}</pre>
         </div>
       </div>
     </div>
-    <table bonitable bo-repeatable bo-selectable bo-sortable sort-options="sortOptions" on-sort="onSort(options)" class="table">
+    <table bonitable bo-repeatable repeatable-config="config" sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
       <thead>
         <tr>
-          <th colspan="{{$columns.length+1}}" style="text-align:right">
-            <table-settings columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="updateVisibility(field)" update-page-size="updatePageSize(size)"></table-settings>
+          <th colspan="{{$columns.length+1}}">
+            <div class="btn-group" >
+              <button class="btn btn-default" ng-click="updateCfg(true)"  ng-disabled="$selectedItems.length === 0">small</button>
+              <button class="btn btn-default" ng-click="updateCfg(false)" ng-disabled="$selectedItems.length === 0">basic</button>
+            </div>
             <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
+            <table-settings class="pull-right" columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="visibilityHandler(field)" update-page-size="pageSizeHandler(size)"></table-settings>
           </th>
         </tr>
         <tr data-headers>
@@ -46,7 +51,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in items | orderBy: sortOptions.property : sortOptions.direction | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">
+        <tr ng-repeat="item in items | orderBy: sortableOptions.property : sortableOptions.direction | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">
           <td><input type="checkbox" bo-selector="item"></td>
           <!-- <td ng-repeat="col in columns | filter:{_visible:true}">{{item[col.id]}}</th> -->
 
@@ -80,18 +85,20 @@
         };
       })
       .run(function($rootScope){
-        $rootScope.onSort = function(options){
+        console.log('rootscope', $rootScope.$id)
+
+        $rootScope.sortHandler = function(options){
           console.log('sort handler', options);
         };
 
-        $rootScope.updateVisibility = function(field){
+        $rootScope.visibilityHandler = function(field){
           console.log('update visibilty on', field);
         };
-        $rootScope.updatePageSize = function(size){
+        $rootScope.pageSizeHandler = function(size){
           console.log('update page size', size);
         };
 
-        $rootScope.sortOptions = {
+        $rootScope.sortableOptions = {
           property: 'name',
           direction: false
         };
@@ -181,6 +188,15 @@
             "date": "Wed Apr 21 1999 19:05:00 GMT+0000 (UTC)"
           }
         ];
+
+        var smallCfg = [false, true, false, false]
+        var basicCfg = [false, true, true, true]
+
+        $rootScope.config = basicCfg;
+
+        $rootScope.updateCfg= function(){
+          $rootScope.config = smallCfg;
+        }
 
         $rootScope.pagination = {
           pageSize:5,
