@@ -19,7 +19,7 @@ angular.module('bonita.repeatable', [])
     return {
       require:'bonitable',
       restrict: 'A',
-      compile: function (elem, attr, bonitaCtrl) {
+      compile: function (elem, attr) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
