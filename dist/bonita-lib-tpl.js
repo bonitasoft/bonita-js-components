@@ -154,6 +154,59 @@ angular.module('bonitable', [])
     }]);
 })();
 
+angular
+  .module('bonita.selectable',[])
+  .directive('boSelectall', function(){
+    // Runs during compile
+    return {
+      restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
+      require: '^bonitable',
+      replace: true,
+      template: '<input type="checkbox" ng-checked="$allSelected" ng-click="$toggleAll()">',
+      link: function(scope, elem){
+        scope.$watch(function(){
+          return scope.$indeterminate;
+        }, function(newVal){
+          elem[0].indeterminate  = newVal;
+        });
+      }
+    };
+  })
+  .directive('boSelector', function(){
+    // Runs during compile
+    return {
+      restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+      require: '^bonitable',
+      link: function($scope, elem, attr, bonitableCtrl) {
+        var ngModel = elem.controller('ngModel');
+
+         var item = {
+          data: $scope.$eval(attr.boSelector),
+          isChecked: function(){
+            return ngModel && ngModel.$modelValue===true || elem[0].checked;
+          },
+          setChecked: function(value){
+            if (ngModel){
+              ngModel.$setViewValue(value===true);
+              ngModel.$render();
+            } else  {
+              elem[0].checked = value;
+            }
+          }
+        };
+
+        elem.on('change', onChange);
+
+        function onChange(){
+          $scope.$apply();
+        }
+
+        bonitableCtrl.registerSelector(item);
+
+      }
+    };
+  });
+
 angular.module('bonita.repeatable', [])
   .directive('columnTemplate', ['$compile', function ($compile) {
     return {
@@ -257,55 +310,26 @@ angular.module('bonita.repeatable', [])
     };
   });
 
-angular
-  .module('bonita.selectable',[])
-  .directive('boSelectall', function(){
+'use strict';
+
+angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  .directive('tableSettings', function(){
     // Runs during compile
     return {
-      restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
-      require: '^bonitable',
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
       replace: true,
-      template: '<input type="checkbox" ng-checked="$allSelected" ng-click="$toggleAll()">',
-      link: function(scope, elem){
-        scope.$watch(function(){
-          return scope.$indeterminate;
-        }, function(newVal){
-          elem[0].indeterminate  = newVal;
-        });
-      }
-    };
-  })
-  .directive('boSelector', function(){
-    // Runs during compile
-    return {
-      restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-      require: '^bonitable',
-      link: function($scope, elem, attr, bonitableCtrl) {
-        var ngModel = elem.controller('ngModel');
-
-         var item = {
-          data: $scope.$eval(attr.boSelector),
-          isChecked: function(){
-            return ngModel && ngModel.$modelValue===true || elem[0].checked;
-          },
-          setChecked: function(value){
-            if (ngModel){
-              ngModel.$setViewValue(value===true);
-              ngModel.$render();
-            } else  {
-              elem[0].checked = value;
-            }
-          }
-        };
-
-        elem.on('change', onChange);
-
-        function onChange(){
-          $scope.$apply();
-        }
-
-        bonitableCtrl.registerSelector(item);
-
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'id';
       }
     };
   });
@@ -337,30 +361,6 @@ angular
     };
   });
 
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'id';
-      }
-    };
-  });
-
 (function(module) {
 try {
   module = angular.module('bonita.templates');
@@ -388,15 +388,14 @@ try {
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('template/table-settings/tableSettings.tpl.html',
     '<div class="btn-group pull-right" dropdown>\n' +
-    '  <button type="button btn-default"\n' +
+    '  <button type="button"\n' +
     '    id="aria-tablesettings"\n' +
-    '    class="btn dropdown-toggle"\n' +
+    '    class="btn btn-default dropdown-toggle"\n' +
     '    title="{{\'Table settings\' | translate}}"\n' +
     '    ng-disabled="tasks.length === 0"\n' +
     '    aria-labelledby="aria-tablesettings">\n' +
     '    <i class="icon icon-gear"></i>\n' +
     '    <span class="sr-only">{{\'Table settings\' | translate}}</span>\n' +
-    '    <span class="caret"></span>\n' +
     '  </button>\n' +
     '\n' +
     '  <div class="TableSettings dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">\n' +
