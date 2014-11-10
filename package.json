@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "gulp dev",
+    "predist": "gulp predist",
     "dist": "gulp dist",
     "test": "karma start --log-level debug --single-run"
   },

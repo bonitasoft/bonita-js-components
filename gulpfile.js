@@ -24,6 +24,9 @@ var cssmin = require('gulp-csso');
 var connect = require('gulp-connect');
 var browser = require('gulp-open');
 
+var exec = require('child_process').exec;
+
+
 var opt = {
   port: 4000,
   livereload: 31357
@@ -204,3 +207,14 @@ gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
 gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'tdd', 'watch', 'open']);
 
 gulp.task('default', ['test']);
+
+gulp.task('predist', function(done){
+  exec('git rev-parse --abbrev-ref HEAD', {}, function(err, stdout){
+    if (stdout.trim() !== 'release'){
+      console.log('you can only run npm dist from the release branch');
+      process.exit(-1);
+    } else {
+      done();
+    }
+  });
+});
