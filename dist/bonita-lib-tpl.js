@@ -103,7 +103,6 @@ angular.module('bonitable', [])
     };
   });
 
-<<<<<<< HEAD
 /* jshint sub:true*/
 (function () {
   'use strict';
@@ -164,8 +163,6 @@ angular.module('bonitable', [])
     }]);
 })();
 
-=======
->>>>>>> 649f542fe0ef3debc82cc6d4e1e66c2a37c0d7fb
 angular
   .module('bonita.selectable',[])
   .directive('boSelectall', function(){
@@ -219,60 +216,6 @@ angular
     };
   });
 
-<<<<<<< HEAD
-=======
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'id';
-      }
-    };
-  });
-
-angular
-  .module('bonita.sortable',[])
-  .directive('boSorter', function(){
-    return {
-      restrict: 'A',
-      scope: true,
-      require:'^bonitable',
-      templateUrl: 'template/sortable/sorter.tpl.html',
-      transclude: true,
-      link: function($scope, iElm, attr, bonitableCtrl) {
-        $scope.property =  (attr.id || attr.boSorter).trim();
-
-        $scope.sortOptions = bonitableCtrl.getOptions();
-
-        $scope.sort = function() {
-          if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
-            $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = false;
-          }
-          bonitableCtrl.triggerSortHandler($scope.sortOptions);
-        };
-      }
-    };
-  });
-
->>>>>>> 649f542fe0ef3debc82cc6d4e1e66c2a37c0d7fb
 angular.module('bonita.repeatable', [])
   .directive('columnTemplate', ['$compile', function ($compile) {
     return {
@@ -376,7 +319,6 @@ angular.module('bonita.repeatable', [])
     };
   });
 
-<<<<<<< HEAD
 angular
   .module('bonita.sortable',[])
   .directive('boSorter', function(){
@@ -428,8 +370,6 @@ angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.button
     };
   });
 
-=======
->>>>>>> 649f542fe0ef3debc82cc6d4e1e66c2a37c0d7fb
 (function(module) {
 try {
   module = angular.module('bonita.templates');
