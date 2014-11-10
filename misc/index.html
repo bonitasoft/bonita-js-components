@@ -72,7 +72,14 @@
 
   <script>
     angular
-      .module('demo', ['bonita.ui','ui.bootstrap'])
+      .module('demo', [
+        'bonitable',
+        'bonita.sortable',
+        'bonita.settings',
+        'bonita.selectable',
+        'bonita.repeatable',
+        'ui.bootstrap'
+      ])
       .filter('slice', function() {
         return function(input, start) {
           start = parseInt(start,10) || 0 ;
@@ -85,7 +92,7 @@
         };
       })
       .run(function($rootScope){
-        console.log('rootscope', $rootScope.$id)
+        console.log('rootscope', $rootScope.$id);
 
         $rootScope.sortHandler = function(options){
           console.log('sort handler', options);
