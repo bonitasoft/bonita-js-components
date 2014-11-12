@@ -17,7 +17,7 @@ angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.button
       },
       link: function(scope, elem, attr) {
         scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'id';
+        scope.label = attr.labelProp || 'name';
       }
     };
   });
