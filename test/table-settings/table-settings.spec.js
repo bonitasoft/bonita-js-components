@@ -1,6 +1,6 @@
 'use strict';
 
-describe('sortable directive', function(){
+describe('TableSettings', function(){
 
   var createDirective;
 
@@ -44,17 +44,17 @@ describe('sortable directive', function(){
     scope.PAGE_SIZES = [5,10,50];
     scope.columns = [
       {
-        id:'id',
+        name:'id',
         label:'ID',
         visible: true,
         display: true
       }, {
-        id:'name',
+        name:'name',
         label:'Name',
         visible: true,
         display: true
       }, {
-        id:'date',
+        name:'date',
         label:'Date',
         visible: false,
         display: false
@@ -125,11 +125,11 @@ describe('sortable directive', function(){
       expect(li.length).toEqual(scope.columns.length)
     });
 
-    it('should use id to identify colums', function(){
+    it('should use name to identify colums', function(){
       var index = 1; // colum Name
       var columnLabel = element.find('.TableSettings-Columns li label').eq(index);
       var label = columnLabel.text().trim();
-      expect(label).toEqual(scope.columns[index].id)
+      expect(label).toEqual(scope.columns[index].name)
     });
 
     it('should trigger columns visibility when toggle a columns', function(){
