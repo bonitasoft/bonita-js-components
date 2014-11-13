@@ -40,11 +40,15 @@ angular
         };
 
         elem.on('change', onChange);
+        $scope.$on('$destroy', onDestroy);
 
         function onChange(){
           $scope.$apply();
         }
 
+        function onDestroy(){
+          bonitableCtrl.unregisterSelector(item);
+        }
         bonitableCtrl.registerSelector(item);
 
       }
