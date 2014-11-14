@@ -17,6 +17,11 @@ angular.module('bonitable', [])
       selectors.push(item);
     };
 
+    this.unregisterSelector = function unregisterSelector(item){
+      var index = selectors.indexOf(item);
+      selectors = selectors.slice(0, index).concat(selectors.slice(index+1));
+    };
+
     var getters = {
       '$selectedItems': function() {
         return selectors
@@ -154,6 +159,57 @@ angular.module('bonitable', [])
     }]);
 })();
 
+angular
+  .module('bonita.sortable',[])
+  .directive('boSorter', function(){
+    return {
+      restrict: 'A',
+      scope: true,
+      require:'^bonitable',
+      templateUrl: 'template/sortable/sorter.tpl.html',
+      transclude: true,
+      link: function($scope, iElm, attr, bonitableCtrl) {
+        $scope.property =  (attr.id || attr.boSorter).trim();
+
+        $scope.sortOptions = bonitableCtrl.getOptions();
+
+        $scope.sort = function() {
+          if ($scope.sortOptions.property === $scope.property){
+            $scope.sortOptions.direction = !$scope.sortOptions.direction;
+          } else {
+            $scope.sortOptions.property = $scope.property;
+            $scope.sortOptions.direction = false;
+          }
+          bonitableCtrl.triggerSortHandler($scope.sortOptions);
+        };
+      }
+    };
+  });
+
+'use strict';
+
+angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  .directive('tableSettings', function(){
+    // Runs during compile
+    return {
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
+      replace: true,
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'name';
+      }
+    };
+  });
+
 angular.module('bonita.repeatable', [])
   .directive('columnTemplate', ['$compile', function ($compile) {
     return {
@@ -189,6 +245,12 @@ angular.module('bonita.repeatable', [])
 
         var columns = [];
         var tdCells =  row.children;
+
+        var insertIndex;
+        [].some.call(header.children, function(th, index){
+          insertIndex = index;
+          return th.getAttribute('data-ignore') === null;
+        });
 
 
         /**
@@ -227,10 +289,25 @@ angular.module('bonita.repeatable', [])
               return o;
             });
 
-        angular.element(header)
-          .append('<th column-template="column.header" ng-repeat="column in $columns | filter:$visibilityFilter"></th>');
-        angular.element(row)
-          .append('<td column-template="column.cell" ng-repeat="column in $columns | filter:$visibilityFilter"></td>');
+        /**
+         * create an HTMLElement for column-template which hold the ng-repeat
+         * @param  {String} tagName
+         * @param  {String} template
+         * @return {HTMLElement}
+         */
+        function createNode(tagName, template) {
+          var el = document.createElement(tagName);
+          el.setAttribute('column-template', template);
+          el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
+          return el;
+        }
+
+        var thRepeat = createNode('th', 'column.header');
+        var tdRepeat = createNode('td', 'column.cell');
+
+        header.insertBefore(thRepeat, header.children[insertIndex]);
+        row.insertBefore(tdRepeat, row.children[insertIndex]);
+
         return function (scope) {
           scope.$columns = columns;
           scope.$visibilityFilter = columnFilter.bind(null, prop);
@@ -299,85 +376,20 @@ angular
         };
 
         elem.on('change', onChange);
+        $scope.$on('$destroy', onDestroy);
 
         function onChange(){
           $scope.$apply();
         }
 
+        function onDestroy(){
+          bonitableCtrl.unregisterSelector(item);
+        }
         bonitableCtrl.registerSelector(item);
 
       }
     };
   });
-
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'name';
-      }
-    };
-  });
-
-angular
-  .module('bonita.sortable',[])
-  .directive('boSorter', function(){
-    return {
-      restrict: 'A',
-      scope: true,
-      require:'^bonitable',
-      templateUrl: 'template/sortable/sorter.tpl.html',
-      transclude: true,
-      link: function($scope, iElm, attr, bonitableCtrl) {
-        $scope.property =  (attr.id || attr.boSorter).trim();
-
-        $scope.sortOptions = bonitableCtrl.getOptions();
-
-        $scope.sort = function() {
-          if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
-            $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = false;
-          }
-          bonitableCtrl.triggerSortHandler($scope.sortOptions);
-        };
-      }
-    };
-  });
-
-(function(module) {
-try {
-  module = angular.module('bonita.templates');
-} catch (e) {
-  module = angular.module('bonita.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/sortable/sorter.tpl.html',
-    '<button class="SortButton"\n' +
-    '        title="{{\'Sort by \' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? \' ASC\': \' DESC\') : \' DESC\') }}"\n' +
-    '        ng-class="{\'SortButton--active\':sortOptions.property === property}" ng-click="sort()">\n' +
-    '  <span class="SortButton-label" ng-transclude></span>\n' +
-    '  <i class="SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
-    '</button>\n' +
-    '');
-}]);
-})();
 
 (function(module) {
 try {
@@ -425,6 +437,24 @@ module.run(['$templateCache', function($templateCache) {
     '    </ul>\n' +
     '  </div>\n' +
     '</div>\n' +
+    '');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('bonita.templates');
+} catch (e) {
+  module = angular.module('bonita.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('template/sortable/sorter.tpl.html',
+    '<button class="SortButton"\n' +
+    '        title="{{\'Sort by \' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? \' ASC\': \' DESC\') : \' DESC\') }}"\n' +
+    '        ng-class="{\'SortButton--active\':sortOptions.property === property}" ng-click="sort()">\n' +
+    '  <span class="SortButton-label" ng-transclude></span>\n' +
+    '  <i class="SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '</button>\n' +
     '');
 }]);
 })();
