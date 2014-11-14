@@ -13,7 +13,7 @@ describe('bonitable directive', function(){
 
     var markup =
         '<div>'+
-        '<table bonitable sort-options="options">'+
+        '<table bonitable>'+
         '  <thead>'+
         '    <tr>'+
         '       <th>{{header}}</th>' +

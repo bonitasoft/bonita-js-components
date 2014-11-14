@@ -2,14 +2,16 @@
 
 describe('multiselect directive', function(){
   var element;
+  var scope;
   var controller;
+  var tags =  tags = [{label:'blue'},{label:'red'}, {label:'green'}];
 
   beforeEach(module('bonitable'));
   beforeEach(module('bonita.selectable'));
   beforeEach(module('bonita.templates'));
 
   beforeEach(inject(function($rootScope, $compile, $httpBackend) {
-    var scope = $rootScope.$new();
+    scope = $rootScope.$new();
 
     $httpBackend.whenGET(/^template/).respond('');
 
@@ -18,7 +20,7 @@ describe('multiselect directive', function(){
         '<table bonitable>'+
         '  <thead>'+
         '    <tr>'+
-        '       <th><div bo-selectall></div></th>'+
+        '       <th><divgit bo-selectall></div></th>'+
         '       <th>label</th>'+
         '    </tr>'+
         '  </thead>'+
@@ -31,11 +33,21 @@ describe('multiselect directive', function(){
         '</table>'+
         '</div>';
 
-    scope.tags = [{label:'blue'},{label:'red'}, {label:'green'}];
+    scope.tags = tags;
     element = $compile(markup)(scope);
-    controller = element.controller('boSelectable');
+
+    controller = element.find('table').controller('bonitable');
     scope.$digest();
   }));
+
+  it('should unregister selector when bo-selector is destroy', function(){
+    spyOn(controller, 'unregisterSelector');
+    scope.tags = [];
+    scope.$digest();
+
+    expect(controller.unregisterSelector).toHaveBeenCalled();
+    expect(controller.unregisterSelector.calls.count()).toEqual(tags.length);
+  });
 
   describe('bo-selecter', function(){
     it('should  update $selected items', function(){

@@ -34,6 +34,12 @@ angular.module('bonita.repeatable', [])
         var columns = [];
         var tdCells =  row.children;
 
+        var insertIndex;
+        [].some.call(header.children, function(th, index){
+          insertIndex = index;
+          return th.getAttribute('data-ignore') === null;
+        });
+
 
         /**
          * filter helper to test if data-ignore attribute is present on a Node
@@ -71,10 +77,25 @@ angular.module('bonita.repeatable', [])
               return o;
             });
 
-        angular.element(header)
-          .append('<th column-template="column.header" ng-repeat="column in $columns | filter:$visibilityFilter"></th>');
-        angular.element(row)
-          .append('<td column-template="column.cell" ng-repeat="column in $columns | filter:$visibilityFilter"></td>');
+        /**
+         * create an HTMLElement for column-template which hold the ng-repeat
+         * @param  {String} tagName
+         * @param  {String} template
+         * @return {HTMLElement}
+         */
+        function createNode(tagName, template) {
+          var el = document.createElement(tagName);
+          el.setAttribute('column-template', template);
+          el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
+          return el;
+        }
+
+        var thRepeat = createNode('th', 'column.header');
+        var tdRepeat = createNode('td', 'column.cell');
+
+        header.insertBefore(thRepeat, header.children[insertIndex]);
+        row.insertBefore(tdRepeat, row.children[insertIndex]);
+
         return function (scope) {
           scope.$columns = columns;
           scope.$visibilityFilter = columnFilter.bind(null, prop);

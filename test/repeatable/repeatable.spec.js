@@ -24,7 +24,7 @@ describe('repeatable', function(){
           '       <th data-ignore>test</th>'+
           '       <th>id</th>'+
           '       <th>name</th>'+
-          '       <th data-ignore>test</th>'+
+          '       <th data-ignore>last</th>'+
           '    </tr>'+
           '    <tr>'+
           '      <th colspan="4">another heading</th>'+
@@ -35,7 +35,7 @@ describe('repeatable', function(){
           '       <td>toto</td>'+
           '       <td>{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
-          '       <td>tata</td>'+
+          '       <td>test</td>'+
           '    </tr>'+
           '  </tbody>'+
           '</table>'+
@@ -51,6 +51,11 @@ describe('repeatable', function(){
       var th = element.find('tr:first-child th:not([data-ignore])')
 
       expect(innerScope.$columns.length).toBe(th.length);
+    });
+
+    it('should insert the column-template node at the correct index ', function(){
+      var th = element.find('thead tr:first-child th:last-child');
+      expect(th.text().trim()).toBe('last');
     });
 
     it('should target the correct header', function(){
