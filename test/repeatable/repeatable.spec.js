@@ -86,27 +86,44 @@ describe('repeatable', function(){
     var scope;
     var createDirective;
 
-    beforeEach(inject(function($rootScope, $compile){
+    beforeEach(inject(function($rootScope, $compile, $timeout){
       scope = $rootScope.$new();
 
       createDirective = function(scope){
         var markup = '<span column-template="tpl"></span>';
         var element = $compile(markup)(scope);
         scope.$digest();
+        $timeout.flush();
         return element;
       }
     }));
 
+    it('should leave attribute on the root node ', function(){
+      scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
+      scope.username = "Bob";
+
+      var element = createDirective(scope);
+
+      var dataEl = element[0].getAttribute('data-title')
+      expect(dataEl).toEqual(scope.username);
+    });
+    it('should remove attribute on the em node ', function(){
+      scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
+      scope.username = "Bob";
+
+      var element = createDirective(scope);
+      var dataEl = element[0].children[0].getAttribute('data-title')
+      expect(dataEl).toBeNull();
+    });
     it('should render data using template', function(){
       scope.tpl = "<em>{{username}}</em>";
       scope.username = "Bob";
 
       var element = createDirective(scope);
       expect(element[0].textContent).toBe('Bob');
-      expect(element[0].querySelector('em')).toBeDefined();
     })
 
-    it('should render bind data using bind', function(){
+    it('should render binded data using bind', function(){
       scope.tpl = '<em ng-bind="username"></em>';
       scope.username = "Bob";
 
@@ -114,7 +131,7 @@ describe('repeatable', function(){
       expect(element[0].textContent).toBe('Bob');
     });
 
-    it('should render a bind data with filter', function(){
+    it('should render a binded data with filter', function(){
       scope.tpl = '<em ng-bind="username | uppercase"></em>';
       scope.username = "bob";
 
