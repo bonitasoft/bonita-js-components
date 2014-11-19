@@ -217,19 +217,34 @@ angular
   });
 
 angular.module('bonita.repeatable', [])
-  .directive('columnTemplate', ['$compile', function ($compile) {
+  .directive('columnTemplate', ['$compile', '$timeout', function ($compile, $timeout) {
     return {
       restrict: 'A',
       scope: {
         template: '=columnTemplate',
       },
       link: function (scope, element) {
+        function copyAttributes(source, destination) {
+          [].slice.call(source[0].attributes).forEach( function (attribute) {
+            destination.attr(attribute.name, source.attr(attribute.name));
+          });
+        }
+
+        function clearAttributes(element) {
+          [].slice.call(element[0].attributes).forEach(function(attr) {
+            element[0].removeAttribute(attr.name);
+          });
+        }
+
         var template = angular.element(scope.template);
         var wrapper = angular.element('<div></div>');
-        angular.forEach(template[0].attributes, function (attribute) {
-          wrapper.attr(attribute.name, template.attr(attribute.name));
-        });
+
+        copyAttributes(template, wrapper);
         element.append($compile(wrapper.append(template.contents()))(scope.$parent));
+        $timeout(function(){
+          copyAttributes(wrapper, element);
+          clearAttributes(wrapper);
+        });
       }
     };
   }])
@@ -340,30 +355,6 @@ angular.module('bonita.repeatable', [])
     };
   });
 
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'name';
-      }
-    };
-  });
-
 angular
   .module('bonita.sortable',[])
   .directive('boSorter', function(){
@@ -387,6 +378,30 @@ angular
           }
           bonitableCtrl.triggerSortHandler($scope.sortOptions);
         };
+      }
+    };
+  });
+
+'use strict';
+
+angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  .directive('tableSettings', function(){
+    // Runs during compile
+    return {
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
+      replace: true,
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'name';
       }
     };
   });

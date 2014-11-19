@@ -160,6 +160,63 @@ angular.module('bonitable', [])
 })();
 
 angular
+  .module('bonita.selectable',[])
+  .directive('boSelectall', function(){
+    // Runs during compile
+    return {
+      restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
+      require: '^bonitable',
+      replace: true,
+      template: '<input type="checkbox" ng-checked="$allSelected" ng-click="$toggleAll()">',
+      link: function(scope, elem){
+        scope.$watch(function(){
+          return scope.$indeterminate;
+        }, function(newVal){
+          elem[0].indeterminate  = newVal;
+        });
+      }
+    };
+  })
+  .directive('boSelector', function(){
+    // Runs during compile
+    return {
+      restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+      require: '^bonitable',
+      link: function($scope, elem, attr, bonitableCtrl) {
+        var ngModel = elem.controller('ngModel');
+
+         var item = {
+          data: $scope.$eval(attr.boSelector),
+          isChecked: function(){
+            return ngModel && ngModel.$modelValue===true || elem[0].checked;
+          },
+          setChecked: function(value){
+            if (ngModel){
+              ngModel.$setViewValue(value===true);
+              ngModel.$render();
+            } else  {
+              elem[0].checked = value;
+            }
+          }
+        };
+
+        elem.on('change', onChange);
+        $scope.$on('$destroy', onDestroy);
+
+        function onChange(){
+          $scope.$apply();
+        }
+
+        function onDestroy(){
+          bonitableCtrl.unregisterSelector(item);
+        }
+        bonitableCtrl.registerSelector(item);
+
+      }
+    };
+  });
+
+angular
   .module('bonita.sortable',[])
   .directive('boSorter', function(){
     return {
@@ -186,44 +243,35 @@ angular
     };
   });
 
-'use strict';
-
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'name';
-      }
-    };
-  });
-
 angular.module('bonita.repeatable', [])
-  .directive('columnTemplate', ['$compile', function ($compile) {
+  .directive('columnTemplate', ['$compile', '$timeout', function ($compile, $timeout) {
     return {
       restrict: 'A',
       scope: {
         template: '=columnTemplate',
       },
       link: function (scope, element) {
+        function copyAttributes(source, destination) {
+          [].slice.call(source[0].attributes).forEach( function (attribute) {
+            destination.attr(attribute.name, source.attr(attribute.name));
+          });
+        }
+
+        function clearAttributes(element) {
+          [].slice.call(element[0].attributes).forEach(function(attr) {
+            element[0].removeAttribute(attr.name);
+          });
+        }
+
         var template = angular.element(scope.template);
         var wrapper = angular.element('<div></div>');
-        angular.forEach(template[0].attributes, function (attribute) {
-          wrapper.attr(attribute.name, template.attr(attribute.name));
-        });
+
+        copyAttributes(template, wrapper);
         element.append($compile(wrapper.append(template.contents()))(scope.$parent));
+        $timeout(function(){
+          copyAttributes(wrapper, element);
+          clearAttributes(wrapper);
+        });
       }
     };
   }])
@@ -334,62 +382,47 @@ angular.module('bonita.repeatable', [])
     };
   });
 
-angular
-  .module('bonita.selectable',[])
-  .directive('boSelectall', function(){
+'use strict';
+
+angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  .directive('tableSettings', function(){
     // Runs during compile
     return {
-      restrict: 'A', // E = Element, A = *Attribute, C = Class, M = Comment
-      require: '^bonitable',
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
       replace: true,
-      template: '<input type="checkbox" ng-checked="$allSelected" ng-click="$toggleAll()">',
-      link: function(scope, elem){
-        scope.$watch(function(){
-          return scope.$indeterminate;
-        }, function(newVal){
-          elem[0].indeterminate  = newVal;
-        });
-      }
-    };
-  })
-  .directive('boSelector', function(){
-    // Runs during compile
-    return {
-      restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-      require: '^bonitable',
-      link: function($scope, elem, attr, bonitableCtrl) {
-        var ngModel = elem.controller('ngModel');
-
-         var item = {
-          data: $scope.$eval(attr.boSelector),
-          isChecked: function(){
-            return ngModel && ngModel.$modelValue===true || elem[0].checked;
-          },
-          setChecked: function(value){
-            if (ngModel){
-              ngModel.$setViewValue(value===true);
-              ngModel.$render();
-            } else  {
-              elem[0].checked = value;
-            }
-          }
-        };
-
-        elem.on('change', onChange);
-        $scope.$on('$destroy', onDestroy);
-
-        function onChange(){
-          $scope.$apply();
-        }
-
-        function onDestroy(){
-          bonitableCtrl.unregisterSelector(item);
-        }
-        bonitableCtrl.registerSelector(item);
-
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'name';
       }
     };
   });
+
+(function(module) {
+try {
+  module = angular.module('bonita.templates');
+} catch (e) {
+  module = angular.module('bonita.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('template/sortable/sorter.tpl.html',
+    '<button class="SortButton"\n' +
+    '        title="{{\'Sort by \' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? \' ASC\': \' DESC\') : \' DESC\') }}"\n' +
+    '        ng-class="{\'SortButton--active\':sortOptions.property === property}" ng-click="sort()">\n' +
+    '  <span class="SortButton-label" ng-transclude></span>\n' +
+    '  <i class="SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '</button>\n' +
+    '');
+}]);
+})();
 
 (function(module) {
 try {
@@ -437,24 +470,6 @@ module.run(['$templateCache', function($templateCache) {
     '    </ul>\n' +
     '  </div>\n' +
     '</div>\n' +
-    '');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('bonita.templates');
-} catch (e) {
-  module = angular.module('bonita.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/sortable/sorter.tpl.html',
-    '<button class="SortButton"\n' +
-    '        title="{{\'Sort by \' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? \' ASC\': \' DESC\') : \' DESC\') }}"\n' +
-    '        ng-class="{\'SortButton--active\':sortOptions.property === property}" ng-click="sort()">\n' +
-    '  <span class="SortButton-label" ng-transclude></span>\n' +
-    '  <i class="SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
-    '</button>\n' +
     '');
 }]);
 })();
