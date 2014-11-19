@@ -22,10 +22,10 @@ There is a dedicated branch which holds dist files to be distributed using [bowe
 
 0. If not already did, bump version number in both ``bower.json`` and ``package.json`` and commit changes.
 
-1. Go to the ```release`` branch, rebase master on it, and launch the dist build.
+1. Go to the ```release`` branch, marge master on it, and launch the dist build.
 ```console
 $ git checkout release
-$ git rebase master
+$ git merge master
 $ npm run dist
 ```
 
@@ -33,7 +33,7 @@ $ npm run dist
 ```console
 $ git commit -m"Release x.x.x"
 $ git tag x.x.x
-$ git push --tag
+$ git push --follow-tags
 ```
 
 3. Celebrate!

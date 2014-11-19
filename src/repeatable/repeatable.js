@@ -1,17 +1,32 @@
 angular.module('bonita.repeatable', [])
-  .directive('columnTemplate', function ($compile) {
+  .directive('columnTemplate', function ($compile, $timeout) {
     return {
       restrict: 'A',
       scope: {
         template: '=columnTemplate',
       },
       link: function (scope, element) {
+        function copyAttributes(source, destination) {
+          [].slice.call(source[0].attributes).forEach( function (attribute) {
+            destination.attr(attribute.name, source.attr(attribute.name));
+          });
+        }
+
+        function clearAttributes(element) {
+          [].slice.call(element[0].attributes).forEach(function(attr) {
+            element[0].removeAttribute(attr.name);
+          });
+        }
+
         var template = angular.element(scope.template);
         var wrapper = angular.element('<div></div>');
-        angular.forEach(template[0].attributes, function (attribute) {
-          wrapper.attr(attribute.name, template.attr(attribute.name));
-        });
+
+        copyAttributes(template, wrapper);
         element.append($compile(wrapper.append(template.contents()))(scope.$parent));
+        $timeout(function(){
+          copyAttributes(wrapper, element);
+          clearAttributes(wrapper);
+        });
       }
     };
   })
