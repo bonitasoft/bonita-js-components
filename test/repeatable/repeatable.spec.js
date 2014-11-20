@@ -47,6 +47,31 @@ describe('repeatable', function(){
       scope.$digest();
     }));
 
+    it('should throw an error if th don\'t match td number', inject(function($compile){
+       var markup =
+          '<div>'+
+          '<table bonitable bo-repeatable>'+
+          '  <thead>'+
+          '    <tr>'+
+          '       <th>id</th>'+
+          '    </tr>'+
+          '  </thead>'+
+          '  <tbody>'+
+          '    <tr ng-repeat="tag in tags">'+
+          '       <td>{{tag.id}}</td>'+
+          '       <td>{{tag.name}}</td>'+
+          '    </tr>'+
+          '  </tbody>'+
+          '</table>'+
+          '</div>';
+      function test() {
+        var el = $compile(markup)(scope);
+        scope.$digest();
+      }
+
+      expect(test).toThrow();
+    }));
+
     it('should ignore [data-ignore] columns', function(){
       var th = element.find('tr:first-child th:not([data-ignore])')
 
@@ -78,9 +103,49 @@ describe('repeatable', function(){
       scope.$digest();
       expect(element.find(selector).length).toBe(cols - 1);
     });
-
-
   });
+
+  describe('repeatableConfig', function(){
+    var scope;
+
+    beforeEach(inject(function($rootScope, $compile){
+      var markup =
+        '<div>'+
+        '<table bonitable bo-repeatable repeatable-config="config">'+
+        '  <thead>'+
+        '    <tr>'+
+        '       <th>id</th>'+
+        '       <th>name</th>'+
+        '    </tr>'+
+        '  </thead>'+
+        '  <tbody>'+
+        '    <tr ng-repeat="tag in tags">'+
+        '       <td>{{tag.id}}</td>'+
+        '       <td>{{tag.name}}</td>'+
+        '    </tr>'+
+        '  </tbody>'+
+        '</table>'+
+        '</div>';
+
+      scope = $rootScope.$new();
+      scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
+      scope.config = [true, false];
+      element = $compile(markup)(scope);
+      scope.$digest();
+    }));
+
+    it('should set columns visibility according config values', function(){
+      var th = element.find('thead th');
+      expect(th.length).toEqual(1);
+
+      //Set the 2 columns visible
+      scope.config = [true, true];
+      scope.$digest();
+
+      th = element.find('thead th');
+      expect(th.length).toEqual(2);
+    })
+  })
 
   describe('columnTemplate directive', function(){
     var scope;
