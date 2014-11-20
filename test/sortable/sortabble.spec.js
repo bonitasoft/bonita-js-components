@@ -5,6 +5,16 @@ describe('sortable directive', function(){
   var scope;
   var $timeout;
 
+  var titles = {
+    id: {
+      asc: 'Sort by ID'
+    },
+    name: {
+      asc: 'Sort by name (reverse)',
+      desc: 'Sort by name'
+    }
+  };
+
   beforeEach(module('bonitable'));
   beforeEach(module('bonita.sortable'));
   beforeEach(module('bonita.templates'));
@@ -20,8 +30,8 @@ describe('sortable directive', function(){
         '       sort-options="sortableOptions" on-sort="sortHandler(options)">'+
         '  <thead>'+
         '    <tr>'+
-        '       <th bo-sorter="id">ID</th>'+
-        '       <th bo-sorter="name">Name</th>'
+        '       <th bo-sorter="id" bo-sorter-title-asc="' + titles.id.asc + '">ID</th>'+
+        '       <th bo-sorter="name" bo-sorter-title-desc="' + titles.name.desc + '" bo-sorter-title-asc="' + titles.name.asc + '">Name</th>'+
         '    </tr>'+
         '  </thead>'+
         '</table>'+
@@ -31,7 +41,7 @@ describe('sortable directive', function(){
       direction:false,
       property:'name'
     };
-    scope.sortHandler = function(){}
+    scope.sortHandler = function(){};
     spyOn(scope, 'sortHandler').and.callThrough();
     element = $compile(markup)(scope);
     scope.$digest();
@@ -59,7 +69,7 @@ describe('sortable directive', function(){
     it('should trigger sort handler when click bo-sorter', function(){
       var button = element.find('.SortButton:not(.SortButton--active)');
       button.click();
-      expect(scope.sortHandler).toHaveBeenCalledWith({property:'id', direction:false});
+      expect(scope.sortHandler).toHaveBeenCalledWith({property:'id', direction:true});
     });
 
     it('should reverse order if active th is clicked', function(){
@@ -67,6 +77,8 @@ describe('sortable directive', function(){
       button.click();
       expect(scope.sortableOptions).toEqual({property:'name', direction:true});
       expect(scope.sortHandler).toHaveBeenCalledWith({property:'name', direction:true});
+      button.click();
+      expect(scope.sortHandler).toHaveBeenCalledWith({property:'name', direction:false});
     });
   });
 
@@ -81,11 +93,32 @@ describe('sortable directive', function(){
 
     it('should reflect sortOption when reverse order', function(){
       var button = element.find('.SortButton--active');
-      var icon = element.find('.SortButton-icon');
-
       button.click();
       expect(scope.sortableOptions.direction).toBe(true);
     });
+  });
+
+  describe('custom title attribute', function() {
+
+    it('should have the same title as the boSorterTitleDesc', function() {
+      var buttons = element.find('button');
+      expect(buttons.get(0).title).toBe(titles.id.asc);
+      expect(buttons.get(1).title).toBe(titles.name.asc);
+    });
+
+    it('should have the default title if you do not set the boSorterTitleAsc', function() {
+      var buttons = element.find('button');
+      buttons.eq(0).click();
+      expect(buttons.eq(0).get(0).title).toBe('Sort by DESC');
+    });
+
+    it('should toggle the title', function() {
+      var buttons = element.find('button');
+      expect(buttons.eq(1).get(0).title).toBe(titles.name.asc);
+      buttons.eq(1).click();
+      expect(buttons.eq(1).get(0).title).toBe(titles.name.desc);
+    });
+
   });
 
 });
