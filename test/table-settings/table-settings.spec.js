@@ -90,23 +90,23 @@ describe('TableSettings', function(){
     });
 
     it('should have one button for each pagesize', function(){
-      expect(element.find('.TableSettings-pagesizes button').length).toBe(scope.PAGE_SIZES.length);
+      expect(element.find('.btn-group.btn-group-justified button').length).toBe(scope.PAGE_SIZES.length);
     });
 
     it('should have a button selected if actual pageSize match', function() {
-      var currentPagination = element.find('.TableSettings-pagesizes button.active').text().trim()
+      var currentPagination = element.find('.btn-group.btn-group-justified button.active').text().trim()
       expect(parseInt(currentPagination, 10)).toEqual(scope.pagination.pageSize);
     });
 
     it('should update pagination.pageSize when selecting another pagination value', function(){
       // select paginatio 50
-      element.find('.TableSettings-pagesizes button').get(2).click();
+      element.find('.btn-group.btn-group-justified button').get(2).click();
       expect(scope.pagination.pageSize).toEqual(50);
     });
 
     it('should trigger pagination handler when selecting a pagination value', function(){
       // select pagination 50
-      element.find('.TableSettings-pagesizes button').get(2).click();
+      element.find('.btn-group.btn-group-justified button').get(2).click();
       expect(scope.onSize).toHaveBeenCalledWith(50);
     });
 
@@ -121,13 +121,13 @@ describe('TableSettings', function(){
     });
 
     it('should display each columns', function(){
-      var li = element.find('.TableSettings-Columns li');
+      var li = element.find('.bo-TableSettings-columns li');
       expect(li.length).toEqual(scope.columns.length)
     });
 
     it('should use name to identify colums', function(){
       var index = 1; // colum Name
-      var columnLabel = element.find('.TableSettings-Columns li label').eq(index);
+      var columnLabel = element.find('.bo-TableSettings-columns li label').eq(index);
       var label = columnLabel.text().trim();
       expect(label).toEqual(scope.columns[index].name)
     });
@@ -183,7 +183,7 @@ describe('TableSettings', function(){
     it('should use label prop to identify colums', function(){
       var index = 1; // colum Name
       var labelProp = 'label';
-      var columnLabel = element.find('.TableSettings-Columns li label').eq(index);
+      var columnLabel = element.find('.bo-TableSettings-columns li label').eq(index);
       var label = columnLabel.text().trim();
       expect(label).toEqual(scope.columns[index][labelProp]);
     });

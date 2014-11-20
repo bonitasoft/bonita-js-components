@@ -1,22 +1,25 @@
-.TableSettings {
+.bo-TableSettings{
+  vertical-align: middle;
+  display: inline-block;
+  position: relative;
+}
+
+.bo-TableSettings-content {
   padding: .5em;
 }
 
-.TableSettings-pagesizes {
-  width:100%;
-}
 
-.TableSettings-title {
+.bo-TableSettings-title {
 
 }
 
-.TableSettings-Columns {
+.bo-TableSettings-columns {
   max-height: 10em;
   overflow: auto;
   list-style-type: none;
   padding-left:0;
 }
 
-.ColumnsItem {
+.bo-TableSettings-column {
   cursor: pointer;
 }

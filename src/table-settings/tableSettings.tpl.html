@@ -1,4 +1,4 @@
-<div class="btn-group pull-right" dropdown>
+<div class="bo-TableSettings pull-right" dropdown>
   <button type="button"
     id="aria-tablesettings"
     class="btn btn-default bo-Settings dropdown-toggle"
@@ -9,24 +9,24 @@
     <span class="sr-only">{{'Table settings' | translate}}</span>
   </button>
 
-  <div class="TableSettings dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">
-    <h5 class="TableSettings-title" >{{'Items per page '| translate}}</h5>
-    <div class="btn-group TableSettings-pagesizes">
-      <button class="btn btn-default"
-        type="button"
-        style="width:{{100/sizes.length}}%"
-        ng-repeat="size in sizes"
-        ng-model="$parent.pageSize" btn-radio="{{size}}"
-        ng-change="updatePageSize({size:size})" tabindex="0">
-        {{size}}
-      </button>
+  <div class="bo-TableSettings-content dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">
+    <h5 class="bo-TableSettings-title" >{{'Items per page '| translate}}</h5>
+    <div class="btn-group btn-group-justified" role="group">
+      <div class="btn-group" role="group" ng-repeat="size in sizes">
+        <button class="btn btn-default"
+          type="button"
+          ng-model="$parent.pageSize" btn-radio="{{size}}"
+          ng-change="updatePageSize({size:size})" tabindex="0">
+          {{size}}
+        </button>
+      </div>
     </div>
 
-    <h5 class="TableSettings-title" >{{'Columns Selection' | translate}}</h5>
-    <ul class="TableSettings-Columns">
+    <h5 class="bo-TableSettings-title" >{{'Columns Selection' | translate}}</h5>
+    <ul class="bo-TableSettings-columns">
       <li  ng-repeat="field in columns">
       <label
-        class="ColumnsItem"
+        class="bo-TableSettings-column"
         title="{{(field.selected ? 'Hide' : 'Show') +' '+ field[label] }}"
         ng-click="$event.stopPropagation()">
         <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
