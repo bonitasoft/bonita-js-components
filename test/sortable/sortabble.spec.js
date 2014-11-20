@@ -5,6 +5,17 @@ describe('sortable directive', function(){
   var scope;
   var $timeout;
 
+  var titles = {
+    id: {
+      asc: 'Sort by ID'
+    },
+    name: {
+      asc: 'Sort by name (reverse)',
+      desc: 'Sort by name'
+    }
+  };
+
+
   beforeEach(module('bonitable'));
   beforeEach(module('bonita.sortable'));
   beforeEach(module('bonita.templates'));
@@ -20,8 +31,9 @@ describe('sortable directive', function(){
         '       sort-options="sortableOptions" on-sort="sortHandler(options)">'+
         '  <thead>'+
         '    <tr>'+
-        '       <th bo-sorter="id">ID</th>'+
-        '       <th bo-sorter="name">Name</th>'
+        '       <th bo-sorter="id" bo-sorter-title-asc="' + titles.id.asc + '">ID</th>'+
+        '       <th bo-sorter="name" bo-sorter-title-desc="' + titles.name.desc + '" bo-sorter-title-asc="' + titles.name.asc + '">Name</th>'+
+        '       <th bo-sorter="date">Date</th>'+
         '    </tr>'+
         '  </thead>'+
         '</table>'+
@@ -58,9 +70,10 @@ describe('sortable directive', function(){
 
   it('should create clickable columns header', function(){
     var buttons = element.find('button');
-    expect(buttons.length).toBe(2);
-    expect(buttons[0].textContent.trim()).toBe('ID');
-    expect(buttons[1].textContent.trim()).toBe('Name');
+    expect(buttons.length).toBe(3);
+    expect(buttons.get(0).textContent.trim()).toBe('ID');
+    expect(buttons.get(1).textContent.trim()).toBe('Name');
+    expect(buttons.get(2).textContent.trim()).toBe('Date');
   });
 
   describe('sortIcon', function() {
@@ -75,9 +88,9 @@ describe('sortable directive', function(){
 
   describe('sorter', function() {
     it('should trigger sort handler when click bo-sorter', function(){
-      var button = element.find('.bo-SortButton:not(.bo-SortButton--active)');
+      var button = element.find('[bo-sorter="date"] button');
       button.click();
-      expect(scope.sortHandler).toHaveBeenCalledWith({property:'id', direction:false});
+      expect(scope.sortHandler).toHaveBeenCalledWith({property:'date', direction:false});
     });
 
     it('should reverse order if active th is clicked', function(){
@@ -105,5 +118,39 @@ describe('sortable directive', function(){
       expect(scope.sortableOptions.direction).toBe(true);
     });
   });
+
+  describe('custom title attribute', function() {
+
+    it('should have the default title if you do not set the any attr', function() {
+      var buttons = element.find('button');
+      expect(buttons.eq(2).get(0).title).toBe('Sort by ASC');
+    });
+
+    it('should have the same title as the boSorterTitleDesc', function() {
+      var buttons = element.find('button');
+      expect(buttons.get(0).title).toBe(titles.id.asc);
+      expect(buttons.get(1).title).toBe(titles.name.asc);
+    });
+
+
+    it('should have the default title if you do not set the boSorterTitleDesc', function() {
+      var buttons = element.find('button');
+
+      // Set the focus - it will be asc
+      buttons.eq(0).click();
+      // Test with desc
+      buttons.eq(0).click();
+      expect(buttons.eq(0).get(0).title).toBe('Sort by DESC');
+    });
+
+    it('should toggle the title', function() {
+      var buttons = element.find('button');
+      expect(buttons.eq(1).get(0).title).toBe(titles.name.asc);
+      buttons.eq(1).click();
+      expect(buttons.eq(1).get(0).title).toBe(titles.name.desc);
+    });
+
+  });
+
 
 });
