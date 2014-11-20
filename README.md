@@ -37,3 +37,5 @@ $ git push --follow-tags
 ```
 
 3. Celebrate!
+
+> The code coverage is build when you run a test, you can access to it by opening the `./coverage/Phantom*/index.html` in a browser.
