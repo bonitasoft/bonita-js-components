@@ -216,33 +216,6 @@ angular
     };
   });
 
-angular
-  .module('bonita.sortable',[])
-  .directive('boSorter', function(){
-    return {
-      restrict: 'A',
-      scope: true,
-      require:'^bonitable',
-      templateUrl: 'template/sortable/sorter.tpl.html',
-      transclude: true,
-      link: function($scope, iElm, attr, bonitableCtrl) {
-        $scope.property =  (attr.id || attr.boSorter).trim();
-
-        $scope.sortOptions = bonitableCtrl.getOptions();
-
-        $scope.sort = function() {
-          if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
-            $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = false;
-          }
-          bonitableCtrl.triggerSortHandler($scope.sortOptions);
-        };
-      }
-    };
-  });
-
 angular.module('bonita.repeatable', [])
   .directive('columnTemplate', ['$compile', '$timeout', function ($compile, $timeout) {
     return {
@@ -382,6 +355,68 @@ angular.module('bonita.repeatable', [])
     };
   });
 
+angular
+  .module('bonita.sortable',[])
+  .directive('boSorter', function(){
+
+    /**
+     * Translate the boolean direction for the order of the sort
+     * @param  {Boolean} isDesc
+     * @return {Strinc}
+     */
+    function getDirectionSort(isDesc) {
+      return isDesc ? 'DESC' : 'ASC';
+    }
+
+    /**
+     * Find the attribute title for the directive for desc mode or asc mode (default one)
+     * @param  {Object} attr Angular directive attr
+     * @param  {String} sort cf {@link getDirectionSort}
+     * @return {String}
+     */
+    function generateTitle(attr, sort) {
+      // Add a suffix with ucFirst
+      var key = 'boSorterTitle' + sort.charAt() + sort.substring(1).toLowerCase();
+      return attr[key] || 'Sort by ' + sort;
+    }
+
+    return {
+      restrict: 'A',
+      scope: true,
+      require:'^bonitable',
+      templateUrl: 'template/sortable/sorter.tpl.html',
+      transclude: true,
+      link: function($scope, iElm, attr, bonitableCtrl) {
+        $scope.property =  (attr.boSorter || attr.id || '').trim();
+
+        if ($scope.property.length === 0){
+          throw new Error('bo-sorter: no id found. Please specify on wich property the sort is applied to or add an id');
+        }
+
+        $scope.sortOptions = bonitableCtrl.getOptions();
+
+        var sort = getDirectionSort($scope.sortOptions.direction);
+
+        // Set de default title if no title exist
+        $scope.titleSortAttr = generateTitle(attr, sort);
+
+        $scope.sort = function() {
+          if ($scope.sortOptions.property === $scope.property){
+            $scope.sortOptions.direction = !$scope.sortOptions.direction;
+          } else {
+            $scope.sortOptions.property = $scope.property;
+            $scope.sortOptions.direction = false;
+          }
+
+          sort = getDirectionSort($scope.sortOptions.direction);
+          $scope.titleSortAttr = generateTitle(attr, sort);
+
+          bonitableCtrl.triggerSortHandler($scope.sortOptions);
+        };
+      }
+    };
+  });
+
 'use strict';
 
 angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
@@ -413,13 +448,45 @@ try {
   module = angular.module('bonita.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/sortable/sorter.tpl.html',
-    '<button class="SortButton"\n' +
-    '        title="{{\'Sort by \' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? \' ASC\': \' DESC\') : \' DESC\') }}"\n' +
-    '        ng-class="{\'SortButton--active\':sortOptions.property === property}" ng-click="sort()">\n' +
-    '  <span class="SortButton-label" ng-transclude></span>\n' +
-    '  <i class="SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
-    '</button>\n' +
+  $templateCache.put('template/table-settings/tableSettings.tpl.html',
+    '<div class="bo-TableSettings pull-right" dropdown>\n' +
+    '  <button type="button"\n' +
+    '    id="aria-tablesettings"\n' +
+    '    class="btn btn-default bo-Settings dropdown-toggle"\n' +
+    '    title="{{\'Table settings\' | translate}}"\n' +
+    '    ng-disabled="tasks.length === 0"\n' +
+    '    aria-labelledby="aria-tablesettings">\n' +
+    '    <i class="icon icon-gear"></i>\n' +
+    '    <span class="sr-only">{{\'Table settings\' | translate}}</span>\n' +
+    '  </button>\n' +
+    '\n' +
+    '  <div class="bo-TableSettings-content dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">\n' +
+    '    <h5 class="bo-TableSettings-title" >{{\'Items per page \'| translate}}</h5>\n' +
+    '    <div class="btn-group btn-group-justified" role="group">\n' +
+    '      <div class="btn-group" role="group" ng-repeat="size in sizes">\n' +
+    '        <button class="btn btn-default"\n' +
+    '          type="button"\n' +
+    '          ng-model="$parent.pageSize" btn-radio="{{size}}"\n' +
+    '          ng-change="updatePageSize({size:size})" tabindex="0">\n' +
+    '          {{size}}\n' +
+    '        </button>\n' +
+    '      </div>\n' +
+    '    </div>\n' +
+    '\n' +
+    '    <h5 class="bo-TableSettings-title" >{{\'Columns Selection\' | translate}}</h5>\n' +
+    '    <ul class="bo-TableSettings-columns">\n' +
+    '      <li  ng-repeat="field in columns">\n' +
+    '      <label\n' +
+    '        class="bo-TableSettings-column"\n' +
+    '        title="{{(field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label] }}"\n' +
+    '        ng-click="$event.stopPropagation()">\n' +
+    '        <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">\n' +
+    '        {{field[label]}}\n' +
+    '      </label>\n' +
+    '      </li>\n' +
+    '    </ul>\n' +
+    '  </div>\n' +
+    '</div>\n' +
     '');
 }]);
 })();
@@ -431,45 +498,13 @@ try {
   module = angular.module('bonita.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/table-settings/tableSettings.tpl.html',
-    '<div class="btn-group pull-right" dropdown>\n' +
-    '  <button type="button"\n' +
-    '    id="aria-tablesettings"\n' +
-    '    class="btn btn-default bo-Settings dropdown-toggle"\n' +
-    '    title="{{\'Table settings\' | translate}}"\n' +
-    '    ng-disabled="tasks.length === 0"\n' +
-    '    aria-labelledby="aria-tablesettings">\n' +
-    '    <i class="icon icon-gear"></i>\n' +
-    '    <span class="sr-only">{{\'Table settings\' | translate}}</span>\n' +
-    '  </button>\n' +
-    '\n' +
-    '  <div class="TableSettings dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">\n' +
-    '    <h5 class="TableSettings-title" >{{\'Items per page \'| translate}}</h5>\n' +
-    '    <div class="btn-group TableSettings-pagesizes">\n' +
-    '      <button class="btn btn-default"\n' +
-    '        type="button"\n' +
-    '        style="width:{{100/sizes.length}}%"\n' +
-    '        ng-repeat="size in sizes"\n' +
-    '        ng-model="$parent.pageSize" btn-radio="{{size}}"\n' +
-    '        ng-change="updatePageSize({size:size})" tabindex="0">\n' +
-    '        {{size}}\n' +
-    '      </button>\n' +
-    '    </div>\n' +
-    '\n' +
-    '    <h5 class="TableSettings-title" >{{\'Columns Selection\' | translate}}</h5>\n' +
-    '    <ul class="TableSettings-Columns">\n' +
-    '      <li  ng-repeat="field in columns">\n' +
-    '      <label\n' +
-    '        class="ColumnsItem"\n' +
-    '        title="{{(field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label] }}"\n' +
-    '        ng-click="$event.stopPropagation()">\n' +
-    '        <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">\n' +
-    '        {{field[label]}}\n' +
-    '      </label>\n' +
-    '      </li>\n' +
-    '    </ul>\n' +
-    '  </div>\n' +
-    '</div>\n' +
+  $templateCache.put('template/sortable/sorter.tpl.html',
+    '<button class="bo-SortButton"\n' +
+    '        title="{{titleSortAttr}}"\n' +
+    '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
+    '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
+    '  <i class="bo-SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '</button>\n' +
     '');
 }]);
 })();
