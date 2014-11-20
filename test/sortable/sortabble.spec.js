@@ -88,7 +88,7 @@ describe('sortable directive', function(){
 
   describe('sorter', function() {
     it('should trigger sort handler when click bo-sorter', function(){
-      var button = element.find('.bo-SortButton:not(.bo-SortButton--active)');
+      var button = element.find('[bo-sorter="date"] button');
       button.click();
       expect(scope.sortHandler).toHaveBeenCalledWith({property:'date', direction:false});
     });
