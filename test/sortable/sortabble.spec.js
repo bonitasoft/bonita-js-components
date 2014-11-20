@@ -47,7 +47,7 @@ describe('sortable directive', function(){
 
   describe('sortIcon', function() {
     it('should reflect sort direction', function(){
-      var icon = element.find('.SortButton--active .SortButton-icon').get(0);
+      var icon = element.find('.bo-SortButton--active .bo-SortButton-icon').get(0);
       expect(icon.classList.contains('icon-sort-up')).toBe(true);
       scope.sortableOptions.direction =  true;
       scope.$digest();
@@ -57,13 +57,13 @@ describe('sortable directive', function(){
 
   describe('sorter', function() {
     it('should trigger sort handler when click bo-sorter', function(){
-      var button = element.find('.SortButton:not(.SortButton--active)');
+      var button = element.find('.bo-SortButton:not(.bo-SortButton--active)');
       button.click();
       expect(scope.sortHandler).toHaveBeenCalledWith({property:'id', direction:false});
     });
 
     it('should reverse order if active th is clicked', function(){
-      var button = element.find('.SortButton--active');
+      var button = element.find('.bo-SortButton--active');
       button.click();
       expect(scope.sortableOptions).toEqual({property:'name', direction:true});
       expect(scope.sortHandler).toHaveBeenCalledWith({property:'name', direction:true});
@@ -72,16 +72,16 @@ describe('sortable directive', function(){
 
   describe('icon class', function(){
     it('should reflect initial sortOption', function(){
-      var button = element.find('.SortButton--active');
+      var button = element.find('.bo-SortButton--active');
       expect(button.get(0).textContent.trim()).toEqual('Name');
 
-      var icon = element.find('.SortButton-icon', button);
+      var icon = element.find('.bo-SortButton-icon', button);
       expect(icon.get(0).classList.contains('icon-sort-up')).toBe(true);
     });
 
     it('should reflect sortOption when reverse order', function(){
-      var button = element.find('.SortButton--active');
-      var icon = element.find('.SortButton-icon');
+      var button = element.find('.bo-SortButton--active');
+      var icon = element.find('.bo-SortButton-icon');
 
       button.click();
       expect(scope.sortableOptions.direction).toBe(true);

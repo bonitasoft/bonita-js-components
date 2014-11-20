@@ -6,7 +6,7 @@
     "Vincent Elcrin <vincent.elcrin@bonitasoft.com>",
     "Lionel Breduillieard <lionel@lumographe.fr>"
   ],
-  "main":[
+  "main": [
     "dist/bonita-lib-tpl.js"
   ],
   "description": "Several tools leading to ease web development with Bonita",
@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "angular": "~1.3.0",
-    "bootstrap": "~3.2.0",
+    "bootstrap": "~3.3.1",
     "angular-bootstrap": "~0.11.2"
   },
   "devDependencies": {
