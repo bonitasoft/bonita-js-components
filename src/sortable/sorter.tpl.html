@@ -1,5 +1,5 @@
 <button class="bo-SortButton"
-        title="{{'Sort by ' + sortLabel + (sortOptions.property === property ? (sortOptions.direction? ' ASC': ' DESC') : ' DESC') }}"
+        title="{{'Sort by ' + property + (sortOptions.property === property ? (sortOptions.direction? ' ASC': ' DESC') : ' DESC') }}"
         ng-class="{'bo-SortButton--active text-primary':sortOptions.property === property}" ng-click="sort()">
   <span class="bo-SortButton-label" ng-transclude></span>
   <i class="bo-SortButton-icon" ng-class="{'icon-sort-up': !sortOptions.direction || sortOptions.property !== property, 'icon-sort-down': sortOptions.direction && sortOptions.property === property}"></i>

@@ -37,6 +37,24 @@ describe('sortable directive', function(){
     scope.$digest();
   }));
 
+  it('should throw an error if none property for sorting is found', inject(function($document, $compile) {
+    var markup =
+        '<div>'+
+        '<table bonitable>'+
+        '  <thead>'+
+        '    <tr>'+
+        '       <th bo-sorter>ID</th>'
+        '    </tr>'+
+        '  </thead>'+
+        '</table>'+
+        '</div>';
+    function test() {
+      var el = $compile(markup)(scope);
+      scope.$digest();
+    }
+
+    expect(test).toThrow();
+  }));
 
   it('should create clickable columns header', function(){
     var buttons = element.find('button');
