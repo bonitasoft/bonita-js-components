@@ -15,7 +15,7 @@
       <div class="btn-group" role="group" ng-repeat="size in sizes">
         <button class="btn btn-default"
           type="button"
-          ng-model="$parent.pageSize" btn-radio="{{size}}"
+          ng-model="$parent.pageSize" btn-radio="{{::size}}"
           ng-change="updatePageSize({size:size})" tabindex="0">
           {{size}}
         </button>
@@ -27,10 +27,10 @@
       <li  ng-repeat="field in columns">
       <label
         class="bo-TableSettings-column"
-        title="{{(field.selected ? 'Hide' : 'Show') +' '+ field[label] }}"
+        title="{{::((field.selected ? 'Hide' : 'Show') +' '+ field[label])}}"
         ng-click="$event.stopPropagation()">
         <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
-        {{field[label]}}
+        {{::field[label]}}
       </label>
       </li>
     </ul>
