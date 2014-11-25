@@ -1,4 +1,5 @@
-angular.module('bonita.repeatable', ['bonitable'])
+angular
+  .module('bonita.repeatable', ['bonitable'])
   .directive('columnTemplate', function ($compile, $timeout) {
     return {
       restrict: 'A',

@@ -1,5 +1,5 @@
 angular
-  .module('bonita.selectable',[])
+  .module('bonita.selectable',['bonitable'])
   .directive('boSelectall', function(){
     // Runs during compile
     return {
