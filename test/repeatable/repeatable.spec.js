@@ -21,7 +21,7 @@ describe('repeatable', function(){
           '<table bonitable bo-repeatable="thead tr:first-child">'+
           '  <thead>'+
           '    <tr>'+
-          '       <th data-ignore>test</th>'+
+          '       <th data-ignore>first</th>'+
           '       <th>id</th>'+
           '       <th>name</th>'+
           '       <th data-ignore>last</th>'+
@@ -33,7 +33,7 @@ describe('repeatable', function(){
           '  <tbody>'+
           '    <tr ng-repeat="tag in tags">'+
           '       <td>toto</td>'+
-          '       <td>{{tag.id}}</td>'+
+          '       <td title="{{tag.id}}">{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
           '       <td>test</td>'+
           '    </tr>'+
@@ -153,10 +153,11 @@ describe('repeatable', function(){
 
     beforeEach(inject(function($rootScope, $compile, $timeout){
       scope = $rootScope.$new();
-
+      scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
       createDirective = function(scope){
-        var markup = '<span column-template="tpl"></span>';
+        var markup = '<span column-template="{{tpl}}"></span>';
         var element = $compile(markup)(scope);
+
         scope.$digest();
         $timeout.flush();
         return element;
@@ -164,14 +165,16 @@ describe('repeatable', function(){
     }));
 
     it('should leave attribute on the root node ', function(){
-      scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
-      scope.username = "Bob";
+      scope.tpl = "<em data-title='{{name}}'>{{name}}</em>";
+      scope.name = "Bob";
 
       var element = createDirective(scope);
+      scope.$digest();
 
       var dataEl = element[0].getAttribute('data-title')
-      expect(dataEl).toEqual(scope.username);
+      expect(dataEl).toEqual(scope.name);
     });
+
     it('should remove attribute on the em node ', function(){
       scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
       scope.username = "Bob";
@@ -180,6 +183,7 @@ describe('repeatable', function(){
       var dataEl = element[0].children[0].getAttribute('data-title')
       expect(dataEl).toBeNull();
     });
+
     it('should render data using template', function(){
       scope.tpl = "<em>{{username}}</em>";
       scope.username = "Bob";
