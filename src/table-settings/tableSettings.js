@@ -2,8 +2,7 @@
 
 angular.module('bonita.settings', [
   'ui.bootstrap.dropdown',
-  'ui.bootstrap.buttons',
-  'ui.sortable'
+  'ui.bootstrap.buttons'
   ])
   .directive('tableSettings', function(){
     // Runs during compile
