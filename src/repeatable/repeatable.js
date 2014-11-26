@@ -1,29 +1,33 @@
 angular
   .module('bonita.repeatable', ['bonitable'])
-  .directive('columnTemplate', function ($compile, $timeout) {
+  .service('domAttributes', function(){
+    this.copy = function(source, destination, needRemove) {
+      [].slice.call(source.attributes).forEach(function (attr) {
+        destination.setAttribute(attr.name, source.getAttribute(attr.name));
+        if (needRemove) {
+          source.removeAttribute(attr.name);
+        }
+      });
+    };
+  })
+  .directive('columnTemplate', function ($compile, domAttributes,  $timeout) {
     return {
       restrict: 'A',
       scope: true,
       link: function (scope, element, attr) {
-        function copyAttributes(source, destination, needRemove) {
-          [].slice.call(source.attributes).forEach(function (attr) {
-            destination.setAttribute(attr.name, source.getAttribute(attr.name));
-            if (needRemove) {
-              source.removeAttribute(attr.name);
-            }
-          });
-        }
+
         var template = angular.element(attr.columnTemplate);
         var wrapper = angular.element('<div></div>');
+
         // copying the root node attributes to the wrapper element to compile them
-        copyAttributes(template[0], wrapper[0], false);
+        domAttributes.copy(template[0], wrapper[0], false);
+
+        //compile the element
         var el = $compile(wrapper.append(template.contents()))(scope.$parent);
 
+        // copying the compiled attributes to the root node and remove them from the wrapper
+        domAttributes.copy(wrapper[0], element[0], true);
         element.append(el);
-        $timeout(function(){
-          // copying the compiled attributes to the root node and remove them from the wrapper
-          copyAttributes(wrapper[0], element[0], true);
-        }, false);
       }
     };
   })
@@ -102,7 +106,6 @@ angular
 
           return el;
         }
-
         var thRepeat = createNode('th', '{{::column.header}}');
         var tdRepeat = createNode('td', '{{::column.cell}}');
 
