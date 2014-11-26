@@ -17,23 +17,15 @@
   <div class="container">
     <div class="jumbotron">
       <h1>Demo page</h1>
-      <div class="row">
-        <div class="col-sm-6">
-          <pre>{{sortableOptions | json}}</pre>
-        </div>
-        <div class="col-sm-6">
-          <pre>{{pagination | json}}</pre>
-        </div>
-      </div>
     </div>
     <!-- <table bonitable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table"> -->
-    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
+    <table bonitable bo-repeatable repeatable-config="config" sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
       <thead>
         <tr>
-          <th colspan="{{$columns.length+1}}">
+          <th colspan="{{$columns.length+2}}">
             <div class="btn-group" >
-              <button class="btn btn-default" ng-click="updateCfg(true)"  ng-disabled="$selectedItems.length === 0">small</button>
-              <button class="btn btn-default" ng-click="updateCfg(false)" ng-disabled="$selectedItems.length === 0">basic</button>
+              <button class="btn btn-default" ng-click="updateConfig(small)"  ng-disabled="$selectedItems.length === 0">small config</button>
+              <button class="btn btn-default" ng-click="updateConfig(all)" ng-disabled="$selectedItems.length === 0">basic config</button>
             </div>
             <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
             <table-settings class="pull-right" columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="visibilityHandler(field)" update-page-size="pageSizeHandler(size)"></table-settings>
@@ -57,7 +49,7 @@
           <th bo-sorter="latitude">lat.</th>
           <th bo-sorter="longitude">lon.</th>
           <th bo-sorter="favoriteFruit">fruits</th>
-          <th>action</th>
+          <th data-ignore>action</th>
 
         </tr>
       </thead>
@@ -131,9 +123,20 @@
           direction: false
         };
 
-        $rootScope.PAGE_SIZES=[5,10,100];
+        $rootScope.PAGE_SIZES=[5,50,100];
 
-        $rootScope.items = [
+        $rootScope.small = [false, true, false, true, true, true, false, false, false, true, false, true, false]
+        $rootScope.all = [true, true, true, true, true, true, true, true, true, true, true, true, true]
+
+        $rootScope.config = $rootScope.small;
+
+        $rootScope.updateConfig = function(config){
+          $rootScope.config = config;
+        };
+
+
+
+        $rootScope.items  = [
           {
             "index": 0,
             "guid": "65db3bc9-5d23-4a08-8ce3-74919b373035",
@@ -2636,17 +2639,8 @@
           }
         ];
 
-        var smallCfg = [false, true, false, true, true, true, false, false, false, true, false, true, false]
-        var basicCfg = [true, true, true, true, true, true, true, true, true, true, true, true, true]
-
-        $rootScope.config = basicCfg;
-
-        $rootScope.updateCfg= function(){
-          $rootScope.config = smallCfg;
-        }
-        $rootScope.testTemplate = "Hello";
         $rootScope.pagination = {
-          pageSize:10,
+          pageSize:50,
           currentPage:1,
           total:$rootScope.items.length
         };
