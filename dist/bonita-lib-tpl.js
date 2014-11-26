@@ -160,7 +160,7 @@ angular.module('bonitable', [])
 })();
 
 angular
-  .module('bonita.selectable',[])
+  .module('bonita.selectable',['bonitable'])
   .directive('boSelectall', function(){
     // Runs during compile
     return {
@@ -216,35 +216,36 @@ angular
     };
   });
 
-angular.module('bonita.repeatable', [])
-  .directive('columnTemplate', ['$compile', '$timeout', function ($compile, $timeout) {
+angular
+  .module('bonita.repeatable', ['bonitable'])
+  .service('domAttributes', function(){
+    this.copy = function(source, destination, needRemove) {
+      [].slice.call(source.attributes).forEach(function (attr) {
+        destination.setAttribute(attr.name, source.getAttribute(attr.name));
+        if (needRemove) {
+          source.removeAttribute(attr.name);
+        }
+      });
+    };
+  })
+  .directive('columnTemplate', ['$compile', 'domAttributes', '$timeout', function ($compile, domAttributes,  $timeout) {
     return {
       restrict: 'A',
-      scope: {
-        template: '=columnTemplate',
-      },
-      link: function (scope, element) {
-        function copyAttributes(source, destination) {
-          [].slice.call(source[0].attributes).forEach( function (attribute) {
-            destination.attr(attribute.name, source.attr(attribute.name));
-          });
-        }
+      scope: true,
+      link: function (scope, element, attr) {
 
-        function clearAttributes(element) {
-          [].slice.call(element[0].attributes).forEach(function(attr) {
-            element[0].removeAttribute(attr.name);
-          });
-        }
-
-        var template = angular.element(scope.template);
+        var template = angular.element(attr.columnTemplate);
         var wrapper = angular.element('<div></div>');
 
-        copyAttributes(template, wrapper);
-        element.append($compile(wrapper.append(template.contents()))(scope.$parent));
-        $timeout(function(){
-          copyAttributes(wrapper, element);
-          clearAttributes(wrapper);
-        });
+        // copying the root node attributes to the wrapper element to compile them
+        domAttributes.copy(template[0], wrapper[0], false);
+
+        //compile the element
+        var el = $compile(wrapper.append(template.contents()))(scope.$parent);
+
+        // copying the compiled attributes to the root node and remove them from the wrapper
+        domAttributes.copy(wrapper[0], element[0], true);
+        element.append(el);
       }
     };
   }])
@@ -320,11 +321,11 @@ angular.module('bonita.repeatable', [])
           var el = document.createElement(tagName);
           el.setAttribute('column-template', template);
           el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
+
           return el;
         }
-
-        var thRepeat = createNode('th', 'column.header');
-        var tdRepeat = createNode('td', 'column.cell');
+        var thRepeat = createNode('th', '{{::column.header}}');
+        var tdRepeat = createNode('td', '{{::column.cell}}');
 
         header.insertBefore(thRepeat, header.children[insertIndex]);
         row.insertBefore(tdRepeat, row.children[insertIndex]);
@@ -356,7 +357,7 @@ angular.module('bonita.repeatable', [])
   });
 
 angular
-  .module('bonita.sortable',[])
+  .module('bonita.sortable',['bonitable'])
   .directive('boSorter', function(){
 
     /**
@@ -448,6 +449,24 @@ try {
   module = angular.module('bonita.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('template/sortable/sorter.tpl.html',
+    '<button class="bo-SortButton"\n' +
+    '        title="{{titleSortAttr}}"\n' +
+    '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
+    '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
+    '  <i class="bo-SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '</button>\n' +
+    '');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('bonita.templates');
+} catch (e) {
+  module = angular.module('bonita.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
   $templateCache.put('template/table-settings/tableSettings.tpl.html',
     '<div class="bo-TableSettings pull-right" dropdown>\n' +
     '  <button type="button"\n' +
@@ -466,7 +485,7 @@ module.run(['$templateCache', function($templateCache) {
     '      <div class="btn-group" role="group" ng-repeat="size in sizes">\n' +
     '        <button class="btn btn-default"\n' +
     '          type="button"\n' +
-    '          ng-model="$parent.pageSize" btn-radio="{{size}}"\n' +
+    '          ng-model="$parent.pageSize" btn-radio="{{::size}}"\n' +
     '          ng-change="updatePageSize({size:size})" tabindex="0">\n' +
     '          {{size}}\n' +
     '        </button>\n' +
@@ -478,33 +497,15 @@ module.run(['$templateCache', function($templateCache) {
     '      <li  ng-repeat="field in columns">\n' +
     '      <label\n' +
     '        class="bo-TableSettings-column"\n' +
-    '        title="{{(field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label] }}"\n' +
+    '        title="{{::((field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label])}}"\n' +
     '        ng-click="$event.stopPropagation()">\n' +
     '        <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">\n' +
-    '        {{field[label]}}\n' +
+    '        {{::field[label]}}\n' +
     '      </label>\n' +
     '      </li>\n' +
     '    </ul>\n' +
     '  </div>\n' +
     '</div>\n' +
-    '');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('bonita.templates');
-} catch (e) {
-  module = angular.module('bonita.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/sortable/sorter.tpl.html',
-    '<button class="bo-SortButton"\n' +
-    '        title="{{titleSortAttr}}"\n' +
-    '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
-    '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
-    '  <i class="bo-SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
-    '</button>\n' +
     '');
 }]);
 })();
