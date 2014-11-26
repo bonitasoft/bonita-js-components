@@ -10,7 +10,7 @@ describe('multiselect directive', function(){
   beforeEach(module('bonita.selectable'));
   beforeEach(module('bonita.templates'));
 
-  beforeEach(inject(function($rootScope, $compile, $httpBackend) {
+  beforeEach(inject(function($rootScope, $compile, $httpBackend, $document) {
     scope = $rootScope.$new();
 
     $httpBackend.whenGET(/^template/).respond('');
@@ -20,7 +20,7 @@ describe('multiselect directive', function(){
         '<table bonitable>'+
         '  <thead>'+
         '    <tr>'+
-        '       <th><divgit bo-selectall></div></th>'+
+        '       <th><div bo-selectall></div></th>'+
         '       <th>label</th>'+
         '    </tr>'+
         '  </thead>'+
@@ -35,7 +35,7 @@ describe('multiselect directive', function(){
 
     scope.tags = tags;
     element = $compile(markup)(scope);
-
+    $document.find('body').append(element);
     controller = element.find('table').controller('bonitable');
     scope.$digest();
   }));

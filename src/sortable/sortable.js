@@ -1,5 +1,5 @@
 angular
-  .module('bonita.sortable',[])
+  .module('bonita.sortable',['bonitable'])
   .directive('boSorter', function(){
 
     /**

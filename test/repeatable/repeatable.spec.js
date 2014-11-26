@@ -13,7 +13,7 @@ describe('repeatable', function(){
     var innerScope;
     var scope;
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, $document) {
       scope = $rootScope.$new();
 
       var markup =
@@ -21,7 +21,7 @@ describe('repeatable', function(){
           '<table bonitable bo-repeatable="thead tr:first-child">'+
           '  <thead>'+
           '    <tr>'+
-          '       <th data-ignore>test</th>'+
+          '       <th data-ignore>first</th>'+
           '       <th>id</th>'+
           '       <th>name</th>'+
           '       <th data-ignore>last</th>'+
@@ -33,7 +33,7 @@ describe('repeatable', function(){
           '  <tbody>'+
           '    <tr ng-repeat="tag in tags">'+
           '       <td>toto</td>'+
-          '       <td>{{tag.id}}</td>'+
+          '       <td title="{{tag.id}}">{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
           '       <td>test</td>'+
           '    </tr>'+
@@ -44,6 +44,7 @@ describe('repeatable', function(){
       scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
       element = $compile(markup)(scope);
       innerScope = element.find('table').scope();
+      $document.find('body').append(element);
       scope.$digest();
     }));
 
@@ -150,58 +151,64 @@ describe('repeatable', function(){
   describe('columnTemplate directive', function(){
     var scope;
     var createDirective;
+    var $compile;
 
-    beforeEach(inject(function($rootScope, $compile, $timeout){
+    beforeEach(inject(function($rootScope, $injector){
+      $compile = $injector.get('$compile');
+
       scope = $rootScope.$new();
+      scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
 
-      createDirective = function(scope){
-        var markup = '<span column-template="tpl"></span>';
-        var element = $compile(markup)(scope);
+      createDirective = function(scope, tpl){
+        var markup = angular.element('<span></span>');
+        markup.attr('column-template', tpl);
+        var element = $compile(markup.get(0).outerHTML)(scope);
         scope.$digest();
-        $timeout.flush();
         return element;
       }
     }));
 
     it('should leave attribute on the root node ', function(){
-      scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
-      scope.username = "Bob";
+      scope.name = "Bob";
+      var tpl = "<em data-title='{{name}}'>{{name}}</em>";
+      var element = createDirective(scope, tpl);
 
-      var element = createDirective(scope);
 
       var dataEl = element[0].getAttribute('data-title')
-      expect(dataEl).toEqual(scope.username);
+      expect(dataEl).toEqual(scope.name);
     });
+
     it('should remove attribute on the em node ', function(){
-      scope.tpl = "<em data-title='{{username}}'>{{username}}</em>";
+      var tpl = "<em data-title='{{name}}'>{{name}}</em>";
       scope.username = "Bob";
 
-      var element = createDirective(scope);
+      var element = createDirective(scope, tpl);
       var dataEl = element[0].children[0].getAttribute('data-title')
       expect(dataEl).toBeNull();
     });
+
     it('should render data using template', function(){
-      scope.tpl = "<em>{{username}}</em>";
+      var tpl = "<em>{{username}}</em>";
       scope.username = "Bob";
 
-      var element = createDirective(scope);
+      var element = createDirective(scope, tpl);
       expect(element[0].textContent).toBe('Bob');
     })
 
     it('should render binded data using bind', function(){
-      scope.tpl = '<em ng-bind="username"></em>';
+      var tpl = '<em ng-bind="username"></em>';
       scope.username = "Bob";
 
-      var element = createDirective(scope);
+      var element = createDirective(scope, tpl);
       expect(element[0].textContent).toBe('Bob');
     });
 
     it('should render a binded data with filter', function(){
-      scope.tpl = '<em ng-bind="username | uppercase"></em>';
+      var tpl = '<em ng-bind="username | uppercase"></em>';
       scope.username = "bob";
 
-      var element = createDirective(scope);
+      var element = createDirective(scope, tpl);
       expect(element[0].textContent).toBe('BOB');
     });
-  })
+  });
 });

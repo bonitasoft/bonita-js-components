@@ -34,7 +34,7 @@ describe('TableSettings', function(){
     });
   }));
 
-  beforeEach(inject(function($rootScope, $compile, $httpBackend) {
+  beforeEach(inject(function($rootScope, $compile, $httpBackend, $document) {
     $httpBackend.whenGET(/^template/).respond('');
 
     var scope = $rootScope.$new();
@@ -65,6 +65,9 @@ describe('TableSettings', function(){
 
     createDirective = function(markup) {
       var element = $compile(markup)(scope);
+
+      $document.find('body').append(element);
+
       scope.$digest();
       return element;
     }

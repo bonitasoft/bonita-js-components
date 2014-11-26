@@ -7,7 +7,7 @@ describe('bonitable directive', function(){
 
   beforeEach(module('bonitable'));
 
-  beforeEach(inject(function($rootScope, $compile) {
+  beforeEach(inject(function($rootScope, $compile, $document) {
     scope = $rootScope.$new();
 
 
@@ -30,6 +30,7 @@ describe('bonitable directive', function(){
     scope.user = 'Bob';
 
     element = $compile(markup)(scope);
+    $document.find('body').append(element);
     scope.$digest();
   }));
 

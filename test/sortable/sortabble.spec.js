@@ -20,7 +20,7 @@ describe('sortable directive', function(){
   beforeEach(module('bonita.sortable'));
   beforeEach(module('bonita.templates'));
 
-  beforeEach(inject(function($rootScope, $compile, $httpBackend) {
+  beforeEach(inject(function($rootScope, $compile, $httpBackend, $document) {
     scope = $rootScope.$new();
 
     $httpBackend.whenGET(/^template/).respond('');
@@ -46,6 +46,8 @@ describe('sortable directive', function(){
     scope.sortHandler = function(){}
     spyOn(scope, 'sortHandler').and.callThrough();
     element = $compile(markup)(scope);
+
+    $document.find('body').append(element);
     scope.$digest();
   }));
 
@@ -60,6 +62,7 @@ describe('sortable directive', function(){
         '  </thead>'+
         '</table>'+
         '</div>';
+
     function test() {
       var el = $compile(markup)(scope);
       scope.$digest();

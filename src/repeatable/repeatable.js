@@ -1,32 +1,33 @@
-angular.module('bonita.repeatable', [])
-  .directive('columnTemplate', function ($compile, $timeout) {
+angular
+  .module('bonita.repeatable', ['bonitable'])
+  .service('domAttributes', function(){
+    this.copy = function(source, destination, needRemove) {
+      [].slice.call(source.attributes).forEach(function (attr) {
+        destination.setAttribute(attr.name, source.getAttribute(attr.name));
+        if (needRemove) {
+          source.removeAttribute(attr.name);
+        }
+      });
+    };
+  })
+  .directive('columnTemplate', function ($compile, domAttributes,  $timeout) {
     return {
       restrict: 'A',
-      scope: {
-        template: '=columnTemplate',
-      },
-      link: function (scope, element) {
-        function copyAttributes(source, destination) {
-          [].slice.call(source[0].attributes).forEach( function (attribute) {
-            destination.attr(attribute.name, source.attr(attribute.name));
-          });
-        }
+      scope: true,
+      link: function (scope, element, attr) {
 
-        function clearAttributes(element) {
-          [].slice.call(element[0].attributes).forEach(function(attr) {
-            element[0].removeAttribute(attr.name);
-          });
-        }
-
-        var template = angular.element(scope.template);
+        var template = angular.element(attr.columnTemplate);
         var wrapper = angular.element('<div></div>');
 
-        copyAttributes(template, wrapper);
-        element.append($compile(wrapper.append(template.contents()))(scope.$parent));
-        $timeout(function(){
-          copyAttributes(wrapper, element);
-          clearAttributes(wrapper);
-        });
+        // copying the root node attributes to the wrapper element to compile them
+        domAttributes.copy(template[0], wrapper[0], false);
+
+        //compile the element
+        var el = $compile(wrapper.append(template.contents()))(scope.$parent);
+
+        // copying the compiled attributes to the root node and remove them from the wrapper
+        domAttributes.copy(wrapper[0], element[0], true);
+        element.append(el);
       }
     };
   })
@@ -102,11 +103,11 @@ angular.module('bonita.repeatable', [])
           var el = document.createElement(tagName);
           el.setAttribute('column-template', template);
           el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
+
           return el;
         }
-
-        var thRepeat = createNode('th', 'column.header');
-        var tdRepeat = createNode('td', 'column.cell');
+        var thRepeat = createNode('th', '{{::column.header}}');
+        var tdRepeat = createNode('td', '{{::column.cell}}');
 
         header.insertBefore(thRepeat, header.children[insertIndex]);
         row.insertBefore(tdRepeat, row.children[insertIndex]);
