@@ -23,8 +23,9 @@
     </div>
 
     <h5 class="bo-TableSettings-title" >{{'Columns Selection' | translate}}</h5>
-    <ul class="bo-TableSettings-columns">
-      <li  ng-repeat="field in columns">
+    <ul class="bo-TableSettings-columns bo-Text-disableSelection" as-sortable="sortableOptions" ng-model="columns">
+      <li  ng-repeat="field in columns" as-sortable-item>
+      <div as-sortable-item-handle ng>
       <label
         class="bo-TableSettings-column"
         title="{{::((field.selected ? 'Hide' : 'Show') +' '+ field[label])}}"
@@ -32,6 +33,7 @@
         <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
         {{::field[label]}}
       </label>
+      </div>
       </li>
     </ul>
   </div>

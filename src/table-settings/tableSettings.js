@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+angular.module('bonita.settings', [
+  'ui.bootstrap.dropdown',
+  'ui.bootstrap.buttons',
+  'ui.sortable'
+  ])
   .directive('tableSettings', function(){
     // Runs during compile
     return {
@@ -18,6 +22,10 @@ angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.button
       link: function(scope, elem, attr) {
         scope.visible = attr.visibleProp || 'visible';
         scope.label = attr.labelProp || 'name';
+        scope.isDragging = false;
+
+        scope.sortableOptions = {};
+
       }
     };
   });

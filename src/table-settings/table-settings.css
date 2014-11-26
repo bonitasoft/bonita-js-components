@@ -23,3 +23,15 @@
 .bo-TableSettings-column {
   cursor: pointer;
 }
+[as-sortable] .bo-TableSettings-column {
+  cursor: inherit;
+}
+
+.bo-Text-disableSelection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
