@@ -13,7 +13,7 @@ describe('repeatable', function(){
     var innerScope;
     var scope;
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, $document) {
       scope = $rootScope.$new();
 
       var markup =
@@ -44,6 +44,7 @@ describe('repeatable', function(){
       scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
       element = $compile(markup)(scope);
       innerScope = element.find('table').scope();
+      $document.find('body').append(element);
       scope.$digest();
     }));
 
