@@ -31,6 +31,68 @@ angular
       }
     };
   })
+  /**
+   * @ngdoc directive
+   * @name bonita.repeatable:boRepeatable
+   * @module bonita.repeatable
+   *
+   * @param {String=} boRepeatable a string representing a valid css selector
+   *                  matching the thead where the columns are defined. By default the value is
+   *                  ``thead tr:last-child``
+   *
+   * @description
+   * Render table content dynamically in order to perform some columns manipulation
+   * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
+   * under the hood to perform this but allow developper to get rid of it when
+   * display the input. No need to add a generic function for cell rendering like
+   * you will do when you put 2 ng-repeat directive inside.
+   *
+   * @example
+   *
+   * ```html
+   *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+   *     <thead>
+   *       <tr>
+   *         <td colspan="{{$columns.length}}" class="form-inline">
+   *           <pre>{{$columns|json}}</pre>
+   *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
+   *         </td>
+   *       </tr>
+   *       <tr>
+   *         <th>name</th>
+   *         <th>country</th>
+   *         <th data-ignore>action</th>
+   *       </tr>
+   *     </thead>
+   *     <tbody>
+   *       <tr ng-repeat="user in users">
+   *         <td>{{user.name}}</td>
+   *         <td>{{user.country}}</td>
+   *         <td><button>&times;</button></td>
+   *       </tr>
+   *     </tbody>
+   *   </table>
+   * ```
+   * ```javascript
+   *   angular
+   *     .module('boRepeaterExample', [
+   *       'bonitable',
+   *       'bonita.repeatable',
+   *       'bonita.templates'
+   *     ])
+   *     .run(function($scope){
+   *       $scope.users = [
+   *         {name:'Paul', country:'Uk'},
+   *         {name:'Sarah', country:'Fr'},
+   *         {name:'Jacques', country:'Us'},
+   *         {name:'Joan', country:'Al'},
+   *         {name:'Tite', country:'Jp'},
+   *       ];
+   *       $scope.colcfg =[true, false];
+   *     })
+   * ```
+
+   */
   .directive('boRepeatable', function () {
     return {
       require:'bonitable',
@@ -119,6 +181,61 @@ angular
       }
     };
   })
+
+  /**
+   * @ngdoc directive
+   * @name bonita.repeatable:repeatableConfig
+   * @module bonita.repeatable
+   *
+   * @description
+   * Allow preseting the visible property for each columns
+   *
+   * @param {String} visible-prop the name of the visible property to update in $columns arrays
+   *
+   * @example
+    <example module="boRepeatConfigExample">
+      <file name="index.html">
+        <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+          <thead>
+            <tr >
+              <td  ng-repeat="col in $columns">
+                <span>column <strong>{{col.name}}</strong> is {{(col.visible? 'shown':'hided')}}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>name</th>
+              <th>country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users">
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('boRepeatConfigExample', [
+            'bonitable',
+            'bonita.repeatable',
+            'bonita.templates'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.colcfg =[true, false];
+
+          })
+      </file>
+    </example>
+   */
   .directive('repeatableConfig', function(){
     return {
       priority:1,
