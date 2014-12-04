@@ -61,7 +61,8 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
- .directive('boDropzone', function (boDragUtils, boDragEvent, boDragMap){
+  .directive('boDropzone', function (boDragUtils, boDragEvent, boDragMap){
+
     'use strict';
 
     // Register some callback for the directive
@@ -70,8 +71,8 @@ angular.module('bonita.dragAndDrop',[])
     // Add a delegate for event detection. One event to rule them all
     document.addEventListener('dragover', function (e) {
       e.preventDefault(); // allows us to drop
-      boDragEvent.onDragOver(angular.element(e.target).scope());
       if(e.target.hasAttribute('data-drop-id')) {
+        eventMap[e.target.getAttribute('data-drop-id')].onDragOver.apply(this,[angular.element(e.target).scope()]);
         e.dataTransfer.dropEffect = 'copy';
         return false;
       }
@@ -108,11 +109,11 @@ angular.module('bonita.dragAndDrop',[])
           }
 
           e.target.appendChild(surrogate);
-          eventMap[e.target.getAttribute('data-drop-id')].apply(this,[angular.element(e.target).scope(), boDragMap.get(surrogate.id)]);
+          eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), boDragMap.get(surrogate.id)]);
           return;
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].apply(this,[angular.element(e.target).scope(), boDragMap.get(el.id)]);
+        eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), boDragMap.get(el.id)]);
         e.target.appendChild(el);
       }
     });
@@ -120,14 +121,21 @@ angular.module('bonita.dragAndDrop',[])
     return {
       type: 'A',
       scope: {
-        onDropSuccess: '&boDropSuccess'
+        onDropSuccess: '&boDropSuccess',
+        onDragOver: '&boDragOver'
       },
       link: function(scope, el, attr) {
         el.addClass('bo-dropzone-container');
         attr.$set('data-drop-id',boDragUtils.generateUniqId('drop'));
-        eventMap[attr['data-drop-id']] = scope.$eval(scope.onDropSuccess) || angular.noop;
+
+        // Register event for this node
+        eventMap[attr['data-drop-id']] = {
+          onDropSuccess: scope.$eval(scope.onDropSuccess) || angular.noop,
+          onDragOver: scope.$eval(scope.onDragOver) || angular.noop
+        };
       }
     };
+
   })
   .directive('boDraggable', function (boDragMap, boDragUtils, boDragEvent){
     'use strict';

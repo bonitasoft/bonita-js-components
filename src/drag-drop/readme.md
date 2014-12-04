@@ -6,10 +6,6 @@ Create draggable items and as many dropzone you wish.
 
 ### Services
 
-- `boDragEvent`: Callback events mapper
-    - `onDropSuccess(DropZone.scope, dragItem.customData)`
-    - `onDragStart(dragItem.scope)`
-    - `onDragOver(dragItem.scope)`
 - `boDragMap`: Temp database for drag and drop item
     `set(id, data)`
     `updateKey(id, newId)`
@@ -18,11 +14,11 @@ Create draggable items and as many dropzone you wish.
 - `boDragUtils`:  Utils
     - `generateUniqId(key)`: Generate a uniq ID (key is a prefix)
 
-
 ### Directives
 
 - `boDropzone`: Define a new dropzone
     - `boDropSuccess`: Pass a function name (not foo(), just foo). The callback is triggered on drop success
+    - `boDragOver`: Pass a function name (not foo(), just foo). The callback is triggered on drag over
 - `boDraggable`: Define a draggable item
     - `boDraggableData` Attr to define some data bind to the scope.data of this directive
 - `boDragPolyfill`: Patch drag&drop API for IE9
@@ -35,7 +31,7 @@ Ex: One col and two dropzones.
     </aside>
 
     <section class="container-dropable" bo-dropzone bo-drop-success="success"></section>
-    <section class="container-dropable" bo-dropzone bo-drop-success="success"></section>
+    <section class="container-dropable" bo-dropzone bo-drop-success="success" bo-drag-over="cb"></section>
 
 </main>
 ```
