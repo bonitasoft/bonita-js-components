@@ -9,6 +9,10 @@ angular.module('bonita.dragAndDrop',[])
      * @param {Object} data
      */
     this.set = function set(id, data) {
+
+      if('string' !== typeof id) {
+        throw new TypeError('The map key must be a string');
+      }
       map[id] = data;
     };
 

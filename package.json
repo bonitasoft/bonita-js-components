@@ -7,7 +7,8 @@
     "start": "gulp dev",
     "predist": "gulp predist",
     "dist": "gulp dist",
-    "test": "karma start --log-level debug --single-run"
+    "test": "karma start --log-level debug --single-run",
+    "testwatch": "./node_modules/karma/bin/karma start karma.conf.js --auto-watch --no-single-run"
   },
   "repository": {
     "type": "git",
