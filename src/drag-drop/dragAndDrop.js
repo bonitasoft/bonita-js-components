@@ -65,8 +65,8 @@ angular.module('bonita.dragAndDrop',[])
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragover', function (e) {
-
       e.preventDefault(); // allows us to drop
+
       if(e.target.hasAttribute('data-drop-id')) {
         eventMap[e.target.getAttribute('data-drop-id')].onDragOver.apply(this,[angular.element(e.target).scope()]);
         e.dataTransfer.dropEffect = 'copy';

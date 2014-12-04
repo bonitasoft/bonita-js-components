@@ -135,6 +135,7 @@
 
       beforeEach(function() {
 
+        scope = rootScope.$new();
         scope.boDropSuccess = function() {
           spyEvent.boDropSuccess();
         };
@@ -146,9 +147,14 @@
         spyOn(spyEvent,'boDragOver');
 
         dom = compile('<div bo-dropzone bo-drop-success="boDropSuccess" bo-drag-over="boDragOver">bonjour</div>')(scope);
-        scope.$apply();
+        $document.find('body').append(dom);
+        scope.$digest();
       });
 
+      afterEach(function() {
+        $document.off('drop');
+        $document.off('dragover');
+      });
 
       describe('you can attach some callback', function() {
 
@@ -163,25 +169,18 @@
 
 
         // Do not try to put it at another position. There is some WTF
-        it('should be triggered on dragover', function () {
-          try {
-            var e = angular.element.Event('drop');
-            e.target = dom[0];
-            e.dataTransfer = {
-              getData: function() {
-                return 'test';
-              }
-            };
-            $document.triggerHandler(e);
-            expect(spyEvent.boDragOver).toHaveBeenCalled();
-          }catch(e) {
-            expect(e.message).toBe("'undefined' is not an object (evaluating 'eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess')");
+        it('should be triggered on drop', function () {
 
-            /**
-             * I do not know why I need to watch this error. It doesn't exist in e2e.
-             * Angular compiles once, so we have eventMap set in our directive. Each attribut find generate a new call to link, so a new id is register. But not with phantom, only the first one appears. It's weird. So at least this test show: it fucking works.
-             */
-          }
+          $document.find('body').append('<div id="test"></div>');
+          var e = angular.element.Event('drop');
+          e.target = dom[0];
+          e.dataTransfer = {
+            getData: function() {
+              return 'test';
+            }
+          };
+          $document.triggerHandler(e);
+          expect(spyEvent.boDropSuccess).toHaveBeenCalled();
         });
 
         it('should trigger a drop success', function() {
@@ -205,9 +204,15 @@
         expect(dom.hasClass('bo-dropzone-container')).toBeTruthy();
       });
 
+    });
 
 
+    describe('Directive boDragPolyfill', function() {
 
+      beforeEach(function() {
+        dom = compile('<aside class="container-siderbar" bo-drag-polyfill><div class="item-drag" bo-draggable>test</div></aside>')(scope);
+        scope.$apply();
+      });
 
     });
 
