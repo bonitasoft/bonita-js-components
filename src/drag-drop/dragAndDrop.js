@@ -1,13 +1,4 @@
 angular.module('bonita.dragAndDrop',[])
-  .service('boDragEvent', function() {
-    'use strict';
-    // Event trigger by boDropzone
-    this.onDropSuccess = angular.noop;
-    // Event trigger by boDraggable
-    this.onDragStart = angular.noop;
-    // Event trigger by boDropzone
-    this.onDragOver = angular.noop;
-  })
   .service('boDragMap', function() {
     'use strict';
     var map = {};
@@ -61,7 +52,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function (boDragUtils, boDragEvent, boDragMap){
+  .directive('boDropzone', function (boDragUtils, boDragMap){
 
     'use strict';
 
@@ -137,25 +128,33 @@ angular.module('bonita.dragAndDrop',[])
     };
 
   })
-  .directive('boDraggable', function (boDragMap, boDragUtils, boDragEvent){
+  .directive('boDraggable', function (boDragMap, boDragUtils){
     'use strict';
+
+    var eventMap = {};
 
     // Add a delegate for event detection. One event to rule them all
     document.addEventListener('dragstart', function (e) {
       e.dataTransfer.effectAllowed = 'copy';
       e.dataTransfer.setData('Text', e.target.id + ':' +e.target.parentElement.hasAttribute('data-drop-id'));
       boDragMap.set(e.target.id, angular.element(e.target).scope().data);
-      boDragEvent.onDragStart(angular.element(e.target).scope());
+      eventMap[e.target.id].onDragStart.apply(this,[angular.element(e.target).scope()]);
     });
 
     return {
       type: 'EA',
       scope: {
-        data: '=boDraggableData'
+        data: '=boDraggableData',
+        onDragStart: '&boDragStart'
       },
-      link: function link(scope, el, attr) {
+      link: function(scope, el, attr) {
         attr.$set('draggable',true);
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
+
+        // Register event for the current node
+        eventMap[attr.id] = {
+          onDragStart: scope.$eval(scope.onDragStart) || angular.noop
+        };
       }
     };
   })
