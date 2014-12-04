@@ -61,8 +61,11 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function (boDragUtils, boDragEvent, boDragMap){
+ .directive('boDropzone', function (boDragUtils, boDragEvent, boDragMap){
     'use strict';
+
+    // Register some callback for the directive
+    var eventMap = {};
 
     // Add a delegate for event detection. One event to rule them all
     document.addEventListener('dragover', function (e) {
@@ -105,20 +108,24 @@ angular.module('bonita.dragAndDrop',[])
           }
 
           e.target.appendChild(surrogate);
-          boDragEvent.onDropSuccess(angular.element(e.target).scope(), boDragMap.get(surrogate.id));
+          eventMap[e.target.getAttribute('data-drop-id')].apply(this,[angular.element(e.target).scope(), boDragMap.get(surrogate.id)]);
           return;
         }
 
-        boDragEvent.onDropSuccess(angular.element(el).scope(), boDragMap.get(el.id));
+        eventMap[e.target.getAttribute('data-drop-id')].apply(this,[angular.element(e.target).scope(), boDragMap.get(el.id)]);
         e.target.appendChild(el);
       }
     });
 
     return {
       type: 'A',
+      scope: {
+        onDropSuccess: '&boDropSuccess'
+      },
       link: function(scope, el, attr) {
         el.addClass('bo-dropzone-container');
         attr.$set('data-drop-id',boDragUtils.generateUniqId('drop'));
+        eventMap[attr['data-drop-id']] = scope.$eval(scope.onDropSuccess) || angular.noop;
       }
     };
   })

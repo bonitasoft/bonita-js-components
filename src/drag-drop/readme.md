@@ -22,6 +22,7 @@ Create draggable items and as many dropzone you wish.
 ### Directives
 
 - `boDropzone`: Define a new dropzone
+    - `boDropSuccess`: Pass a function name (not foo(), just foo). The callback is triggered on drop success
 - `boDraggable`: Define a draggable item
     - `boDraggableData` Attr to define some data bind to the scope.data of this directive
 - `boDragPolyfill`: Patch drag&drop API for IE9
@@ -33,8 +34,8 @@ Ex: One col and two dropzones.
         <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index">item-{{$index + 1}}</div>
     </aside>
 
-    <section class="container-dropable" bo-dropzone bo-dropzone-success="success()"></section>
-    <section class="container-dropable" bo-dropzone bo-dropzone-success="success()"></section>
+    <section class="container-dropable" bo-dropzone bo-drop-success="success"></section>
+    <section class="container-dropable" bo-dropzone bo-drop-success="success"></section>
 
 </main>
 ```
