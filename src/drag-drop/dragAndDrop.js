@@ -56,7 +56,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function (boDragUtils, boDragMap){
+  .directive('boDropzone', function ($document, boDragUtils, boDragMap){
 
     'use strict';
 
@@ -64,7 +64,8 @@ angular.module('bonita.dragAndDrop',[])
     var eventMap = {};
 
     // Add a delegate for event detection. One event to rule them all
-    document.addEventListener('dragover', function (e) {
+    $document.on('dragover', function (e) {
+
       e.preventDefault(); // allows us to drop
       if(e.target.hasAttribute('data-drop-id')) {
         eventMap[e.target.getAttribute('data-drop-id')].onDragOver.apply(this,[angular.element(e.target).scope()]);
@@ -74,12 +75,11 @@ angular.module('bonita.dragAndDrop',[])
     });
 
     // Add a delegate for event detection. One event to rule them all
-    document.addEventListener('drop', function (e) {
+    $document.on('drop', function (e) {
       e.preventDefault(); // allows us to drop
 
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
-
         /**
          * Defines in the directive boDraggable inside the listener of dragStart
          * Format: element.id:(true|false)
