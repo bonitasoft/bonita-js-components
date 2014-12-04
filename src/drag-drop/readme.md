@@ -7,10 +7,10 @@ Create draggable items and as many dropzone you wish.
 ### Services
 
 - `boDragMap`: Temp database for drag and drop item
-    `set(id, data)`
-    `updateKey(id, newId)`
-    `get(id)`
-    `reset()`
+    - `set(id, data)`
+    - `updateKey(id, newId)`
+    - `get(id)`
+    - `reset()`
 - `boDragUtils`:  Utils
     - `generateUniqId(key)`: Generate a uniq ID (key is a prefix)
 
