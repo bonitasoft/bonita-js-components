@@ -5,7 +5,7 @@
 
   describe('Directove: boDropzone', function() {
 
-    var compile, scope, rootScope, $document, $window, boDragUtils, boDragMap;
+    var compile, scope, rootScope, $document, $window, boDragUtils;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
@@ -13,7 +13,6 @@
       $document   = $injector.get('$document');
       $window     = $injector.get('$window');
       boDragUtils = $injector.get('boDragUtils');
-      boDragMap   = $injector.get('boDragMap');
       rootScope   = $rootScope;
       scope       = $rootScope.$new();
 
@@ -65,6 +64,13 @@
         it('should be triggered on drop', function () {
 
           $document.find('body').append('<div id="test"></div>');
+          var newScope = rootScope.$new();
+          newScope.data = {
+            name: 'Yolo'
+          };
+          $document.find('body').append('<div id="test"></div>');
+          compile(angular.element(document.getElementById('test')))(newScope);
+
           var e = angular.element.Event('drop');
           e.target = dom[0];
           e.dataTransfer = {
@@ -93,9 +99,13 @@
           beforeEach(function() {
 
             spyOn(boDragUtils,'generateUniqId').and.returnValue(current);
-            spyOn(boDragMap,'updateKey');
-
+            var newScope = rootScope.$new();
+            newScope.data = {
+              name: 'Yolo'
+            };
             $document.find('body').append('<div id="test"></div>');
+            compile(angular.element(document.getElementById('test')))(newScope);
+
             var e = angular.element.Event('drop');
             e.target = dom[0];
             e.dataTransfer = {
@@ -113,11 +123,6 @@
           it('should clone the node', function() {
             expect(boDragUtils.generateUniqId).toHaveBeenCalledWith();
           });
-
-          it('should update keys from the map', function() {
-            expect(boDragMap.updateKey).toHaveBeenCalledWith('test',current);
-          });
-
 
         });
 

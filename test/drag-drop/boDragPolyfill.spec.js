@@ -5,8 +5,7 @@
 
   describe('Directive boDragPolyfill', function() {
 
-    var compile, scope, rootScope, $document, $window;
-    var dom, boDragMap;
+    var compile, scope, rootScope, $document, $window, dom;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
@@ -14,7 +13,6 @@
       $document = $injector.get('$document');
       $window   = $injector.get('$window');
       rootScope = $rootScope;
-      boDragMap = $injector.get('boDragMap');
       scope     = $rootScope.$new();
 
     }));

@@ -6,7 +6,7 @@
   describe('Directive boDraggable', function() {
 
     var compile, scope, rootScope, $document, $window;
-    var dom, boDragMap, spyEvent = {
+    var dom, spyEvent = {
       boDragStart: jasmine.any(Function),
     };
 
@@ -16,7 +16,6 @@
       $document = $injector.get('$document');
       $window   = $injector.get('$window');
       rootScope = $rootScope;
-      boDragMap = $injector.get('boDragMap');
       scope     = $rootScope.$new();
 
     }));
@@ -29,8 +28,6 @@
         name: 'Jean pierre',
         date: '11/11/2011'
       };
-
-      spyOn(boDragMap,'set');
 
       scope.boDragStart = function() {
         spyEvent.boDragStart();
@@ -83,10 +80,6 @@
         };
         spyOn(e.dataTransfer,'setData');
         $document.triggerHandler(e);
-      });
-
-      it('should listen the dragstart event and set data to boDragMap', function() {
-        expect(boDragMap.set).toHaveBeenCalledWith(dom[0].id, scope.informations);
       });
 
       it('should trigger the callback onDragStart', function() {

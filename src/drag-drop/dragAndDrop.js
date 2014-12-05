@@ -43,7 +43,7 @@ angular.module('bonita.dragAndDrop',[])
         // Grab the drag element
         var el       = document.getElementById(dragData[0]);
         var newScope = angular.element(e.target).scope().$new();
-        var scope    = angular.element(el).scope().$new();
+        var scope    = angular.element(el).scope();
 
         // Was it a child of a dropzone ? If not then create a copy
         if('false' === dragData[1]) {
