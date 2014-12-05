@@ -177,7 +177,7 @@ angular.module('bonita.dragAndDrop',[])
       type: 'EA',
       compile: function compile(element) {
 
-        var el = element.find('[bo-draggable]').get(0);
+        var el = element.find('[bo-draggable]')[0];
 
         // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
