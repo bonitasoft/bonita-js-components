@@ -56,7 +56,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function ($document, boDragUtils, boDragMap){
+  .directive('boDropzone', function ($document, boDragUtils, boDragMap, boDragEvent){
 
     'use strict';
 
@@ -96,6 +96,7 @@ angular.module('bonita.dragAndDrop',[])
 
           // Update the map reference
           boDragMap.updateKey(dragData[0], surrogate.id);
+          boDragEvent.copy(dragData[0], surrogate.id);
 
           try {
             surrogate.attributes.removeNamedItem('ng-repeat');
@@ -132,17 +133,37 @@ angular.module('bonita.dragAndDrop',[])
     };
 
   })
-  .directive('boDraggable', function ($document, boDragMap, boDragUtils){
-    'use strict';
-
+  .factory('boDragEvent',function() {
     var eventMap = {};
+    return {
+      // Store each cb reference for a any draggable element
+      map: eventMap,
+      /**
+       * Copy an event reference
+       * @param  {String} from Identifier draggable item
+       * @param  {String} to   Identifier other draggable event
+       * @return {void}
+       */
+      copy: function copy(from, to) {
+        eventMap[to] = eventMap[from];
+      }
+    };
+  })
+  .directive('boDraggable', function ($document, boDragMap, boDragEvent, boDragUtils){
+    'use strict';
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
+
+      var target = e.target,
+          currentScope = angular.element(e.target).isolateScope() || angular.element(e.target).scope();
+
       e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('Text', e.target.id + ':' +e.target.parentElement.hasAttribute('data-drop-id'));
-      boDragMap.set(e.target.id, angular.element(e.target).isolateScope().data);
-      eventMap[e.target.id].onDragStart.apply(this,[angular.element(e.target).isolateScope()]);
+      e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
+
+      boDragMap.set(target.id, currentScope.data);
+      boDragEvent.map[target.id] && boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
+
     });
 
     return {
@@ -156,9 +177,11 @@ angular.module('bonita.dragAndDrop',[])
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
 
         // Register event for the current node
-        eventMap[attr.id] = {
-          onDragStart: scope.$eval(scope.onDragStart) || angular.noop
-        };
+        if(attr.boDragStart) {
+          boDragEvent.map[attr.id] = {
+            onDragStart: scope.$eval(scope.onDragStart) || angular.noop
+          };
+        }
       }
     };
   })
