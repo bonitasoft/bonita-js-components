@@ -132,17 +132,17 @@ angular.module('bonita.dragAndDrop',[])
     };
 
   })
-  .directive('boDraggable', function (boDragMap, boDragUtils){
+  .directive('boDraggable', function ($document, boDragMap, boDragUtils){
     'use strict';
 
     var eventMap = {};
 
     // Add a delegate for event detection. One event to rule them all
-    document.addEventListener('dragstart', function (e) {
+    $document.on('dragstart', function (e) {
       e.dataTransfer.effectAllowed = 'copy';
       e.dataTransfer.setData('Text', e.target.id + ':' +e.target.parentElement.hasAttribute('data-drop-id'));
-      boDragMap.set(e.target.id, angular.element(e.target).scope().data);
-      eventMap[e.target.id].onDragStart.apply(this,[angular.element(e.target).scope()]);
+      boDragMap.set(e.target.id, angular.element(e.target).isolateScope().data);
+      eventMap[e.target.id].onDragStart.apply(this,[angular.element(e.target).isolateScope()]);
     });
 
     return {
