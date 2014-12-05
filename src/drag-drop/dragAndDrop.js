@@ -1,50 +1,4 @@
 angular.module('bonita.dragAndDrop',[])
-  .service('boDragMap', function() {
-    'use strict';
-    var map = {};
-
-    /**
-     * Save data for a drag item
-     * @param {String} id   uniq identifier for a node
-     * @param {Object} data
-     */
-    this.set = function set(id, data) {
-
-      if('string' !== typeof id) {
-        throw new TypeError('The map key must be a string');
-      }
-      map[id] = data;
-    };
-
-    /**
-     * Update a key. When we drag an item into a container its id changes so we
-     * need to map the data to the new id
-     * @param  {String} id    old id
-     * @param  {string} newId new id
-     * @return {void}
-     */
-    this.updateKey = function updateKey(id, newId) {
-      map[newId] = map[id];
-      delete map[id];
-    };
-
-    /**
-     * Get data for a node id
-     * @param  {String} id
-     * @return {Object}
-     */
-    this.get = function get(id) {
-      return map[id];
-    };
-
-    /**
-     * Reset the map
-     * @return {void}
-     */
-    this.reset = function reset() {
-      map = {};
-    };
-  })
   .service('boDragUtils', function() {
     'use strict';
     /**
@@ -56,7 +10,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function ($document, boDragUtils, boDragMap, boDragEvent){
+  .directive('boDropzone', function ($document, $compile, boDragUtils, boDragEvent){
 
     'use strict';
 
@@ -87,15 +41,16 @@ angular.module('bonita.dragAndDrop',[])
          */
         var dragData = e.dataTransfer.getData('Text').split(':');
         // Grab the drag element
-        var el = document.getElementById(dragData[0]);
+        var el       = document.getElementById(dragData[0]);
+        var newScope = angular.element(e.target).scope().$new();
+        var scope    = angular.element(el).scope().$new();
 
         // Was it a child of a dropzone ? If not then create a copy
         if('false' === dragData[1]) {
           var surrogate = el.cloneNode(true);
           surrogate.id = boDragUtils.generateUniqId();
 
-          // Update the map reference
-          boDragMap.updateKey(dragData[0], surrogate.id);
+          // Update the event map reference
           boDragEvent.copy(dragData[0], surrogate.id);
 
           try {
@@ -105,12 +60,19 @@ angular.module('bonita.dragAndDrop',[])
           }
 
           e.target.appendChild(surrogate);
-          eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), boDragMap.get(surrogate.id)]);
+          newScope.data = scope.data;
+
+          // Compile a new isolate scope for the drag element
+          $compile(angular.element(surrogate))(newScope);
+
+          eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), newScope.data]);
+
           return;
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), boDragMap.get(el.id)]);
+        eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), scope.data]);
         e.target.appendChild(el);
+
       }
     });
 
@@ -149,19 +111,19 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', function ($document, boDragMap, boDragEvent, boDragUtils){
+  .directive('boDraggable', function ($document, boDragEvent, boDragUtils){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
       var target = e.target,
-          currentScope = angular.element(e.target).isolateScope() || angular.element(e.target).scope();
+          currentScope = angular.element(target).isolateScope() || angular.element(target).scope();
 
       e.dataTransfer.effectAllowed = 'copy';
       e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
 
-      boDragMap.set(target.id, currentScope.data);
+      // Trigger the event if we need to
       boDragEvent.map[target.id] && boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
 
     });
