@@ -5,15 +5,17 @@
 
   describe('Directove: boDropzone', function() {
 
-    var compile, scope, rootScope, $document, $window;
+    var compile, scope, rootScope, $document, $window, boDragUtils, boDragMap;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
-      compile   = $injector.get('$compile');
-      $document = $injector.get('$document');
-      $window   = $injector.get('$window');
-      rootScope = $rootScope;
-      scope     = $rootScope.$new();
+      compile     = $injector.get('$compile');
+      $document   = $injector.get('$document');
+      $window     = $injector.get('$window');
+      boDragUtils = $injector.get('boDragUtils');
+      boDragMap   = $injector.get('boDragMap');
+      rootScope   = $rootScope;
+      scope       = $rootScope.$new();
 
     }));
 
@@ -82,6 +84,41 @@
         it('should trigger a dragover success', function() {
           scope.$eval(dom.isolateScope().onDragOver)();
           expect(spyEvent.boDragOver).toHaveBeenCalled();
+        });
+
+        describe('We are not a child of a dropZone', function() {
+
+          var current = 'drop' + Date.now();
+
+          beforeEach(function() {
+
+            spyOn(boDragUtils,'generateUniqId').and.returnValue(current);
+            spyOn(boDragMap,'updateKey');
+
+            $document.find('body').append('<div id="test"></div>');
+            var e = angular.element.Event('drop');
+            e.target = dom[0];
+            e.dataTransfer = {
+              getData: function() {
+                return 'test:false';
+              }
+            };
+            $document.triggerHandler(e);
+          });
+
+          it('should call onDropSuccess', function() {
+            expect(spyEvent.boDropSuccess).toHaveBeenCalled();
+          });
+
+          it('should clone the node', function() {
+            expect(boDragUtils.generateUniqId).toHaveBeenCalledWith();
+          });
+
+          it('should update keys from the map', function() {
+            expect(boDragMap.updateKey).toHaveBeenCalledWith('test',current);
+          });
+
+
         });
 
       });

@@ -146,7 +146,7 @@ angular.module('bonita.dragAndDrop',[])
     });
 
     return {
-      type: 'EA',
+      type: 'C',
       scope: {
         data: '=boDraggableData',
         onDragStart: '&boDragStart'
