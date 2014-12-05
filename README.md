@@ -1,4 +1,4 @@
-bonita-js-components
+bonita-js-components [![Build Status](https://travis-ci.org/bonitasoft/bonita-js-components.svg?branch=ag_dragdrop)](https://travis-ci.org/bonitasoft/bonita-js-components)
 ====================
 
 bonita angular components library.
