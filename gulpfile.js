@@ -2,6 +2,7 @@
 
 /* gulp */
 var gulp = require('gulp');
+var utils   = require('gulp-util');
 var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
 var del  = require('del');
@@ -51,8 +52,8 @@ gulp.task('jshint', function() {
   return gulp.src('src/**/*.js')
     .pipe(plumber())
     .pipe(jshint())
-    .pipe(jshint.reporter('fail'))
-    .pipe(jshint.reporter('jshint-stylish'));
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'));
 });
 /**
  * html2js

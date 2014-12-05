@@ -11,6 +11,7 @@ Todo
  - [x] selectAll (bo-selectable, bo-selectAll, bo-selector)
  - [x] bo-repeatable
  - [x] table-settings 
+ - [x] drag and drop
  - [ ] Resizeable (see http://bz.var.ru/comp/web/resizable.html )
  - [ ] draggable-columns
 
