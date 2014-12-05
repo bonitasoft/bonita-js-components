@@ -7,6 +7,7 @@
     "start": "gulp dev",
     "predist": "gulp predist",
     "dist": "gulp dist",
+    "tdd": "gulp dev & npm run testwatch",
     "test": "./node_modules/.bin/gulp jshint && ./node_modules/karma/bin/karma start karma.conf.js",
     "testwatch": "./node_modules/karma/bin/karma start karma.conf.js --auto-watch --no-single-run"
   },

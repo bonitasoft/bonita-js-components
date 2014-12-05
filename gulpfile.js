@@ -39,7 +39,7 @@ var opt = {
  * Fetch bower dependencies
  */
 gulp.task('bower', function() {
-  return bower()
+  bower()
     .pipe(plumber())
     .pipe(gulp.dest('bower_components'));
 });
@@ -49,7 +49,7 @@ gulp.task('bower', function() {
  * Validate js script
  */
 gulp.task('jshint', function() {
-  return gulp.src('src/**/*.js')
+  gulp.src('src/**/*.js')
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
@@ -75,7 +75,7 @@ gulp.task('html2js', function() {
  * concat generated templates and javascript files
  */
 gulp.task('bundle:js:tpl',['jshint', 'html2js'], function(){
-  return gulp.src(['src/**/*.js', 'demo/templates.js'])
+  gulp.src(['src/**/*.js', 'demo/templates.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
       remove: true,
@@ -87,7 +87,7 @@ gulp.task('bundle:js:tpl',['jshint', 'html2js'], function(){
 });
 
 gulp.task('bundle:js',['jshint'], function(){
-  return gulp.src(['src/**/*.js'])
+  gulp.src(['src/**/*.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
       remove: true,
@@ -106,12 +106,12 @@ gulp.task('clean', function(done){
 });
 
 gulp.task('dist:files', ['bundle:js:tpl', 'bundle:js', 'assets:css'], function(){
-  return gulp.src(['demo/bonita-lib.js', 'demo/bonita-lib-tpl.js', 'demo/*.css'])
+  gulp.src(['demo/bonita-lib.js', 'demo/bonita-lib-tpl.js', 'demo/*.css'])
     .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('uglify', ['dist:files'], function(){
-  return gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
+  gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
     .pipe(plumber())
     .pipe(uglify())
     .pipe(rename({ suffix:'.min' }))
@@ -119,7 +119,7 @@ gulp.task('uglify', ['dist:files'], function(){
 });
 
 gulp.task('dist:css', ['dist:files'], function(){
-  return gulp.src('dist/*.css')
+  gulp.src('dist/*.css')
     .pipe(rename({ suffix:'.min' }))
     .pipe(cssmin())
     .pipe(gulp.dest('dist/'));
@@ -130,7 +130,7 @@ gulp.task('dist:css', ['dist:files'], function(){
  * assets
  */
 gulp.task('assets:css', function(){
-  return gulp.src('src/**/*.css')
+  gulp.src('src/**/*.css')
     .pipe(concat('bonita-lib.css'))
     .pipe(autoprefixer({
       browsers: ['last 3 version', 'ie 9']
@@ -139,7 +139,7 @@ gulp.task('assets:css', function(){
 });
 
 gulp.task('assets:html', function(){
-  return gulp.src('misc/**/*.html')
+  gulp.src('misc/**/*.html')
     .pipe(gulp.dest('demo/'));
 });
 gulp.task('assets', ['assets:css', 'assets:html']);
@@ -149,7 +149,7 @@ gulp.task('assets', ['assets:css', 'assets:html']);
  * launch a local webserver with livereload, open
  */
 gulp.task('webserver',['assets'], function() {
-  return connect.server({
+  connect.server({
     root: ['demo', 'bower_components'],
     port: opt.port,
     livereload: true
@@ -161,7 +161,7 @@ gulp.task('webserver',['assets'], function() {
  * Launch default browser on local server url
  */
 gulp.task('open', ['webserver'],function() {
-  return gulp.src('demo/index.html')
+  gulp.src('demo/index.html')
     .pipe(browser('', {
       url: 'http://localhost:'+opt.port+'/index.html'
     }));
@@ -205,7 +205,7 @@ gulp.task('tdd', function (done) {
 });
 
 gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
-gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'tdd', 'watch', 'open']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
 
