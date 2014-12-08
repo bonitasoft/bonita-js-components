@@ -124,8 +124,9 @@ angular.module('bonita.dragAndDrop',[])
       e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
 
       // Trigger the event if we need to
-      boDragEvent.map[target.id] && boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
-
+      if (boDragEvent.map[target.id]){
+        boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
+      }
     });
 
     return {
