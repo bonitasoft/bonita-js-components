@@ -53,6 +53,19 @@
       manageTopUrlService.getUrlToTokenAndId = function (id, token) {
         return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
       };
+
+      manageTopUrlService.goTo = function(token, paramsArray){
+
+        var params = '&';
+        if(paramsArray && paramsArray.length){
+          paramsArray.forEach(function(element){
+            if(element && element.name && element.value){
+              params += token + element.name + '=' + element.value + '&';
+            }
+          });
+        }
+        $window.top.location.hash = '?_p='+ token+'&' + manageTopUrlService.getCurrentProfile() + params;
+      };
 //cannot use module pattern or reveling since we would want to mock methods on test
       return manageTopUrlService;
     }]);
