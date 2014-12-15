@@ -119,7 +119,7 @@
         expect(manageTopUrl.getCurrentPageToken()).toBe('');
       });
     });
-    ddescribe('goTo', function(){
+    describe('goTo', function(){
       it('should change top window\'s hash', function(){
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
         manageTopUrl.goTo('caselistingadmin');
