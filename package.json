@@ -4,6 +4,7 @@
   "description": "Several tools leading to ease web development with Bonita",
   "main": "index.js",
   "scripts": {
+    "postinstall": "./node_modules/.bin/bower install",
     "start": "gulp dev",
     "predist": "gulp predist",
     "dist": "gulp dist",
