@@ -10,7 +10,7 @@ angular
       });
     };
   })
-  .directive('columnTemplate', function ($compile, domAttributes,  $timeout) {
+  .directive('columnTemplate', function ($compile, domAttributes) {
     return {
       restrict: 'A',
       scope: true,
