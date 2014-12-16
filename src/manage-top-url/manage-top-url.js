@@ -54,13 +54,16 @@
         return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
       };
 
-      manageTopUrlService.goTo = function(token, paramsArray){
-
+      manageTopUrlService.goTo = function(destination){
+        var token = destination.token;
+        if(!token){
+          return;
+        }
         var params = '&';
-        if(paramsArray && paramsArray.length){
-          paramsArray.forEach(function(element){
-            if(element && element.name && element.value){
-              params += token + element.name + '=' + element.value + '&';
+        if(destination){
+          angular.forEach(destination, function(value, key){
+            if(key && value && key !== 'token'){
+              params += token + key + '=' + value + '&';
             }
           });
         }

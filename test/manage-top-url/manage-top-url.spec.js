@@ -122,22 +122,19 @@
     describe('goTo', function(){
       it('should change top window\'s hash', function(){
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
-        manageTopUrl.goTo('caselistingadmin');
+        manageTopUrl.goTo({'token' : 'caselistingadmin'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
         mockedWindow.top.location.hash = '?_pf=456';
-        manageTopUrl.goTo('caselistingpm');
+        manageTopUrl.goTo({'token' : 'caselistingpm'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingpm&_pf=456&');
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
-        manageTopUrl.goTo('caselistingadmin', []);
+        manageTopUrl.goTo({'token' : 'caselistingadmin'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
-        manageTopUrl.goTo('caselistingadmin', [{name : 'toto'}]);
+        manageTopUrl.goTo({'token' : 'caselistingadmin', 'toto':undefined});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
-        manageTopUrl.goTo('caselistingadmin', [{value : 'toto'}]);
-        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
-        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
-        manageTopUrl.goTo('caselistingadmin', [{name : '_toto', 'value' : 'tata'}]);
+        manageTopUrl.goTo({'token' : 'caselistingadmin', '_toto': 'tata'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&caselistingadmin_toto=tata&');
       });
     });
