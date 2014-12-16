@@ -17,6 +17,7 @@
     "angular": false,
     // Jasmine
     "describe": false,
+    "ddescribe": false,
     "beforeEach": false,
     "module": false,
     "inject": false,
