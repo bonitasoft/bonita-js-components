@@ -1,4 +1,4 @@
-bonita-js-components
+bonita-js-components [![Build Status](https://travis-ci.org/bonitasoft/bonita-js-components.svg?branch=ag_dragdrop)](https://travis-ci.org/bonitasoft/bonita-js-components)
 ====================
 
 bonita angular components library.
@@ -11,6 +11,7 @@ Todo
  - [x] selectAll (bo-selectable, bo-selectAll, bo-selector)
  - [x] bo-repeatable
  - [x] table-settings 
+ - [x] drag and drop
  - [ ] Resizeable (see http://bz.var.ru/comp/web/resizable.html )
  - [ ] draggable-columns
 
