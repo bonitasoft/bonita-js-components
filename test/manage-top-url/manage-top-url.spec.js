@@ -10,9 +10,13 @@
     beforeEach(function(){
       mockedWindow = {
         top : {
-          location:{}
+          location:{
+             hash: ''
+          }
         },
-        location: {}
+        location: {
+           hash: '#/home'
+        }
       };
 
       module(function($provide) {
@@ -24,7 +28,19 @@
       });
     });
 
+    describe('getSearch', function() {
 
+      it('should return a string if undefined', function() {
+        expect(typeof manageTopUrl.getSearch()).toBe('string');
+      });
+
+      it('should return the search value in top url', function() {
+        mockedWindow.top.location.search = 'tome=1&tape=3';
+        mockedWindow.location.search = 'page_id=2';
+        expect(manageTopUrl.getSearch()).toBe('tome=1&tape=3');
+      });
+
+    });
 
     describe('getUrlToTokenAndId function', function(){
 
@@ -177,6 +193,18 @@
 
     describe('goTo', function(){
 
+      it('should throw an error if no destination argument is set', function() {
+        expect(function() {
+          manageTopUrl.goTo();
+        }).toThrow(new TypeError('You must pass an Object as argument'));
+      });
+
+      it('should throw an error if no destination token is set', function() {
+        expect(function() {
+          manageTopUrl.goTo({});
+        }).toThrow(new Error('You must set a token to define the destination page'));
+      });
+
       it('should change top window\'s hash', function(){
 
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
@@ -199,6 +227,18 @@
         manageTopUrl.goTo({'token' : 'caselistingadmin', '_toto': 'tata'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&caselistingadmin_toto=tata&');
       });
+
+      it('should not update the window.location if we are not inside an iframe', function() {
+
+        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
+        manageTopUrl.goTo({'token' : 'caselistingadmin', '_toto': 'tata'});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&caselistingadmin_toto=tata&');
+        expect(mockedWindow.location.hash).toBe('#/home');
+
+      });
+
     });
+
+
   });
 })();
