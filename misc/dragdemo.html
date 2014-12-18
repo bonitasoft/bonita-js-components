@@ -83,8 +83,8 @@
             <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index">{{data.name}}</div>
         </aside>
 
-        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($data, $event, test)"></section>
-        <section class="container-dropable" bo-dropzone></section>
+        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($event, $data, test)"></section>
+        <section class="container-dropable" bo-dropzone bo-drag-over="dragDropCtrl.onDragOver($event, test)"></section>
 
     </main>
 
@@ -107,6 +107,10 @@
 
             this.onDropSuccess = function() {
               console.log('trigger dat event', arguments);
+            };
+
+            this.onDragOver = function() {
+              console.log('Drag over', arguments);
             };
 
             $scope.dragArray = dragArray;

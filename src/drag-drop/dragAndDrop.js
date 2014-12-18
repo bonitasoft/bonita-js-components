@@ -33,7 +33,7 @@ angular.module('bonita.dragAndDrop',[])
           e.target.className += ' bo-dragzone-hover';
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].onDragOver.apply(this,[angular.element(e.target).scope()]);
+        eventMap[e.target.getAttribute('data-drop-id')].onDragOver(angular.element(e.target).scope(), {$event: e});
         e.dataTransfer.dropEffect = 'copy';
         return false;
       }
