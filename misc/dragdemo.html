@@ -81,7 +81,7 @@
             <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index">{{data.name}}</div>
         </aside>
 
-        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess"></section>
+        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($data, $event, test)"></section>
         <section class="container-dropable" bo-dropzone></section>
 
     </main>
@@ -94,10 +94,8 @@
         angular.module('app',['bonita.dragAndDrop'])
           .controller('dragDropCtrl', function ($scope) {
 
-            var dragArray = [];
-
-            var i = 10;
-
+            var i = 10,
+                dragArray = [];
             while(--i>0) {
               dragArray.push({
                 name: 'item-' + i,
@@ -105,11 +103,12 @@
               });
             }
 
-            this.onDropSuccess = function(scope, data) {
-              console.log('trigger dat event', [scope, data]);
+            this.onDropSuccess = function() {
+              console.log('trigger dat event', arguments);
             };
 
             $scope.dragArray = dragArray;
+            $scope.test = 'value';
 
           });
     </script>

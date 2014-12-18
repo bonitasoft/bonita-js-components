@@ -10,7 +10,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function ($document, $compile, boDragUtils, boDragEvent){
+  .directive('boDropzone', function ($document, $parse, $compile, boDragUtils, boDragEvent){
 
     'use strict';
 
@@ -34,6 +34,9 @@ angular.module('bonita.dragAndDrop',[])
 
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
+
+        var dragElmId = e.target.getAttribute('data-drop-id');
+
         /**
          * Defines in the directive boDraggable inside the listener of dragStart
          * Format: element.id:(true|false)
@@ -41,9 +44,10 @@ angular.module('bonita.dragAndDrop',[])
          */
         var dragData = e.dataTransfer.getData('Text').split(':');
         // Grab the drag element
-        var el       = document.getElementById(dragData[0]);
-        var newScope = angular.element(e.target).scope().$new();
-        var scope    = angular.element(el).scope();
+        var el       = document.getElementById(dragData[0]),
+            targetScope = angular.element(e.target).scope(),
+            newScope    = targetScope.$new(),
+            scopeData   = angular.element(el).isolateScope().data || angular.element(el).scope().data;
 
         // Was it a child of a dropzone ? If not then create a copy
         if('false' === dragData[1]) {
@@ -60,36 +64,39 @@ angular.module('bonita.dragAndDrop',[])
           }
 
           e.target.appendChild(surrogate);
-          newScope.data = scope.data;
+          newScope.data = scopeData;
 
           // Compile a new isolate scope for the drag element
           $compile(angular.element(surrogate))(newScope);
 
-          eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), newScope.data]);
+          targetScope.$apply(function() {
+            eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
+          });
 
           return;
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), scope.data]);
-        e.target.appendChild(el);
+        targetScope.$apply(function() {
+          eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
+        });
 
+        e.target.appendChild(el);
       }
     });
 
+
+
     return {
       type: 'A',
-      scope: {
-        onDropSuccess: '&boDropSuccess',
-        onDragOver: '&boDragOver'
-      },
       link: function(scope, el, attr) {
+
         el.addClass('bo-dropzone-container');
         attr.$set('data-drop-id',boDragUtils.generateUniqId('drop'));
 
         // Register event for this node
         eventMap[attr['data-drop-id']] = {
-          onDropSuccess: scope.$eval(scope.onDropSuccess) || angular.noop,
-          onDragOver: scope.$eval(scope.onDragOver) || angular.noop
+          onDropSuccess: $parse(attr.boDropSuccess) || angular.noop,
+          onDragOver: $parse(attr.boDragOver) || angular.noop
         };
       }
     };
