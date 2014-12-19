@@ -35,7 +35,7 @@
 
       spyOn(spyEvent,'boDragStart');
 
-      dom = compile('<div class="item-drag" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart">test</div>')(scope);
+      dom = compile('<div class="item-drag" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart()">test</div>')(scope);
       scope.$apply();
       $document.find('body').append(dom);
     });
@@ -53,7 +53,7 @@
     });
 
     it('should use the id if it was specified', function() {
-      dom = compile('<div class="item-drag" id="yolo" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart">test</div>')(scope);
+      dom = compile('<div class="item-drag" id="yolo" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart()">test</div>')(scope);
       scope.$apply();
       $document.find('body').append(dom);
       expect(dom.attr('id')).toBe('yolo');
@@ -64,7 +64,7 @@
     });
 
     it('should bind a callback', function() {
-      scope.$eval(dom.isolateScope().onDragStart)();
+      dom.isolateScope().onDragStart();
       expect(spyEvent.boDragStart).toHaveBeenCalled();
     });
 
