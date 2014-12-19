@@ -59,6 +59,9 @@
           expect(spyEvent.boDragOver).toHaveBeenCalledWith();
         });
 
+        it('should have the className bo-dragzone-hover', function() {
+          expect(angular.element('.bo-dragzone-hover')[0]).toBeDefined();
+        });
 
         // Do not try to put it at another position. There is some WTF
         it('should be triggered on drop', function () {
@@ -79,7 +82,7 @@
             }
           };
           $document.triggerHandler(e);
-          expect(spyEvent.boDropSuccess).toHaveBeenCalledWith();
+          expect(spyEvent.boDropSuccess).toHaveBeenCalled();
         });
 
         describe('We are not a child of a dropZone', function() {
@@ -116,6 +119,10 @@
             expect(boDragUtils.generateUniqId).toHaveBeenCalledWith();
           });
 
+          it('should not have the className bo-dragzone-hover', function() {
+            expect(dom.hasClass('bo-dragzone-hover')).toBe(false);
+          });
+
         });
 
       });
@@ -127,6 +134,10 @@
 
       it('should attach a className bo-dropzone-container', function() {
         expect(dom.hasClass('bo-dropzone-container')).toBeTruthy();
+      });
+
+      it('should not have the className bo-dragzone-hover', function() {
+        expect(dom.hasClass('bo-dragzone-hover')).toBe(false);
       });
 
     });
