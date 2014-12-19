@@ -29,7 +29,10 @@ angular.module('bonita.dragAndDrop',[])
 
         if(-1 === e.target.className.indexOf('bo-dragzone-hover')) {
           // Remove all other dropZone with the className
-          angular.element(document.getElementsByClassName('bo-dragzone-hover')).removeClass('bo-dragzone-hover');
+          angular
+            .element(document.getElementsByClassName('bo-dragzone-hover'))
+            .removeClass('bo-dragzone-hover');
+
           e.target.className += ' bo-dragzone-hover';
         }
 
@@ -132,21 +135,20 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', function ($document, boDragEvent, boDragUtils){
+  .directive('boDraggable', function ($document, $parse, boDragEvent, boDragUtils){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
-      var target = e.target,
-          currentScope = angular.element(target).isolateScope() || angular.element(target).scope();
+      var target = e.target;
 
       e.dataTransfer.effectAllowed = 'copy';
       e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
-        boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
+          boDragEvent.map[target.id].onDragStart();
       }
     });
 
@@ -159,11 +161,10 @@ angular.module('bonita.dragAndDrop',[])
       link: function(scope, el, attr) {
         attr.$set('draggable',true);
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
-
         // Register event for the current node
         if(attr.boDragStart) {
           boDragEvent.map[attr.id] = {
-            onDragStart: scope.$eval(scope.onDragStart) || angular.noop
+            onDragStart: scope.onDragStart || angular.noop
           };
         }
       }

@@ -80,7 +80,7 @@
 
     <main  ng-controller="dragDropCtrl as dragDropCtrl">
         <aside class="container-siderbar" bo-drag-polyfill>
-            <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index">{{data.name}}</div>
+            <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index" bo-drag-start="dragDropCtrl.onDragStart($index, data)">{{data.name}}</div>
         </aside>
 
         <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($event, $data, test)"></section>
@@ -111,6 +111,9 @@
 
             this.onDragOver = function() {
               console.log('Drag over', arguments);
+            };
+            this.onDragStart = function() {
+              console.log('Drag start', arguments);
             };
 
             $scope.dragArray = dragArray;
