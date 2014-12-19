@@ -185,22 +185,23 @@ angular.module('bonita.dragAndDrop',[])
       type: 'EA',
       compile: function compile(element) {
 
-        var el = element.find('[bo-draggable]')[0];
+        var elmts = document.querySelectorAll('[bo-draggable]');
 
         // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
 
-          // IE, where the WTF is real
-          var nodeA = document.createElement('A');
+          [].forEach.call(elmts, function (el) {
+            // IE, where the WTF is real
+            var nodeA = document.createElement('A');
+            // Duplicate attributes
+            [].forEach.call(el.attributes, function (attr) {
+              nodeA.setAttribute(attr.name,attr.value);
+            });
 
-          // Duplicate attributes
-          [].forEach.call(el.attributes, function (attr) {
-            nodeA.setAttribute(attr.name,attr.value);
+            nodeA.innerHTML = el.innerHTML;
+            nodeA.href = '#';
+            el.parentNode.replaceChild(nodeA,el);
           });
-
-          nodeA.innerHTML = el.innerHTML;
-          nodeA.href = '#';
-          el.parentNode.replaceChild(nodeA,el);
         }
       }
     };
