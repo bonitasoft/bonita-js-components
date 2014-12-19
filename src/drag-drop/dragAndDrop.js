@@ -135,7 +135,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', function ($document, $parse, boDragEvent, boDragUtils){
+  .directive('boDraggable', function ($document, boDragEvent, boDragUtils){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
