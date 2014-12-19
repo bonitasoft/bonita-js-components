@@ -148,7 +148,7 @@ angular.module('bonita.dragAndDrop',[])
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
-          boDragEvent.map[target.id].onDragStart();
+        boDragEvent.map[target.id].onDragStart();
       }
     });
 
