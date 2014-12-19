@@ -183,7 +183,7 @@ angular.module('bonita.dragAndDrop',[])
 
     return {
       type: 'EA',
-      compile: function compile(element) {
+      compile: function compile() {
 
         var elmts = document.querySelectorAll('[bo-draggable]');
 
