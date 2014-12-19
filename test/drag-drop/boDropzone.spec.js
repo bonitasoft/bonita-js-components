@@ -59,8 +59,8 @@
           expect(spyEvent.boDragOver).toHaveBeenCalledWith();
         });
 
-        it('should have the className bo-dragzone-hover', function() {
-          expect(angular.element('.bo-dragzone-hover')[0]).toBeDefined();
+        it('should have the className bo-dropzone-hover', function() {
+          expect(angular.element('.bo-dropzone-hover')[0]).toBeDefined();
         });
 
         // Do not try to put it at another position. There is some WTF

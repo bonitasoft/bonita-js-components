@@ -18,7 +18,7 @@ Create draggable items and as many dropzone you wish.
 
 - `boDropzone`: Define a new dropzone
     - `boDropSuccess($event, $data)`: The callback is triggered on drop success
-    - `boDragOver($event)`: Pass a function name (not foo(), just foo). The callback is triggered on drag over (add a className **bo-dragzone-hover**) if is :hover a dropzone
+    - `boDragOver($event)`: Pass a function name (not foo(), just foo). The callback is triggered on drag over (add a className **bo-dropzone-hover**) if is :hover a dropzone
 - `boDraggable`: Define a draggable item
     - `boDragStart`: The callback is triggered on drag start
     - `boDraggableData` Attr to define some data bind to the scope.data of this directive

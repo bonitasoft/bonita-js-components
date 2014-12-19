@@ -15,7 +15,8 @@ angular.module('bonita.dragAndDrop',[])
     'use strict';
 
     // Register some callback for the directive
-    var eventMap = {};
+    var eventMap = {},
+        DROPZONE_CLASSNAME_HOVER = 'bo-dropzone-hover';
 
     function removeClassNames(target, className) {
       target.className = target.className.replace(new RegExp(' ' + className),'');
@@ -27,17 +28,17 @@ angular.module('bonita.dragAndDrop',[])
 
       if(e.target.hasAttribute('data-drop-id')) {
 
-        if(-1 === e.target.className.indexOf('bo-dragzone-hover')) {
+        if(-1 === e.target.className.indexOf(DROPZONE_CLASSNAME_HOVER)) {
           // Remove all other dropZone with the className
           angular
-            .element(document.getElementsByClassName('bo-dragzone-hover'))
-            .removeClass('bo-dragzone-hover');
+            .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
+            .removeClass(DROPZONE_CLASSNAME_HOVER);
 
-          e.target.className += ' bo-dragzone-hover';
+          e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
         }
 
         eventMap[e.target.getAttribute('data-drop-id')].onDragOver(angular.element(e.target).scope(), {$event: e});
-        e.dataTransfer.dropEffect = 'copy';
+        (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
         return false;
       }
     });
@@ -56,7 +57,7 @@ angular.module('bonita.dragAndDrop',[])
          * Format: element.id:(true|false)
          * So after a split, [0] is drag element id and [1] is is it a child of a dropZone
          */
-        var dragData = e.dataTransfer.getData('Text').split(':');
+        var dragData = (e.dataTransfer || e.originalEvent.dataTransfer).getData('Text').split(':');
 
         // Grab the drag element
         var el          = document.getElementById(dragData[0]),
@@ -85,7 +86,7 @@ angular.module('bonita.dragAndDrop',[])
           $compile(angular.element(surrogate))(newScope);
 
           targetScope.$apply(function() {
-            removeClassNames(e.target,'bo-dragzone-hover');
+            removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
             eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
           });
 
@@ -93,7 +94,7 @@ angular.module('bonita.dragAndDrop',[])
         }
 
         targetScope.$apply(function() {
-          removeClassNames(e.target,'bo-dragzone-hover');
+          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
           eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
         });
 
@@ -141,10 +142,11 @@ angular.module('bonita.dragAndDrop',[])
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
-      var target = e.target;
+      var target     = e.target,
+          eventData  = (e.dataTransfer || e.originalEvent.dataTransfer);
 
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
+      eventData.effectAllowed = 'copy';
+      eventData.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
