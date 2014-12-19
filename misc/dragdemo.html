@@ -69,6 +69,8 @@
             text-align: center;
             color: #999
         }
+
+        .bo-dragzone-hover {border-color: #663399}
     </style>
     <!--[if IE]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -78,14 +80,15 @@
 
     <main  ng-controller="dragDropCtrl as dragDropCtrl">
         <aside class="container-siderbar" bo-drag-polyfill>
-            <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index">{{data.name}}</div>
+            <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index" bo-drag-start="dragDropCtrl.onDragStart($index, data)">{{data.name}}</div>
         </aside>
 
-        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess"></section>
-        <section class="container-dropable" bo-dropzone></section>
+        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($event, $data, test)"></section>
+        <section class="container-dropable" bo-dropzone bo-drag-over="dragDropCtrl.onDragOver($event, test)"></section>
 
     </main>
 
+    <!--<script src="//code.jquery.com/jquery-2.1.3.min.js"></script>-->
     <script src="angular/angular.js"></script>
     <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bonita-lib-tpl.js"></script>
@@ -94,10 +97,8 @@
         angular.module('app',['bonita.dragAndDrop'])
           .controller('dragDropCtrl', function ($scope) {
 
-            var dragArray = [];
-
-            var i = 10;
-
+            var i = 10,
+                dragArray = [];
             while(--i>0) {
               dragArray.push({
                 name: 'item-' + i,
@@ -105,11 +106,19 @@
               });
             }
 
-            this.onDropSuccess = function(scope, data) {
-              console.log('trigger dat event', [scope, data]);
+            this.onDropSuccess = function() {
+              console.log('trigger dat event', arguments);
+            };
+
+            this.onDragOver = function() {
+              console.log('Drag over', arguments);
+            };
+            this.onDragStart = function() {
+              console.log('Drag start', arguments);
             };
 
             $scope.dragArray = dragArray;
+            $scope.test = 'value';
 
           });
     </script>
