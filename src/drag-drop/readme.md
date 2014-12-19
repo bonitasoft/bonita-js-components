@@ -17,10 +17,10 @@ Create draggable items and as many dropzone you wish.
 ### Directives
 
 - `boDropzone`: Define a new dropzone
-    - `boDropSuccess`: Pass a function name (not foo(), just foo). The callback is triggered on drop success
-    - `boDragOver`: Pass a function name (not foo(), just foo). The callback is triggered on drag over
+    - `boDropSuccess($event, $data)`: The callback is triggered on drop success
+    - `boDragOver($event)`: Pass a function name (not foo(), just foo). The callback is triggered on drag over (add a className **bo-dropzone-hover**) if is :hover a dropzone
 - `boDraggable`: Define a draggable item
-    - `boDragStart`: Pass a function name (not foo(), just foo). The callback is triggered on drag start
+    - `boDragStart`: The callback is triggered on drag start
     - `boDraggableData` Attr to define some data bind to the scope.data of this directive
 - `boDragPolyfill`: Patch drag&drop API for IE9
 
@@ -60,3 +60,7 @@ controller('dragDropCtrl', function ($scope, boDragEvent) {
 
 });
 ```
+
+## Informations
+
+The directive does not work if you use `$compileProvider.debugInfoEnabled(false);` inside the application cf [angular.element.scope() returns undefined](https://github.com/angular/angular.js/issues/9515#issuecomment-61990861).
