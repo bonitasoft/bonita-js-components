@@ -218,8 +218,9 @@ angular.module('bonita.dragAndDrop',[])
 
     /**
      * Replace all node for IE9
-     * @param  {[type]} list [description]
-     * @return {[type]}      [description]
+     * And attach their scope
+     * @param  {nodeList} list
+     * @return {void}
      */
     function replaceNode(list) {
 
