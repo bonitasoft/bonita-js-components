@@ -110,8 +110,42 @@
       expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',e.target.id + ':true');
     });
 
+    describe('Listening on event dragenter', function() {
+
+      var e;
+
+      beforeEach(function() {
+        e = angular.element.Event('dragenter');
+        e.target = dom[0];
+        $document.triggerHandler(e);
+      });
+
+      it('should add a clasName bo-drag-enter', function() {
+        expect(dom[0].classList.contains('bo-drag-enter')).toBe(true);
+      });
+
+    });
+
+    describe('Listening on event dragleave', function() {
+
+      var e;
+
+      beforeEach(function() {
+        dom[0].classList.add('bo-drag-enter');
+        e = angular.element.Event('dragleave');
+        e.target = dom[0];
+        $document.triggerHandler(e);
+      });
+
+      it('should remove a clasName bo-drag-enter', function() {
+        expect(dom[0].classList.contains('bo-drag-enter')).toBe(false);
+      });
+
+    });
+
 
   });
+
 
 
 })();

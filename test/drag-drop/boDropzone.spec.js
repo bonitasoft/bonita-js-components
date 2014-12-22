@@ -100,7 +100,7 @@
             $document.find('body').append(domDrag);
             rootScope.$apply();
 
-
+            dom[0].classList.add('bo-drag-enter');
             var e = angular.element.Event('drop');
             e.target = dom[0];
             e.dataTransfer = {
@@ -140,7 +140,12 @@
         expect(dom.hasClass('bo-dragzone-hover')).toBe(false);
       });
 
+      it('should remove a clasName bo-drag-enter', function() {
+        expect(dom[0].classList.contains('bo-drag-enter')).toBe(false);
+      });
+
     });
+
 
   });
 
