@@ -205,7 +205,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDragPolyfill', function ($window) {
+  .directive('boDragPolyfill', function ($window, $timeout, $rootScope, $compile) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -216,27 +216,49 @@ angular.module('bonita.dragAndDrop',[])
      */
     'use strict';
 
+    /**
+     * Replace all node for IE9
+     * @param  {[type]} list [description]
+     * @return {[type]}      [description]
+     */
+    function replaceNode(list) {
+
+      var scope, newScope;
+      Array.prototype.forEach.call(list, function (el) {
+
+        // Find data for the draggable directive and copy it
+        scope         = angular.element(el).isolateScope().data;
+        newScope      = $rootScope.$new(true, angular.element(el).isolateScope());
+        newScope.data = scope;
+
+        // IE, where the WTF is real
+        var nodeA = document.createElement('A');
+        // Duplicate attributes
+        [].forEach.call(el.attributes, function (attr) {
+          nodeA.setAttribute(attr.name,attr.value);
+        });
+
+        nodeA.innerHTML = el.innerHTML;
+        nodeA.href = '#';
+        el.parentNode.replaceChild(nodeA,el);
+        $compile(angular.element(nodeA))(newScope);
+      });
+    }
+
     return {
       type: 'EA',
-      compile: function compile() {
-
-        var elmts = document.querySelectorAll('[bo-draggable]');
-
+      link: function link() {
         // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
 
-          [].forEach.call(elmts, function (el) {
-            // IE, where the WTF is real
-            var nodeA = document.createElement('A');
-            // Duplicate attributes
-            [].forEach.call(el.attributes, function (attr) {
-              nodeA.setAttribute(attr.name,attr.value);
-            });
-
-            nodeA.innerHTML = el.innerHTML;
-            nodeA.href = '#';
-            el.parentNode.replaceChild(nodeA,el);
+          // run the polyfill after the digest, because some directive can be bind, so compile cannot see them
+          $timeout(function() {
+            var elmts = document.querySelectorAll('[bo-draggable]'),
+                elmts2 = document.querySelectorAll('[data-bo-draggable]');
+            replaceNode(elmts);
+            replaceNode(elmts2);
           });
+
         }
       }
     };
