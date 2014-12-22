@@ -1,4 +1,34 @@
 angular.module('bonita.dragAndDrop',[])
+  .provider('boDraggableItem', function() {
+
+    'use strict';
+
+    var defaultConfig = {
+      cloneOnDrop: true
+    };
+
+    /**
+     * Allow the creation of a new node when we drag the item
+     * Default is true;
+     * @param  {Boolean} allowClone
+     * @return {[type]}            [description]
+     */
+    this.cloneOnDrop = function cloneOnDrop(allowClone) {
+      defaultConfig.cloneOnDrop = allowClone;
+    };
+
+    this.$get = function() {
+      return {
+        config: function config() {
+          return angular.copy(defaultConfig);
+        },
+        allowCloneOnDrop: function allowCloneOnDrop() {
+          return this.config().cloneOnDrop || false;
+        }
+      };
+    };
+
+  })
   .service('boDragUtils', function() {
     'use strict';
     /**
@@ -10,7 +40,7 @@ angular.module('bonita.dragAndDrop',[])
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
   })
-  .directive('boDropzone', function ($document, $parse, $compile, boDragUtils, boDragEvent){
+  .directive('boDropzone', function ($document, $parse, $compile, boDragUtils, boDragEvent, boDraggableItem){
 
     'use strict';
 
@@ -79,7 +109,10 @@ angular.module('bonita.dragAndDrop',[])
             // You're trying to delete an ghost attribute. DOMException: Failed to execute 'removeNamedItem'
           }
 
-          e.target.appendChild(surrogate);
+          // Default is true so we clone the node
+          if(boDraggableItem.allowCloneOnDrop()) {
+            e.target.appendChild(surrogate);
+          }
           newScope.data = scopeData;
 
           // Compile a new isolate scope for the drag element
