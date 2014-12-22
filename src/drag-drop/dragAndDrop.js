@@ -46,7 +46,8 @@ angular.module('bonita.dragAndDrop',[])
 
     // Register some callback for the directive
     var eventMap = {},
-        DROPZONE_CLASSNAME_HOVER = 'bo-dropzone-hover';
+        DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
+        CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
     function removeClassNames(target, className) {
       target.className = target.className.replace(new RegExp(' ' + className),'');
@@ -120,6 +121,7 @@ angular.module('bonita.dragAndDrop',[])
 
           targetScope.$apply(function() {
             removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
+            removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
             eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
           });
 
@@ -128,14 +130,13 @@ angular.module('bonita.dragAndDrop',[])
 
         targetScope.$apply(function() {
           removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
+          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
           eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
         });
 
         e.target.appendChild(el);
       }
     });
-
-
 
     return {
       type: 'A',
@@ -158,6 +159,10 @@ angular.module('bonita.dragAndDrop',[])
     return {
       // Store each cb reference for a any draggable element
       map: eventMap,
+      events: {
+        DROPZONE_CLASSNAME_HOVER: 'bo-dropzone-hover',
+        CLASSNAME_DRAG_HOVER: 'bo-drag-enter'
+      },
       /**
        * Copy an event reference
        * @param  {String} from Identifier draggable item
@@ -184,6 +189,21 @@ angular.module('bonita.dragAndDrop',[])
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
         boDragEvent.map[target.id].onDragStart();
+      }
+    });
+
+    $document.on('dragenter', function(e) {
+
+      if(e.target.className.indexOf(boDragEvent.events.CLASSNAME_DRAG_HOVER) > -1) {
+        return;
+      }
+      e.target.className += ' ' + boDragEvent.events.CLASSNAME_DRAG_HOVER;
+
+    });
+
+    $document.on('dragleave', function(e) {
+      if(e.target.className.indexOf(boDragEvent.events.CLASSNAME_DRAG_HOVER) > -1) {
+        e.target.className = e.target.className.replace(' '+boDragEvent.events.CLASSNAME_DRAG_HOVER,'');
       }
     });
 
