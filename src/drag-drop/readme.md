@@ -36,15 +36,6 @@ Create draggable items and as many dropzone you wish.
 Ex: One col and two dropzones.
 ```html
 <main  ng-controller="dragDropCtrl as dragDropCtrl">
-    <aside class="container-siderbar" bo-drag-polyfill>
-        <div class="item-drag" bo-draggable bo-draggable-data="data" bo-drag-start="cb" ng-repeat="data in dragArray track by $index">item-{{$index + 1}}</div>
-    </aside>
-
-    <section class="container-dropable" bo-dropzone bo-drop-success="success"></section>
-    <section class="container-dropable" bo-dropzone bo-drop-success="success" bo-drag-over="cb"></section>
-
-</main>
-<main  ng-controller="dragDropCtrl as dragDropCtrl">
   <aside class="container-siderbar" bo-drag-polyfill>
       <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index" bo-drag-start="dragDropCtrl.onDragStart($index, data)">item-{{$index + 1}}</div>
   </aside>
