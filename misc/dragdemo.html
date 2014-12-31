@@ -96,6 +96,9 @@
 
     <script>
         angular.module('app',['bonita.dragAndDrop'])
+          .config(function ($compileProvider) {
+            $compileProvider.debugInfoEnabled(false);
+          })
           .controller('dragDropCtrl', function ($scope) {
 
             var i = 10,
