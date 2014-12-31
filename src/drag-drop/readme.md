@@ -83,7 +83,3 @@ controller('dragDropCtrl', function ($scope, boDragEvent) {
 
 });
 ```
-
-## Informations
-
-The directive does not work if you use `$compileProvider.debugInfoEnabled(false);` inside the application cf [angular.element.scope() returns undefined](https://github.com/angular/angular.js/issues/9515#issuecomment-61990861).
