@@ -229,7 +229,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDragPolyfill', function ($window, $timeout, $rootScope, $compile) {
+  .directive('boDragPolyfill', function ($window, $timeout, $rootScope, $compile, boDragEvent) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -252,8 +252,8 @@ angular.module('bonita.dragAndDrop',[])
       Array.prototype.forEach.call(list, function (el) {
 
         // Find data for the draggable directive and copy it
-        scope         = angular.element(el).isolateScope().data;
-        newScope      = $rootScope.$new(true, angular.element(el).isolateScope());
+        scope         = boDragEvent.map[el.id].scope.data;
+        newScope      = $rootScope.$new(true, boDragEvent.map[el.id].scope);
         newScope.data = scope;
 
         // IE, where the WTF is real
