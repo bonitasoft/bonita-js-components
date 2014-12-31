@@ -49,6 +49,13 @@ angular.module('bonita.dragAndDrop',[])
         DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
         CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
+    /**
+     * Remove a className on en element
+     * ClassList is not available on IE9 :/
+     * @param  {Node} target
+     * @param  {String} className ClassName to remove
+     * @return {void}
+     */
     function removeClassNames(target, className) {
       target.className = target.className.replace(new RegExp(' ' + className),'');
     }
@@ -59,6 +66,9 @@ angular.module('bonita.dragAndDrop',[])
 
       if(e.target.hasAttribute('data-drop-id')) {
 
+        // IE9 does not know dataset :/
+        var dragElmId = e.target.getAttribute('data-drop-id');
+
         if(-1 === e.target.className.indexOf(DROPZONE_CLASSNAME_HOVER)) {
           // Remove all other dropZone with the className
           angular
@@ -68,7 +78,7 @@ angular.module('bonita.dragAndDrop',[])
           e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].onDragOver(angular.element(e.target).scope(), {$event: e});
+        eventMap[dragElmId].onDragOver(eventMap[dragElmId].scope, {$event: e});
         (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
         return false;
       }
@@ -95,7 +105,7 @@ angular.module('bonita.dragAndDrop',[])
         var el          = document.getElementById(dragData[0]),
             targetScope = eventMap[dragElmId].scope,
             newScope    = targetScope.$new(),
-            scopeData   = angular.element(el).isolateScope().data || angular.element(el).scope().data;
+            scopeData   = boDragEvent.map[dragData[0]].scope.data;
 
         // Was it a child of a dropzone ? If not then create a copy
         if('false' === dragData[1]) {
@@ -217,6 +227,7 @@ angular.module('bonita.dragAndDrop',[])
         // Register event for the current node
         if(attr.boDragStart) {
           boDragEvent.map[attr.id] = {
+            scope: scope,
             onDragStart: scope.onDragStart || angular.noop
           };
         }
