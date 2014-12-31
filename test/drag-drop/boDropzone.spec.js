@@ -59,6 +59,15 @@
           expect(spyEvent.boDragOver).toHaveBeenCalledWith();
         });
 
+
+        it('should be triggered on dragover for originalEvent', function () {
+          var e = angular.element.Event('dragover');
+          e.target = dom[0];
+          e.originalEvent = {dataTransfer: {}};
+          $document.triggerHandler(e);
+          expect(spyEvent.boDragOver).toHaveBeenCalledWith();
+        });
+
         it('should have the className bo-dropzone-hover', function() {
           expect(angular.element('.bo-dropzone-hover')[0]).toBeDefined();
         });
@@ -77,6 +86,32 @@
           var e = angular.element.Event('drop');
           e.target = dom[0];
           e.dataTransfer = {
+            getData: function() {
+              return JSON.stringify({
+                dragItemId: 'test',
+                isDropZoneChild: true
+              });
+            }
+          };
+          $document.triggerHandler(e);
+          expect(spyEvent.boDropSuccess).toHaveBeenCalled();
+        });
+
+        // Do not try to put it at another position. There is some WTF
+        it('should be triggered on drop for originalEvent', function () {
+
+          var newScope = rootScope.$new();
+          newScope.data = {
+            name: 'Yolo'
+          };
+          var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+          $document.find('body').append(domDrag);
+          rootScope.$apply();
+
+          var e = angular.element.Event('drop');
+          e.target = dom[0];
+          e.originalEvent = {};
+          e.originalEvent.dataTransfer = {
             getData: function() {
               return JSON.stringify({
                 dragItemId: 'test',

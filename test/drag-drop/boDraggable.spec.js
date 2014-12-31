@@ -5,18 +5,19 @@
 
   describe('Directive boDraggable', function() {
 
-    var compile, scope, rootScope, $document, $window;
+    var compile, scope, rootScope, $document, $window, boDragEvent;
     var dom, spyEvent = {
       boDragStart: jasmine.any(Function),
     };
 
     beforeEach(inject(function ($injector, $rootScope) {
 
-      compile   = $injector.get('$compile');
-      $document = $injector.get('$document');
-      $window   = $injector.get('$window');
-      rootScope = $rootScope;
-      scope     = $rootScope.$new();
+      compile     = $injector.get('$compile');
+      $document   = $injector.get('$document');
+      $window     = $injector.get('$window');
+      boDragEvent = $injector.get('boDragEvent');
+      rootScope   = $rootScope;
+      scope       = $rootScope.$new();
 
     }));
 
@@ -120,6 +121,28 @@
       expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',JSON.stringify(dataEvent));
     });
 
+
+    it('should set the informations with true if it is a child of dropZone for OriginalEvent', function() {
+      dom = compile('<div data-drop-id="test"><div class="item-drag" id="yolo" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart">test</div></div>')(scope);
+      scope.$apply();
+      $document.find('body').append(dom);
+      var e = angular.element.Event('dragstart');
+      e.target = dom.find('.item-drag').get(0);
+      e.originalEvent = {};
+      e.originalEvent.dataTransfer = {
+        setData: angular.noop
+      };
+      spyOn(e.originalEvent.dataTransfer,'setData');
+      $document.triggerHandler(e);
+
+      var dataEvent = {
+        dragItemId: e.target.id,
+        isDropZoneChild: true
+      };
+
+      expect(e.originalEvent.dataTransfer.setData).toHaveBeenCalledWith('Text',JSON.stringify(dataEvent));
+    });
+
     describe('Listening on event dragenter', function() {
 
       var e;
@@ -149,6 +172,34 @@
 
       it('should remove a clasName bo-drag-enter', function() {
         expect(dom[0].classList.contains('bo-drag-enter')).toBe(false);
+      });
+
+    });
+
+
+    describe('Fill an eventMap', function() {
+
+      beforeEach(function() {
+        boDragEvent.map = {};
+        scope.yolo1 = {name: 'yolo-1'};
+        scope.yolo2 = {name: 'yolo-2'};
+        dom = compile('<div class="item-drag" id="yolo" bo-draggable bo-draggable-data="yolo1" bo-drag-start="boDragStart()">test</div><div class="item-drag" id="yolo2" bo-draggable bo-draggable-data="yolo2">test</div>')(scope);
+        scope.$apply();
+        $document.find('body').append(dom);
+      });
+
+      it('should record some item in the map', function() {
+        expect(Object.keys(boDragEvent.map).length).toBe(2);
+      });
+
+      it('should record the current scope for each item', function() {
+        expect(boDragEvent.map.yolo.scope.data).toBe(scope.yolo1);
+        expect(boDragEvent.map.yolo2.scope.data).toBe(scope.yolo2);
+      });
+
+      it('should store a reference to onDragStart', function() {
+        expect(typeof boDragEvent.map.yolo.onDragStart).toBe('function');
+        expect(typeof boDragEvent.map.yolo2.onDragStart).toBe('function');
       });
 
     });
