@@ -108,7 +108,9 @@ angular.module('bonita.dragAndDrop',[])
             scopeData   = boDragEvent.map[dragData[0]].scope.data;
 
         // Was it a child of a dropzone ? If not then create a copy
-        if('false' === dragData[1]) {
+        if('false' !== dragData[1]) {
+          e.target.appendChild(el);
+        }else {
           var surrogate = el.cloneNode(true);
           surrogate.id = boDragUtils.generateUniqId();
 
@@ -129,19 +131,12 @@ angular.module('bonita.dragAndDrop',[])
 
           // Compile a new isolate scope for the drag element
           $compile(angular.element(surrogate))(newScope);
-
-          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
-          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-          eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
-
-          return;
         }
 
         removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
         removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-        eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
+        eventMap[dragElmId].onDropSuccess(targetScope, {$data: 'false' !== dragData[1] ? scopeData : newScope.data, $event: e});
 
-        e.target.appendChild(el);
       }
     });
 
