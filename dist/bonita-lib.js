@@ -252,14 +252,17 @@ angular.module('bonita.dragAndDrop',[])
         // Register event for this node
         eventMap[attr['data-drop-id']] = {
           scope: scope,
-          onDropSuccess: $parse(attr.boDropSuccess) || angular.noop,
-          onDragOver: $parse(attr.boDragOver) || angular.noop
+          onDropSuccess: $parse(attr.boDropSuccess),
+          onDragOver: $parse(attr.boDragOver)
         };
       }
     };
 
   }])
   .factory('boDragEvent',function() {
+
+    'use strict';
+
     var eventMap = {};
     return {
       // Store each cb reference for a any draggable element
@@ -324,13 +327,11 @@ angular.module('bonita.dragAndDrop',[])
       link: function(scope, el, attr) {
         attr.$set('draggable',true);
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
-        // Register event for the current node
-        if(attr.boDragStart) {
-          boDragEvent.map[attr.id] = {
-            scope: scope,
-            onDragStart: scope.onDragStart || angular.noop
-          };
-        }
+        // Register event for the current node and its scope
+        boDragEvent.map[attr.id] = {
+          scope: scope,
+          onDragStart: scope.onDragStart
+        };
       }
     };
   }])
