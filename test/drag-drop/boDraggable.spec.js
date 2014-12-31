@@ -87,7 +87,11 @@
       });
 
       it('should record some informations inside dataTransfer as a String', function() {
-        expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',dom[0].id + ':false');
+        var dataEvent = {
+          dragItemId: dom[0].id,
+          isDropZoneChild: false
+        };
+        expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',JSON.stringify(dataEvent));
       });
 
       it('should set the dataTransfer effectAllowed to copy', function() {
@@ -107,7 +111,13 @@
       };
       spyOn(e.dataTransfer,'setData');
       $document.triggerHandler(e);
-      expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',e.target.id + ':true');
+
+      var dataEvent = {
+        dragItemId: e.target.id,
+        isDropZoneChild: true
+      };
+
+      expect(e.dataTransfer.setData).toHaveBeenCalledWith('Text',JSON.stringify(dataEvent));
     });
 
     describe('Listening on event dragenter', function() {
