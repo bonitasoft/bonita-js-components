@@ -81,6 +81,7 @@ angular.module('bonita.dragAndDrop',[])
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
 
+        // IE9 does not know dataset :/
         var dragElmId = e.target.getAttribute('data-drop-id');
 
         /**
@@ -89,10 +90,10 @@ angular.module('bonita.dragAndDrop',[])
          * So after a split, [0] is drag element id and [1] is is it a child of a dropZone
          */
         var dragData = (e.dataTransfer || e.originalEvent.dataTransfer).getData('Text').split(':');
-
+        // debugger;
         // Grab the drag element
         var el          = document.getElementById(dragData[0]),
-            targetScope = angular.element(e.target).scope(),
+            targetScope = eventMap[dragElmId].scope,
             newScope    = targetScope.$new(),
             scopeData   = angular.element(el).isolateScope().data || angular.element(el).scope().data;
 
@@ -119,20 +120,16 @@ angular.module('bonita.dragAndDrop',[])
           // Compile a new isolate scope for the drag element
           $compile(angular.element(surrogate))(newScope);
 
-          targetScope.$apply(function() {
-            removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
-            removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-            eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
-          });
+          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
+          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
+          eventMap[dragElmId].onDropSuccess(targetScope, {$data : newScope.data,  $event: e});
 
           return;
         }
 
-        targetScope.$apply(function() {
-          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
-          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-          eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
-        });
+        removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
+        removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
+        eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
 
         e.target.appendChild(el);
       }
@@ -147,6 +144,7 @@ angular.module('bonita.dragAndDrop',[])
 
         // Register event for this node
         eventMap[attr['data-drop-id']] = {
+          scope: scope,
           onDropSuccess: $parse(attr.boDropSuccess) || angular.noop,
           onDragOver: $parse(attr.boDragOver) || angular.noop
         };

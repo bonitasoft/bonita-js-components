@@ -2,7 +2,7 @@
 
 /* gulp */
 var gulp = require('gulp');
-var utils   = require('gulp-util');
+var utils = require('gulp-util');
 var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
 var del  = require('del');
@@ -53,7 +53,7 @@ gulp.task('jshint', function() {
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
+    .pipe(utils.env.dist ? jshint.reporter('fail') : utils.noop());
 });
 /**
  * html2js
@@ -204,7 +204,11 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('env:dist', function() {
+  utils.env.dist = true;
+});
+
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify']);
 gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
