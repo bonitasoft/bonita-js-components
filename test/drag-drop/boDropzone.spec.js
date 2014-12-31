@@ -78,7 +78,10 @@
           e.target = dom[0];
           e.dataTransfer = {
             getData: function() {
-              return 'test';
+              return JSON.stringify({
+                dragItemId: 'test',
+                isDropZoneChild: true
+              });
             }
           };
           $document.triggerHandler(e);
@@ -105,7 +108,10 @@
             e.target = dom[0];
             e.dataTransfer = {
               getData: function() {
-                return 'test:false';
+                return JSON.stringify({
+                  dragItemId: 'test',
+                  isDropZoneChild: false
+                });
               }
             };
             $document.triggerHandler(e);
