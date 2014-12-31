@@ -11,7 +11,7 @@ angular.module('bonita.dragAndDrop',[])
      * Allow the creation of a new node when we drag the item
      * Default is true;
      * @param  {Boolean} allowClone
-     * @return {[type]}            [description]
+     * @return {void}
      */
     this.cloneOnDrop = function cloneOnDrop(allowClone) {
       defaultConfig.cloneOnDrop = allowClone;
