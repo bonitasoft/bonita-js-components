@@ -1,6 +1,6 @@
 {
   "name": "bonita-js-components",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Several tools leading to ease web development with Bonita",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "predist": "gulp predist",
     "dist": "gulp dist",
     "tdd": "gulp dev & npm run testwatch",
-    "test": "./node_modules/.bin/gulp jshint && ./node_modules/karma/bin/karma start karma.conf.js",
+    "pretest": "./node_modules/.bin/gulp jshint",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
     "testwatch": "./node_modules/karma/bin/karma start karma.conf.js --auto-watch --no-single-run"
   },
   "repository": {
