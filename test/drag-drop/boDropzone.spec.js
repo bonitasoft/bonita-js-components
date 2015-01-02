@@ -5,16 +5,17 @@
 
   describe('Directove: boDropzone', function() {
 
-    var compile, scope, rootScope, $document, $window, boDragUtils;
+    var compile, scope, rootScope, $document, $window, boDragUtils, boDragEvent;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
-      compile     = $injector.get('$compile');
-      $document   = $injector.get('$document');
-      $window     = $injector.get('$window');
-      boDragUtils = $injector.get('boDragUtils');
-      rootScope   = $rootScope;
-      scope       = $rootScope.$new();
+      compile         = $injector.get('$compile');
+      $document       = $injector.get('$document');
+      $window         = $injector.get('$window');
+      boDragUtils     = $injector.get('boDragUtils');
+      boDragEvent     = $injector.get('boDragEvent');
+      rootScope       = $rootScope;
+      scope           = $rootScope.$new();
 
     }));
 
@@ -130,10 +131,13 @@
           beforeEach(function() {
 
             spyOn(boDragUtils,'generateUniqId').and.returnValue(current);
+
             var newScope = rootScope.$new();
-            newScope.data = {
-              name: 'Yolo'
+
+            boDragEvent.map[current] = {
+              scope: newScope
             };
+
             var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
             $document.find('body').append(domDrag);
             rootScope.$apply();

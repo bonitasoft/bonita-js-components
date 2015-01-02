@@ -182,6 +182,9 @@ angular.module('bonita.dragAndDrop',[])
        */
       copy: function copy(from, to) {
         eventMap[to] = eventMap[from];
+        // console.log('From',from);
+        // console.log('to',to);
+        // console.log(eventMap);
       }
     };
   })
