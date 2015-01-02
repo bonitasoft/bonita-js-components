@@ -235,9 +235,11 @@ angular.module('bonita.dragAndDrop',[])
           $compile(angular.element(surrogate))(newScope);
         }
 
-        removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
-        removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-        eventMap[dragElmId].onDropSuccess(targetScope, {$data: eventData.isDropZoneChild ? scopeData : newScope.data, $event: e});
+        targetScope.$apply(function() {
+          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
+          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
+          eventMap[dragElmId].onDropSuccess(targetScope, {$data: eventData.isDropZoneChild ? scopeData : newScope.data, $event: e});
+        });
 
       }
     });
