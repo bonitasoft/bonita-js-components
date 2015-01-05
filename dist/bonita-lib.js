@@ -202,12 +202,12 @@ angular.module('bonita.dragAndDrop',[])
          *   - isDropZoneChild: Boolean
          */
         var eventData = JSON.parse((e.dataTransfer || e.originalEvent.dataTransfer).getData('Text'));
-        // debugger;
+
         // Grab the drag element
-        var el          = document.getElementById(eventData.dragItemId),
-            targetScope = eventMap[dragElmId].scope,
-            newScope    = targetScope.$new(),
-            scopeData   = boDragEvent.map[eventData.dragItemId].scope.data;
+        var el              = document.getElementById(eventData.dragItemId),
+            targetScope     = eventMap[dragElmId].scope,
+            currentDragItem = boDragEvent.map[eventData.dragItemId],
+            scopeData       = currentDragItem.data;
 
         // Was it a child of a dropzone ? If not then create a copy
         if(eventData.isDropZoneChild) {
@@ -229,16 +229,18 @@ angular.module('bonita.dragAndDrop',[])
           if(boDraggableItem.allowCloneOnDrop()) {
             e.target.appendChild(surrogate);
           }
-          newScope.data = scopeData;
 
           // Compile a new isolate scope for the drag element
-          $compile(angular.element(surrogate))(newScope);
+          $compile(angular.element(surrogate))(boDragEvent.map[surrogate.id].scope);
         }
 
         targetScope.$apply(function() {
           removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
           removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
-          eventMap[dragElmId].onDropSuccess(targetScope, {$data: eventData.isDropZoneChild ? scopeData : newScope.data, $event: e});
+
+          // Hooks
+          currentDragItem.onDropItem(targetScope,{$data: scopeData, $event: e});
+          eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
         });
 
       }
@@ -281,10 +283,13 @@ angular.module('bonita.dragAndDrop',[])
        */
       copy: function copy(from, to) {
         eventMap[to] = eventMap[from];
+        // console.log('From',from);
+        // console.log('to',to);
+        // console.log(eventMap);
       }
     };
   })
-  .directive('boDraggable', ['$document', 'boDragEvent', 'boDragUtils', function ($document, boDragEvent, boDragUtils){
+  .directive('boDraggable', ['$document', '$parse', 'boDragEvent', 'boDragUtils', function ($document, $parse, boDragEvent, boDragUtils){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
@@ -301,7 +306,7 @@ angular.module('bonita.dragAndDrop',[])
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
-        boDragEvent.map[target.id].onDragStart();
+        boDragEvent.map[target.id].onDragStart(boDragEvent.map[target.id].scope);
       }
     });
 
@@ -321,19 +326,23 @@ angular.module('bonita.dragAndDrop',[])
     });
 
     return {
-      type: 'EA',
-      scope: {
-        data: '=boDraggableData',
-        onDragStart: '&boDragStart'
-      },
       link: function(scope, el, attr) {
+
         attr.$set('draggable',true);
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
+
         // Register event for the current node and its scope
         boDragEvent.map[attr.id] = {
-          scope: scope,
-          onDragStart: scope.onDragStart
+          key         : attr.boDraggableData, // Ref key to the scope custom data
+          scope       : scope,
+          onDragStart : $parse(attr.boDragStart),
+          onDropItem  : $parse(attr.boDropItem)
         };
+
+        // Some key in the scope are async (if it comes from directive)
+        scope.$evalAsync(function (currentScope) {
+          boDragEvent.map[attr.id].data = currentScope[attr.boDraggableData];
+        });
       }
     };
   }])
