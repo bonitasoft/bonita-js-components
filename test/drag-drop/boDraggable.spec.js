@@ -1,7 +1,22 @@
 (function() {
   'use strict';
 
-  beforeEach(module('bonita.dragAndDrop'));
+    beforeEach(module('bonita.dragAndDrop', function ($provide) {
+    // Mock EventMap
+    // $provide.decorator('boDragEvent', function ($delegate) {
+    //   $delegate.map = {
+    //     yolo: {
+    //       scope: {data: {}},
+    //       onDragStart: angular.noop
+    //     },
+    //     yolo2: {
+    //       scope: {data: {}},
+    //       onDragStart: angular.noop
+    //     }
+    //   };
+    //   return $delegate;
+    // });
+  }));
 
   describe('Directive boDraggable', function() {
 
@@ -12,12 +27,12 @@
 
     beforeEach(inject(function ($injector, $rootScope) {
 
-      compile     = $injector.get('$compile');
-      $document   = $injector.get('$document');
-      $window     = $injector.get('$window');
-      boDragEvent = $injector.get('boDragEvent');
-      rootScope   = $rootScope;
-      scope       = $rootScope.$new();
+      compile         = $injector.get('$compile');
+      $document       = $injector.get('$document');
+      $window         = $injector.get('$window');
+      boDragEvent     = $injector.get('boDragEvent');
+      rootScope       = $rootScope;
+      scope           = $rootScope.$new();
 
     }));
 
@@ -58,15 +73,6 @@
       scope.$apply();
       $document.find('body').append(dom);
       expect(dom.attr('id')).toBe('yolo');
-    });
-
-    it('should bind a data key to the scope', function() {
-      expect(dom.isolateScope().data.name).toBe('Jean pierre');
-    });
-
-    it('should bind a callback', function() {
-      dom.isolateScope().onDragStart();
-      expect(spyEvent.boDragStart).toHaveBeenCalled();
     });
 
     describe('listening the event dragstart', function() {
@@ -193,8 +199,8 @@
       });
 
       it('should record the current scope for each item', function() {
-        expect(boDragEvent.map.yolo.scope.data).toBe(scope.yolo1);
-        expect(boDragEvent.map.yolo2.scope.data).toBe(scope.yolo2);
+        expect(boDragEvent.map.yolo.data).toBe(scope.yolo1);
+        expect(boDragEvent.map.yolo2.data).toBe(scope.yolo2);
       });
 
       it('should store a reference to onDragStart', function() {

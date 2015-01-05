@@ -14,6 +14,9 @@
           onDragStart: angular.noop
         }
       };
+      $delegate.copy = function(from, to) {
+        this.map[to] = this.map[from];
+      };
       return $delegate;
     });
   }));
