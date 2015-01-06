@@ -49,17 +49,6 @@ angular.module('bonita.dragAndDrop',[])
         DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
         CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
-    /**
-     * Remove a className on en element
-     * ClassList is not available on IE9 :/
-     * @param  {Node} target
-     * @param  {String} className ClassName to remove
-     * @return {void}
-     */
-    function removeClassNames(target, className) {
-      target.className = target.className.replace(new RegExp(' ' + className),'');
-    }
-
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragover', function (e) {
       e.preventDefault(); // allows us to drop
@@ -134,8 +123,13 @@ angular.module('bonita.dragAndDrop',[])
         }
 
         targetScope.$apply(function() {
-          removeClassNames(e.target,DROPZONE_CLASSNAME_HOVER);
-          removeClassNames(e.target,CLASSNAME_DRAG_HOVER);
+          angular
+            .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
+            .removeClass(DROPZONE_CLASSNAME_HOVER);
+
+            angular
+            .element(document.getElementsByClassName(CLASSNAME_DRAG_HOVER))
+            .removeClass(CLASSNAME_DRAG_HOVER);
 
           // Hooks
           currentDragItem.onDropItem(targetScope,{$data: scopeData, $event: e});
