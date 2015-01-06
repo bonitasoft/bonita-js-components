@@ -1,6 +1,8 @@
 # Drag and drop module
 
-Create draggable items and as many dropzone you wish.
+Create draggable items and as many dropzone you wish. 
+
+> Chrome - Firefox - Safari - IE >= 9
 
 ## Compenents
 
@@ -30,6 +32,7 @@ Create draggable items and as many dropzone you wish.
     - `boDragOver($event)`: The callback is triggered on drag over
 - `boDraggable`: Define a draggable item
     - `boDragStart`: The callback is triggered on drag start
+    - `boDropItem($event, $data)`: The callback is triggered on drag start
     - `boDraggableData` Attr to define some data bind to the scope.data of this directive
 - `boDragPolyfill`: Patch drag&drop API for IE9
 
@@ -43,7 +46,7 @@ Ex: One col and two dropzones.
 ```html
 <main  ng-controller="dragDropCtrl as dragDropCtrl">
   <aside class="container-siderbar" bo-drag-polyfill>
-      <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index" bo-drag-start="dragDropCtrl.onDragStart($index, data)">item-{{$index + 1}}</div>
+      <div class="item-drag" bo-draggable bo-draggable-data="data" ng-repeat="data in dragArray track by $index" bo-drop-item="dragDropCtrl.onDropItem($data, test)"  bo-drag-start="dragDropCtrl.onDragStart($index, data)">item-{{$index + 1}}</div>
   </aside>
 
   <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($event, $data, test)"></section>
@@ -69,6 +72,11 @@ controller('dragDropCtrl', function ($scope, boDragEvent) {
   
   this.onDropSuccess = function() {
     console.log('trigger dat event', arguments);
+  };
+
+
+  this.onDropItem = function() {
+    console.log('drop item', arguments);
   };
 
   this.onDragOver = function() {
