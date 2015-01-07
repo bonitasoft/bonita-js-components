@@ -154,22 +154,20 @@ angular.module('bonita.dragAndDrop',[])
     $document.on('dragover', function (e) {
       e.preventDefault(); // allows us to drop
 
+      // Remove all other dropZone with the className
+      angular
+        .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
+        .removeClass(DROPZONE_CLASSNAME_HOVER);
+
       if(e.target.hasAttribute('data-drop-id')) {
 
         // IE9 does not know dataset :/
         var dragElmId = e.target.getAttribute('data-drop-id');
 
-        if(-1 === e.target.className.indexOf(DROPZONE_CLASSNAME_HOVER)) {
-          // Remove all other dropZone with the className
-          angular
-            .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
-            .removeClass(DROPZONE_CLASSNAME_HOVER);
-
-          e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
-        }
-
+        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
         eventMap[dragElmId].onDragOver(eventMap[dragElmId].scope, {$event: e});
         (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
+
         return false;
       }
     });
@@ -306,6 +304,11 @@ angular.module('bonita.dragAndDrop',[])
       if(e.target.className.indexOf(boDragEvent.events.CLASSNAME_DRAG_HOVER) > -1) {
         return;
       }
+
+      // Remove the className for previous hovered items
+      angular
+        .element(document.getElementsByClassName(boDragEvent.events.CLASSNAME_DRAG_HOVER))
+        .removeClass(boDragEvent.events.CLASSNAME_DRAG_HOVER);
       e.target.className += ' ' + boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
     });
