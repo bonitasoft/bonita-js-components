@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Drag and drop</title>
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+
+    <style>
+        :root {font-size: 16px}
+        main {
+            width: 800px;
+            min-height: 300px;
+            margin: 2em auto;
+            overflow: hidden;
+        }
+
+        main::after {
+            content: '';
+            display: table;
+        }
+
+        [class^="container"] {
+            border: 2px solid #e6e6e6;
+            background: #f3f3f3;
+            font-size: 0
+        }
+
+        .container-siderbar {
+            width: 300px;
+            float: left;
+        }
+
+        .item-drag {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border: 1px dashed;
+            margin: 10px 10px;
+            line-height: 80px;
+            cursor: move;
+            text-align: center;
+            font-size: 1rem
+        }
+
+        .container-siderbar .item-drag:nth-child(3n + 1) {
+            margin-left: 10px;
+        }
+        .container-siderbar .item-drag:nth-child(3n + 3) {
+            margin-right: 0;
+        }
+
+        .container-dropable {
+            width: 60%;
+            float: right;
+            min-height: 300px;
+            position: relative;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,.1)
+        }
+
+        .container-dropable:empty::before {
+            content: 'Drop something here';
+            display: table-cell;
+            width: 100%;
+            position: absolute;
+            margin-top: calc(150px - 1rem);
+            font-size: 1.4rem;
+            font-style: italic;
+            text-align: center;
+            color: #999
+        }
+
+        .bo-dropzone-hover {border-color: #663399}
+        .bo-drag-enter {color: #bada55}
+    </style>
+    <!--[if IE]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+    <main  ng-controller="dragDropCtrl as dragDropCtrl">
+        <aside class="container-siderbar" bo-drag-polyfill>
+            <div class="item-drag" bo-draggable bo-draggable-data="data" bo-drop-item="dragDropCtrl.onDropItem($data, test)" bo-drag-start="dragDropCtrl.onDragStart($index, data)" ng-repeat="data in dragArray track by $index">{{data.name}}</div>
+
+        </aside>
+
+        <section class="container-dropable" bo-dropzone bo-drop-success="dragDropCtrl.onDropSuccess($event, $data, test)"></section>
+        <section class="container-dropable" bo-dropzone bo-drag-over="dragDropCtrl.onDragOver($event, test)"></section>
+
+    </main>
+
+    <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="angular/angular.js"></script>
+    <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bonita-lib-tpl.js"></script>
+
+    <script>
+        angular.module('app',['bonita.dragAndDrop'])
+          .config(function ($compileProvider) {
+            $compileProvider.debugInfoEnabled(false);
+          })
+          .controller('dragDropCtrl', function ($scope) {
+
+            var i = 10,
+                dragArray = [];
+            while(--i>0) {
+              dragArray.push({
+                name: 'item-' + i,
+                date: new Date()
+              });
+            }
+
+            this.onDropSuccess = function() {
+              console.log('trigger dat event', arguments);
+            };
+
+            this.onDropItem = function() {
+              console.log('drop item', arguments);
+            };
+
+            this.onDragOver = function() {
+              console.log('Drag over', arguments);
+            };
+            this.onDragStart = function() {
+              console.log('Drag start', arguments);
+            };
+
+            $scope.dragArray = dragArray;
+            $scope.test = 'value';
+
+          });
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 
 /* gulp */
 var gulp = require('gulp');
+var utils = require('gulp-util');
 var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
 var del  = require('del');
@@ -51,15 +52,15 @@ gulp.task('jshint', function() {
   return gulp.src('src/**/*.js')
     .pipe(plumber())
     .pipe(jshint())
-    .pipe(jshint.reporter('fail'))
-    .pipe(jshint.reporter('jshint-stylish'));
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(utils.env.dist ? jshint.reporter('fail') : utils.noop());
 });
 /**
  * html2js
  * transform templates to a templates.js file
  */
 gulp.task('html2js', function() {
-  gulp.src('src/**/*.html')
+  return gulp.src('src/**/*.html')
     .pipe(plumber())
     .pipe(html2js({
       moduleName: 'bonita.templates',
@@ -101,7 +102,7 @@ gulp.task('bundle:js',['jshint'], function(){
  * dist
  */
 gulp.task('clean', function(done){
-  del(['dist/', 'demo/'], done);
+  return del(['dist/', 'demo/'], done);
 });
 
 gulp.task('dist:files', ['bundle:js:tpl', 'bundle:js', 'assets:css'], function(){
@@ -148,7 +149,7 @@ gulp.task('assets', ['assets:css', 'assets:html']);
  * launch a local webserver with livereload, open
  */
 gulp.task('webserver',['assets'], function() {
-  return connect.server({
+  connect.server({
     root: ['demo', 'bower_components'],
     port: opt.port,
     livereload: true
@@ -287,12 +288,12 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-/**
- * Main task
- */
+gulp.task('env:dist', function() {
+  utils.env.dist = true;
+});
 
-gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
-gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'tdd', 'watch', 'open']);
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
 
