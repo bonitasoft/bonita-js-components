@@ -53,6 +53,22 @@
       manageTopUrlService.getUrlToTokenAndId = function (id, token) {
         return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
       };
+
+      manageTopUrlService.goTo = function(destination){
+        var token = destination.token;
+        if(!token){
+          return;
+        }
+        var params = '&';
+        if(destination){
+          angular.forEach(destination, function(value, key){
+            if(key && value && key !== 'token'){
+              params += token + key + '=' + value + '&';
+            }
+          });
+        }
+        $window.top.location.hash = '?_p='+ token+'&' + manageTopUrlService.getCurrentProfile() + params;
+      };
 //cannot use module pattern or reveling since we would want to mock methods on test
       return manageTopUrlService;
     }]);

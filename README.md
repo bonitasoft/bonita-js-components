@@ -1,4 +1,4 @@
-bonita-js-components
+bonita-js-components [![Build Status](https://travis-ci.org/bonitasoft/bonita-js-components.svg?branch=ag_dragdrop)](https://travis-ci.org/bonitasoft/bonita-js-components)
 ====================
 
 bonita angular components library.
@@ -7,6 +7,7 @@ bonita angular components library.
 
 You need to have__nodejs__ and __npm__   
 This library also needs angular 1.3 to run properly.
+ - [x] drag and drop
 
 ## Available command
 
