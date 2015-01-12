@@ -93,11 +93,11 @@ angular
    * ```
 
    */
-  .directive('boRepeatable', function () {
+  .directive('boRepeatable', ['$interpolate' , function ($interpolate) {
     return {
       require:'bonitable',
       restrict: 'A',
-      compile: function (elem, attr) {
+      compile: function (elem, attr, $scope) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
@@ -147,7 +147,7 @@ angular
               angular.element(item.th).remove();
               angular.element(item.td).remove();
               var o = {
-                name: item.th.textContent,
+                name: $interpolate(item.th.textContent)($scope),
                 header: item.th.outerHTML,
                 cell: item.td.outerHTML
               };
@@ -180,7 +180,7 @@ angular
         };
       }
     };
-  })
+  }])
 
   /**
    * @ngdoc directive

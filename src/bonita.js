@@ -23,8 +23,9 @@ angular.module('bonitable', [])
     };
 
     this.unregisterSelector = function unregisterSelector(item){
-      var index = selectors.indexOf(item);
-      selectors = selectors.slice(0, index).concat(selectors.slice(index+1));
+      /*var index = selectors.indexOf(item);
+      selectors = selectors.slice(0, index).concat(selectors.slice(index+1));*/
+      selectors.splice(selectors.indexOf(item), 1);
     };
 
     var getters = {
