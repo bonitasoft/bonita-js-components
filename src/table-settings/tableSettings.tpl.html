@@ -30,6 +30,8 @@
         class="bo-TableSettings-column"
         title="{{::((field.selected ? 'Hide' : 'Show') +' '+ field[label])}}"
         ng-click="$event.stopPropagation()">
+        <span class="glyphicon glyphicon-align-justify grabHover"></span>
+        <span class="glyphicon glyphicon-align-justify grabHover"></span>
         <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
         {{::field[label]}}
       </label>
