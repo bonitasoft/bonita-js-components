@@ -5,9 +5,18 @@ bonita angular components library.
 
 ## requirements
 
-You need to have__nodejs__ and __npm__   
+
+You need to have __nodejs__ and __npm__   
 This library also needs angular 1.3 to run properly.
+
+ - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
+ - [x] bo-sorter (default id=key, or bo-sorter='key')
+ - [x] selectAll (bo-selectable, bo-selectAll, bo-selector)
+ - [x] bo-repeatable
+ - [x] table-settings 
  - [x] drag and drop
+ - [ ] Resizeable (see http://bz.var.ru/comp/web/resizable.html )
+ - [ ] draggable-columns
 
 ## Available command
 

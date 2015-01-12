@@ -288,10 +288,6 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-/**
- * Main task
- */
-
 gulp.task('env:dist', function() {
   utils.env.dist = true;
 });
