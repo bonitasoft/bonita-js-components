@@ -178,6 +178,87 @@ function test(done, tdd) {
   }, done);
 }
 
+
+
+/**
+ * ngdocs : documentation generator
+ */
+gulp.task('docs:js',['jshint', 'html2js'], function() {
+  return gulp.src(['src/**/*.js', 'demo/templates.js'])
+    .pipe(plumber())
+    .pipe(ngAnnotage({
+      remove: true,
+      add: true,
+      single_quotes: true
+    }))
+    .pipe(concat('bonita-lib-tpl.js'))
+    .pipe(gulp.dest('docs/js'));
+});
+
+gulp.task('docs:css', function(){
+  return gulp.src('src/**/*.css')
+    .pipe(concat('bonita-lib.css'))
+    .pipe(autoprefixer({
+      browsers: ['last 3 version', 'ie 9']
+    }))
+    .pipe(gulp.dest('docs/css'));
+});
+
+gulp.task('docs:assets', ['bower'], function(){
+
+  gulp.src([
+    'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+    'bower_components/ng-sortable/dist/ng-sortable.min.js'
+  ]).pipe(gulp.dest('docs/js'));
+
+  return gulp.src([
+    'bower_components/ng-sortable/dist/ng-sortable.min.css'
+  ]).pipe(gulp.dest('docs/css'));
+
+});
+gulp.task('clean:docs', function(done){
+  del(['docs/'], done);
+});
+gulp.task('ngdocs', ['bower', 'docs:js', 'docs:css', 'docs:assets'], function () {
+  var gulpDocs = require('gulp-ngdocs');
+  var options = {
+    title:'bonita-js-components',
+    html5Mode: false,
+    startPage: '/api/bonitable',
+    scripts:[
+      'docs/js/bonita-lib-tpl.js',
+      'docs/js/ui-bootstrap-tpls.js',
+      'docs/js/ng-sortable.min.js'
+    ],
+    styles:[
+      'docs/css/ng-sortable.min.css',
+      'docs/css/bonita-lib.css'
+    ]
+  };
+  return gulp.src('src/**/*.js')
+    .pipe(plumber())
+    .pipe(gulpDocs.process(options))
+    .pipe(gulp.dest('./docs'));
+});
+
+
+gulp.task('server:docs',['assets'], function() {
+  return connect.server({
+    root: ['docs'],
+    port: opt.port,
+    livereload: true
+  });
+});
+
+gulp.task('watch:docs', function() {
+  gulp
+    .watch(['src/**/*.js'], ['ngdocs'])
+    .on('change', function() {
+      gulp.src('').pipe(connect.reload());
+    });
+});
+gulp.task('documentation', ['ngdocs', 'watch:docs', 'server:docs']);
+
 /**
  * Watch task
  * Launch a server with livereload
@@ -196,6 +277,9 @@ gulp.task('watch', ['jshint', 'bower'], function() {
 
 });
 
+/**
+ * Testing tasks
+ */
 gulp.task('test', ['bower'], function (done) {
   return test(done, false);
 });

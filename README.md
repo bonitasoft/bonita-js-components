@@ -3,8 +3,11 @@ bonita-js-components [![Build Status](https://travis-ci.org/bonitasoft/bonita-js
 
 bonita angular components library.
 
-Todo
-----
+## requirements
+
+
+You need to have __nodejs__ and __npm__   
+This library also needs angular 1.3 to run properly.
 
  - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
  - [x] bo-sorter (default id=key, or bo-sorter='key')
@@ -15,7 +18,24 @@ Todo
  - [ ] Resizeable (see http://bz.var.ru/comp/web/resizable.html )
  - [ ] draggable-columns
 
-# Publishing a new version
+## Available command
+
+- ``$ npm start``: launch the developpement environnement with a local server+livreload. Also, unit tests ran in background
+- ``$ npm run dist`` : create a dist folder with minified/concatenated files. Please not that this command is only available in the _release_ branch.
+- ``$ npm test`` will run the unit test suite on PhantomJS
+- ``$ npm run documentation`` will generate the a ngdoc documentation site inside a ``./docs/ directory``
+ 
+## Todo
+
+ - [x] bonitable
+ - [x] bonita.sortable
+ - [x] bonita.selectable (bo-selectAll, bo-selector)
+ - [x] bonita.repeatable (bo-repeatable, repeatable-config)
+ - [x] bonita.settings (table-settings) 
+ - [x] draggable-columns (within table-settings)
+ - [ ] bonita.resizable (see http://bz.var.ru/comp/web/resizable.html )
+
+## Publishing a new version
 
 **The master branch do not contains any dist files.**
 
@@ -40,3 +60,13 @@ $ git push --follow-tags
 3. Celebrate!
 
 > The code coverage is build when you run a test, you can access to it by opening the `./coverage/Phantom*/index.html` in a browser.
+
+## Documentation
+To ease the documentation process
+```console
+$ npm run documentation
+```
+will run a local server (with livereload) and generate the docs sites each time you update the js files.
+
+## Code coverage
+The karma test suite provides code coverage through karma-istanbul. The generated coverage site is at the root of the project, in the ``/coverage/`` folder.

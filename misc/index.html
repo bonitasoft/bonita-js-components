@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Bonita demo page</title>
   <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="ng-sortable/dist/ng-sortable.min.css">
   <link rel="stylesheet" href="bonita-lib.css">
   <style type="text/css" media="screen">
     .pagination{
@@ -19,8 +20,13 @@
       <h1>Demo page</h1>
     </div>
     <!-- <table bonitable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table"> -->
-    <table bonitable bo-repeatable repeatable-config="config" sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
+    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
       <thead>
+        <tr>
+          <td colspan="{{$columns.length}}">
+            <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
+          </td>
+        </tr>
         <tr>
           <th colspan="{{$columns.length+2}}">
             <div class="btn-group" >
@@ -78,10 +84,10 @@
     </table>
   </div>
 
-  <script src="angular/angular.js"></script>
+  <script src="angular/angular.min.js"></script>
   <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="ng-sortable/dist/ng-sortable.min.js"></script>
   <script src="bonita-lib-tpl.js"></script>
-
   <script>
     angular
       .module('demo', [
@@ -91,7 +97,8 @@
         'bonita.settings',
         'bonita.selectable',
         'bonita.repeatable',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'ui.sortable'
       ])
       .filter('slice', function() {
         return function(input, start) {
@@ -133,8 +140,6 @@
         $rootScope.updateConfig = function(config){
           $rootScope.config = config;
         };
-
-
 
         $rootScope.items  = [
           {
