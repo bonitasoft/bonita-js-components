@@ -1,3 +1,8 @@
+'use strict';
+/**
+ * @ngdoc overview
+ * @name bonitable
+ */
 angular.module('bonitable', [])
   .controller('BonitableController', ['$scope', function($scope){
 
@@ -18,8 +23,9 @@ angular.module('bonitable', [])
     };
 
     this.unregisterSelector = function unregisterSelector(item){
-      var index = selectors.indexOf(item);
-      selectors = selectors.slice(0, index).concat(selectors.slice(index+1));
+      /*var index = selectors.indexOf(item);
+      selectors = selectors.slice(0, index).concat(selectors.slice(index+1));*/
+      selectors.splice(selectors.indexOf(item), 1);
     };
 
     var getters = {
@@ -74,9 +80,94 @@ angular.module('bonitable', [])
     }
 
   }])
+  /**
+   * @ngdoc directive
+   * @name bonitable.bonitable
+   *
+   * @description
+   * This is a base directive to use with  {@link bonita.sortable:boSorter bo-sorter} and {@link bonita.sortable:boSelector bo-selector}/{@link bonita.sortable:boSelectall bo-selectall}
+   * You should not use it only
+   * The __bonitable__ directive will create it's own transcluded scope and
+   * exposes and API only available to it's children.
+   * These properties are used by the directive from bonita.selectable
+   *
+   * | Variable          | Type             | Details                                                            |
+   * |-------------------|------------------|--------------------------------------------------------------------|
+   * | `$selectedItems`  | {@type Array}    | an array containing the selected items. @see bo_selector.          |
+   * | `$indeterminate`  | {@type boolean}  | true if not all the items are selected.                            |
+   * | `$allSelected`    | {@type boolean}  | true if all items are selected.                                    |
+   * | `$toggleAll`      | {@type function} | select/unselect all the bo-selector at once.                       |
+   *
+   *
+   * @element ANY
+   * @scope
+   * @prioriyt 100
+   * @restrict A
+   * @param {expression} onSort an  expression to be evaluate upon each time the sortProperties are updated
+   * @param {Array} repeatableConfig an array of ``boolean`` representing the visibility status for  each columns in the table
+   * @param {Object} sortOptions  an function an object with 2 property: ``property``{string} for current property
+   *                                    sort is apply on, and, 'direction' {boolean} ``false`` for ascending sort, ``true`` for descending sort
+   *
+   * @example
+    <example module="bonitableExample">
+      <file name="index.html">
+        <p>sort called {{count}} times</p>
+        <pre>{{options|json}}</pre>
+        <table bonitable sort-options="options" on-sort="sortHandler()">
+          <thead>
+            <tr>
+              <th><div bo-selectall></div></th>
+              <th bo-sorter="name">name</th>
+              <th bo-sorter="country">country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users | orderBy: options.property : options.direction ">
+              <td><input type="checkbox" bo-selector/></td>
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">You have selected {{$selectedItems.length}} items</td>
+            </tr>
+          </tfoot>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('bonitableExample', [
+            'ui.bootstrap.tpls',
+            'bonitable',
+            'bonita.templates',
+            'bonita.sortable',
+            'bonita.selectable'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.count = 0;
+            $rootScope.sortHandler = function() {
+              $rootScope.count += 1 ;
+            };
+
+            $rootScope.options = {
+              property: 'name',
+              direction: false
+            };
+          })
+      </file>
+    </example>
+   *
+   */
   .directive('bonitable', function(){
     return {
-      // scope:true,
       priority:100,
       scope: {
         //bo-sortable options
@@ -479,6 +570,71 @@ angular.module('bonita.dragAndDrop',[])
 
 angular
   .module('bonita.selectable',['bonitable'])
+  /**
+   * @ngdoc directive
+   * @name bonita.selectable:boSelectall
+   * @module bonita.selectable
+   *
+   * @description
+   *
+   * This directive will insert a checkbox that reflect the current
+   * selection status (checked / unckeched / indeterminate) of the row.
+   *
+   * It will also allow user to check the ``input[bo-selector]`` all at once.
+   * Internally, this directive rely on ``$toggleAll()`` and ``$allSelected``,
+   * wich are both exposed by the {@link bonitable.bonitable directive}.
+   *
+   * @example
+    <example module="selectableExample">
+      <file name="index.html">
+
+        <table bonitable>
+          <thead>
+
+              <tr>
+                  <th><div bo-selectall></div></th>
+                  <th>Name</th>
+                  <th>Country</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="user in users">
+                  <td><input bo-selector="user" type="checkbox" /></td>
+                  <td>{{user.name}}</td>
+                  <td>{{user.country}}</td>
+              </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>$allSelected</td>
+              <td colspan="2"><pre>{{$allSelected | json}}</pre></td>
+            </tr>
+            <tr>
+              <td>$indeterminate</td>
+              <td colspan="2"><pre>{{$indeterminate | json}}</pre></td>
+            </tr>
+          </tfoot>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('selectableExample', [
+            'ui.bootstrap.tpls',
+            'bonitable',
+            'bonita.selectable'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+          })
+      </file>
+    </example>
+   */
   .directive('boSelectall', function(){
     // Runs during compile
     return {
@@ -495,6 +651,74 @@ angular
       }
     };
   })
+  /**
+   * @ngdoc directive
+   * @name bonita.selectable:boSelector
+   * @module bonita.selectable
+   * @element input
+   * @description
+   *
+   * This directive could be used in association with {@link bonita.selectable:boSelector boSelector}.
+   *
+   *
+   * The directive __bo-selector__ will updates ``$selectedItems`` which is exposed by {@link bonitable:bonitable bonitable} for all its child elements.
+   *
+   * By default, the directive will refer to a local property for defining the selected state of a row.
+   * If you want to associate these property on the current row data, you use a ng-model
+   *
+   *
+   * ```html
+   * <input bo-selector="tag" ng-model="tag.selected" /></td>
+   * ```
+   *
+   * @param {String} boSelector the data associated to the row from a ng-repeat
+   *
+   * @example
+    <example module="selectorExample">
+      <file name="index.html">
+
+        <table bonitable>
+          <thead>
+
+              <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Country</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="user in users">
+                  <td><input bo-selector="user" type="checkbox" /></td>
+                  <td>{{user.name}}</td>
+                  <td>{{user.country}}</td>
+              </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3"><pre>{{$selectedItems | json}}</pre></td>
+            </tr>
+          </tfoot>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('selectorExample', [
+            'ui.bootstrap.tpls',
+            'bonitable',
+            'bonita.selectable'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+          })
+      </file>
+    </example>
+   */
   .directive('boSelector', function(){
     // Runs during compile
     return {
@@ -567,11 +791,73 @@ angular
       }
     };
   }])
-  .directive('boRepeatable', function () {
+  /**
+   * @ngdoc directive
+   * @name bonita.repeatable:boRepeatable
+   * @module bonita.repeatable
+   *
+   * @param {String=} boRepeatable a string representing a valid css selector
+   *                  matching the thead where the columns are defined. By default the value is
+   *                  ``thead tr:last-child``
+   *
+   * @description
+   * Render table content dynamically in order to perform some columns manipulation
+   * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
+   * under the hood to perform this but allow developper to get rid of it when
+   * display the input. No need to add a generic function for cell rendering like
+   * you will do when you put 2 ng-repeat directive inside.
+   *
+   * @example
+   *
+   * ```html
+   *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+   *     <thead>
+   *       <tr>
+   *         <td colspan="{{$columns.length}}" class="form-inline">
+   *           <pre>{{$columns|json}}</pre>
+   *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
+   *         </td>
+   *       </tr>
+   *       <tr>
+   *         <th>name</th>
+   *         <th>country</th>
+   *         <th data-ignore>action</th>
+   *       </tr>
+   *     </thead>
+   *     <tbody>
+   *       <tr ng-repeat="user in users">
+   *         <td>{{user.name}}</td>
+   *         <td>{{user.country}}</td>
+   *         <td><button>&times;</button></td>
+   *       </tr>
+   *     </tbody>
+   *   </table>
+   * ```
+   * ```javascript
+   *   angular
+   *     .module('boRepeaterExample', [
+   *       'bonitable',
+   *       'bonita.repeatable',
+   *       'bonita.templates'
+   *     ])
+   *     .run(function($scope){
+   *       $scope.users = [
+   *         {name:'Paul', country:'Uk'},
+   *         {name:'Sarah', country:'Fr'},
+   *         {name:'Jacques', country:'Us'},
+   *         {name:'Joan', country:'Al'},
+   *         {name:'Tite', country:'Jp'},
+   *       ];
+   *       $scope.colcfg =[true, false];
+   *     })
+   * ```
+
+   */
+  .directive('boRepeatable', ['$interpolate', function ($interpolate) {
     return {
       require:'bonitable',
       restrict: 'A',
-      compile: function (elem, attr) {
+      compile: function (elem, attr, $scope) {
 
         var thSelecter  = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
@@ -621,7 +907,7 @@ angular
               angular.element(item.th).remove();
               angular.element(item.td).remove();
               var o = {
-                name: item.th.textContent,
+                name: $interpolate(item.th.textContent)($scope),
                 header: item.th.outerHTML,
                 cell: item.td.outerHTML
               };
@@ -654,7 +940,62 @@ angular
         };
       }
     };
-  })
+  }])
+
+  /**
+   * @ngdoc directive
+   * @name bonita.repeatable:repeatableConfig
+   * @module bonita.repeatable
+   *
+   * @description
+   * Allow preseting the visible property for each columns
+   *
+   * @param {String} visible-prop the name of the visible property to update in $columns arrays
+   *
+   * @example
+    <example module="boRepeatConfigExample">
+      <file name="index.html">
+        <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+          <thead>
+            <tr >
+              <td  ng-repeat="col in $columns">
+                <span>column <strong>{{col.name}}</strong> is {{(col.visible? 'shown':'hided')}}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>name</th>
+              <th>country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users">
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('boRepeatConfigExample', [
+            'bonitable',
+            'bonita.repeatable',
+            'bonita.templates'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.colcfg =[true, false];
+
+          })
+      </file>
+    </example>
+   */
   .directive('repeatableConfig', function(){
     return {
       priority:1,
@@ -676,6 +1017,74 @@ angular
 
 angular
   .module('bonita.sortable',['bonitable'])
+  /**
+   * @ngdoc directive
+   * @module bonita.sortable
+   * @name bonita.sortable:boSorter
+   *
+   * @description
+   * Tansforms a table heading into a button reflecting the current state of the sort
+   * (sort upon which **property**, in which **direction**)?
+   *
+   * ## Requirements
+   * To initialiaze the sort properties, you will need to set a ``sort-options`` to the
+   * {@link bonitable.bonitable bonitable}. If you want to be notified each time
+   * the sort have changed just provide a ``on-sort``  event handler to the
+   *  {@link bonitable.bonitable bonitable} directive.
+   *
+   *
+   * @param {String} boSorter the property name on which apply the sort _(optional)_
+   *                          if __bo-sorter__ is empty, it will rely on the id attribute
+   *                          to find the property name
+   *
+   * @example
+    <example module="sorterExample">
+      <file name="index.html">
+        <p>sort called {{count}} times</p>
+        <pre>{{options|json}}</pre>
+        <table bonitable sort-options="options" on-sort="sortHandler()">
+          <thead>
+            <tr>
+              <th bo-sorter="name">name</th>
+              <th bo-sorter="country">country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users | orderBy: options.property : options.direction ">
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('sorterExample', [
+            'ui.bootstrap.tpls',
+            'bonitable',
+            'bonita.templates',
+            'bonita.sortable'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.count = 0;
+            $rootScope.sortHandler = function() {
+              $rootScope.count += 1 ;
+            };
+            $rootScope.options = {
+              property: 'name',
+              direction: false
+            }
+          })
+      </file>
+    </example>
+   */
   .directive('boSorter', function(){
 
     /**
@@ -737,8 +1146,113 @@ angular
   });
 
 'use strict';
+/**
+ *
+ */
+angular.module('bonita.settings', [
+  'ui.bootstrap.dropdown',
+  'ui.bootstrap.buttons'
+  ])
 
-angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.buttons'])
+  /**
+   * @ngdoc directive
+   * @name bonita.settings:tableSettings
+   * @module bonita.settings
+   *
+   * @description
+   *
+   * Table settings create a simple widget to manage table settings.
+   * ## pagination settings
+   * table settings create a small component to choose pageSize.
+   * If you do it on the client side, here how you can achieve it.
+   * simply create this slice filter
+   * ```js
+   * //Create a slice filter
+   * app.filter('slice', function() {
+   *   return function(input, start) {
+   *     start = parseInt(start,10) || 0 ;
+   *     return input.slice(start);
+   *   };
+   * })
+   * ```
+   *and add the slice filter with a limitTo filter on a ng-repeat
+   *``ng-repeat="user in users | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">``
+   *
+   * ## columns visibility
+   * If you provide a columns attributes, the component will also render a list of columns with a checkbox associated to it.
+   * the checlkbox value will represent the column visibility, so you can easily toggle their visibility.
+   *
+   * ## column reordering
+   *
+   * the table-settings component also permit to re-order the columns from the columsn list, using drag and drop.
+   * this behaviour is optionnal, so if you need that feature, you will also need to add a ``<script>`` tag
+   * to include the ng-sortable library (in the bower_components dir, since __ng-sortable__ is as a bower dependency.
+   *
+   * @example
+   *
+   * ```html
+   *     <table bonitable class="table">
+   *       <thead>
+   *         <tr>
+   *           <th colspan="2">
+   *             <table-settings page-size="pageSize" sizes="sizes" columns="columns"></table-settings>
+   *           </th>
+   *         </tr>
+   *         <tr>
+   *           <th ng-repeat="col in columns | filter: col.visible">{{col.name}}</th>
+   *         </tr>
+   *       </thead>
+   *       <tbody>
+   *         <tr ng-repeat="user in users">
+   *           <td ng-repeat="col in columns | filter: col.visible">{{user[col.name]}}</td>
+   *         </tr>
+   *       </tbody>
+   *     </table>
+   * ```
+   * ```javascript
+   *     angular
+   *       .module('settingsExample', [
+   *         'bonitable',
+   *         'bonita.settings',
+   *         'bonita.templates',
+   *         'ui.bootstrap.tpls'
+   *       ])
+   *       .filter('slice', function() {
+   *         return function(input, start) {
+   *           start = parseInt(start,10) || 0 ;
+   *           return input.slice(start);
+   *         };
+   *       })
+   *       .filter('translate', function() {
+   *         return function(input) {
+   *           return input;
+   *         };
+   *       })
+   *       .run(function($rootScope){
+   *         $rootScope.users = [
+   *           {name:'Paul', country:'Uk'},
+   *           {name:'Sarah', country:'Fr'},
+   *           {name:'Jacques', country:'Us'},
+   *           {name:'Joan', country:'Al'},
+   *           {name:'Tite', country:'Jp'},
+   *         ];
+   *         $rootScope.pageSize = 10;
+   *         $rootScope.sizes = [1, 10, 100];
+   *         $rootScope.columns = [{name:'name', visible:true},{name:'country', visible:true}];
+   *       })
+   *  ```
+   *
+   * @param {Array} columns an array of object representing the columns of the table.
+   *                        Each object should have a  ``visible`` property and a ``name`` property
+   *                          The name of these properties is customizable
+   * @param {Array} sizes an array of int, containing the different number of element per pages
+   * @param {int} pageSize the actual number per page value
+   * @param {String} labelProp the name of the property reprensenting the columns name
+   * @param {String} visibleProp the name of the property reprensenting the columns visibility
+   * @param {function} updatePageSize a handler function wich is called each time the pageSize settings changed
+   * @param {function} updateVisibility a handler function wich is called each time o columns visibility changes
+   *
+   */
   .directive('tableSettings', function(){
     // Runs during compile
     return {
@@ -756,6 +1270,10 @@ angular.module('bonita.settings', ['ui.bootstrap.dropdown', 'ui.bootstrap.button
       link: function(scope, elem, attr) {
         scope.visible = attr.visibleProp || 'visible';
         scope.label = attr.labelProp || 'name';
+        scope.isDragging = false;
+
+        scope.sortableOptions = {};
+
       }
     };
   });
@@ -804,22 +1322,26 @@ module.run(['$templateCache', function($templateCache) {
     '        <button class="btn btn-default"\n' +
     '          type="button"\n' +
     '          ng-model="$parent.pageSize" btn-radio="{{::size}}"\n' +
-    '          ng-change="updatePageSize({size:size})" tabindex="0">\n' +
+    '          ng-click="updatePageSize({size:size})" tabindex="0">\n' +
     '          {{size}}\n' +
     '        </button>\n' +
     '      </div>\n' +
     '    </div>\n' +
     '\n' +
     '    <h5 class="bo-TableSettings-title" >{{\'Columns Selection\' | translate}}</h5>\n' +
-    '    <ul class="bo-TableSettings-columns">\n' +
-    '      <li  ng-repeat="field in columns">\n' +
+    '    <ul class="bo-TableSettings-columns bo-Text-disableSelection" as-sortable="sortableOptions" ng-model="columns">\n' +
+    '      <li  ng-repeat="field in columns" as-sortable-item>\n' +
+    '      <div as-sortable-item-handle ng>\n' +
     '      <label\n' +
     '        class="bo-TableSettings-column"\n' +
     '        title="{{::((field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label])}}"\n' +
     '        ng-click="$event.stopPropagation()">\n' +
+    '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
+    '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
     '        <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">\n' +
     '        {{::field[label]}}\n' +
     '      </label>\n' +
+    '      </div>\n' +
     '      </li>\n' +
     '    </ul>\n' +
     '  </div>\n' +
