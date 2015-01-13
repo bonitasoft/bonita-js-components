@@ -5,16 +5,17 @@
 
   describe('Directove: boDropzone', function() {
 
-    var compile, scope, rootScope, $document, $window, boDragUtils;
+    var compile, scope, rootScope, $document, $window, boDragUtils, boDragEvent;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
-      compile     = $injector.get('$compile');
-      $document   = $injector.get('$document');
-      $window     = $injector.get('$window');
-      boDragUtils = $injector.get('boDragUtils');
-      rootScope   = $rootScope;
-      scope       = $rootScope.$new();
+      compile         = $injector.get('$compile');
+      $document       = $injector.get('$document');
+      $window         = $injector.get('$window');
+      boDragUtils     = $injector.get('boDragUtils');
+      boDragEvent     = $injector.get('boDragEvent');
+      rootScope       = $rootScope;
+      scope           = $rootScope.$new();
 
     }));
 
@@ -38,7 +39,7 @@
         spyOn(spyEvent,'boDropSuccess');
         spyOn(spyEvent,'boDragOver');
 
-        dom = compile('<div bo-dropzone bo-drop-success="boDropSuccess" bo-drag-over="boDragOver">bonjour</div>')(scope);
+        dom = compile('<div bo-dropzone bo-drop-success="boDropSuccess($event, $data)" bo-drag-over="boDragOver($event)">bonjour</div>')(scope);
         $document.find('body').append(dom);
         scope.$digest();
       });
@@ -56,40 +57,71 @@
           e.target = dom[0];
           e.dataTransfer = {};
           $document.triggerHandler(e);
-          expect(spyEvent.boDragOver).toHaveBeenCalled();
+          expect(spyEvent.boDragOver).toHaveBeenCalledWith();
         });
 
+
+        it('should be triggered on dragover for originalEvent', function () {
+          var e = angular.element.Event('dragover');
+          e.target = dom[0];
+          e.originalEvent = {dataTransfer: {}};
+          $document.triggerHandler(e);
+          expect(spyEvent.boDragOver).toHaveBeenCalledWith();
+        });
+
+        it('should have the className bo-dropzone-hover', function() {
+          expect(angular.element('.bo-dropzone-hover')[0]).toBeDefined();
+        });
 
         // Do not try to put it at another position. There is some WTF
         it('should be triggered on drop', function () {
 
-          $document.find('body').append('<div id="test"></div>');
           var newScope = rootScope.$new();
           newScope.data = {
             name: 'Yolo'
           };
-          $document.find('body').append('<div id="test"></div>');
-          compile(angular.element(document.getElementById('test')))(newScope);
+          var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+          $document.find('body').append(domDrag);
+          rootScope.$apply();
 
           var e = angular.element.Event('drop');
           e.target = dom[0];
           e.dataTransfer = {
             getData: function() {
-              return 'test';
+              return JSON.stringify({
+                dragItemId: 'test',
+                isDropZoneChild: true
+              });
             }
           };
           $document.triggerHandler(e);
           expect(spyEvent.boDropSuccess).toHaveBeenCalled();
         });
 
-        it('should trigger a drop success', function() {
-          scope.$eval(dom.isolateScope().onDropSuccess)();
-          expect(spyEvent.boDropSuccess).toHaveBeenCalled();
-        });
+        // Do not try to put it at another position. There is some WTF
+        it('should be triggered on drop for originalEvent', function () {
 
-        it('should trigger a dragover success', function() {
-          scope.$eval(dom.isolateScope().onDragOver)();
-          expect(spyEvent.boDragOver).toHaveBeenCalled();
+          var newScope = rootScope.$new();
+          newScope.data = {
+            name: 'Yolo'
+          };
+          var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+          $document.find('body').append(domDrag);
+          rootScope.$apply();
+
+          var e = angular.element.Event('drop');
+          e.target = dom[0];
+          e.originalEvent = {};
+          e.originalEvent.dataTransfer = {
+            getData: function() {
+              return JSON.stringify({
+                dragItemId: 'test',
+                isDropZoneChild: true
+              });
+            }
+          };
+          $document.triggerHandler(e);
+          expect(spyEvent.boDropSuccess).toHaveBeenCalled();
         });
 
         describe('We are not a child of a dropZone', function() {
@@ -99,18 +131,26 @@
           beforeEach(function() {
 
             spyOn(boDragUtils,'generateUniqId').and.returnValue(current);
-            var newScope = rootScope.$new();
-            newScope.data = {
-              name: 'Yolo'
-            };
-            $document.find('body').append('<div id="test"></div>');
-            compile(angular.element(document.getElementById('test')))(newScope);
 
+            var newScope = rootScope.$new();
+
+            boDragEvent.map[current] = {
+              scope: newScope
+            };
+
+            var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+            $document.find('body').append(domDrag);
+            rootScope.$apply();
+
+            dom[0].classList.add('bo-drag-enter');
             var e = angular.element.Event('drop');
             e.target = dom[0];
             e.dataTransfer = {
               getData: function() {
-                return 'test:false';
+                return JSON.stringify({
+                  dragItemId: 'test',
+                  isDropZoneChild: false
+                });
               }
             };
             $document.triggerHandler(e);
@@ -122,6 +162,10 @@
 
           it('should clone the node', function() {
             expect(boDragUtils.generateUniqId).toHaveBeenCalledWith();
+          });
+
+          it('should not have the className bo-dragzone-hover', function() {
+            expect(dom.hasClass('bo-dragzone-hover')).toBe(false);
           });
 
         });
@@ -137,7 +181,16 @@
         expect(dom.hasClass('bo-dropzone-container')).toBeTruthy();
       });
 
+      it('should not have the className bo-dragzone-hover', function() {
+        expect(dom.hasClass('bo-dragzone-hover')).toBe(false);
+      });
+
+      it('should remove a clasName bo-drag-enter', function() {
+        expect(dom[0].classList.contains('bo-drag-enter')).toBe(false);
+      });
+
     });
+
 
   });
 

@@ -2,7 +2,7 @@
 
 /* gulp */
 var gulp = require('gulp');
-var utils   = require('gulp-util');
+var utils = require('gulp-util');
 var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
 var del  = require('del');
@@ -39,7 +39,7 @@ var opt = {
  * Fetch bower dependencies
  */
 gulp.task('bower', function() {
-  bower()
+  return bower()
     .pipe(plumber())
     .pipe(gulp.dest('bower_components'));
 });
@@ -49,18 +49,18 @@ gulp.task('bower', function() {
  * Validate js script
  */
 gulp.task('jshint', function() {
-  gulp.src('src/**/*.js')
+  return gulp.src('src/**/*.js')
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
+    .pipe(utils.env.dist ? jshint.reporter('fail') : utils.noop());
 });
 /**
  * html2js
  * transform templates to a templates.js file
  */
 gulp.task('html2js', function() {
-  gulp.src('src/**/*.html')
+  return gulp.src('src/**/*.html')
     .pipe(plumber())
     .pipe(html2js({
       moduleName: 'bonita.templates',
@@ -75,7 +75,7 @@ gulp.task('html2js', function() {
  * concat generated templates and javascript files
  */
 gulp.task('bundle:js:tpl',['jshint', 'html2js'], function(){
-  gulp.src(['src/**/*.js', 'demo/templates.js'])
+  return gulp.src(['src/**/*.js', 'demo/templates.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
       remove: true,
@@ -87,7 +87,7 @@ gulp.task('bundle:js:tpl',['jshint', 'html2js'], function(){
 });
 
 gulp.task('bundle:js',['jshint'], function(){
-  gulp.src(['src/**/*.js'])
+  return gulp.src(['src/**/*.js'])
     .pipe(plumber())
     .pipe(ngAnnotage({
       remove: true,
@@ -102,16 +102,16 @@ gulp.task('bundle:js',['jshint'], function(){
  * dist
  */
 gulp.task('clean', function(done){
-  del(['dist/', 'demo/'], done);
+  return del(['dist/', 'demo/'], done);
 });
 
 gulp.task('dist:files', ['bundle:js:tpl', 'bundle:js', 'assets:css'], function(){
-  gulp.src(['demo/bonita-lib.js', 'demo/bonita-lib-tpl.js', 'demo/*.css'])
+  return gulp.src(['demo/bonita-lib.js', 'demo/bonita-lib-tpl.js', 'demo/*.css'])
     .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('uglify', ['dist:files'], function(){
-  gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
+  return gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
     .pipe(plumber())
     .pipe(uglify())
     .pipe(rename({ suffix:'.min' }))
@@ -119,7 +119,7 @@ gulp.task('uglify', ['dist:files'], function(){
 });
 
 gulp.task('dist:css', ['dist:files'], function(){
-  gulp.src('dist/*.css')
+  return gulp.src('dist/*.css')
     .pipe(rename({ suffix:'.min' }))
     .pipe(cssmin())
     .pipe(gulp.dest('dist/'));
@@ -130,7 +130,7 @@ gulp.task('dist:css', ['dist:files'], function(){
  * assets
  */
 gulp.task('assets:css', function(){
-  gulp.src('src/**/*.css')
+  return gulp.src('src/**/*.css')
     .pipe(concat('bonita-lib.css'))
     .pipe(autoprefixer({
       browsers: ['last 3 version', 'ie 9']
@@ -139,7 +139,7 @@ gulp.task('assets:css', function(){
 });
 
 gulp.task('assets:html', function(){
-  gulp.src('misc/**/*.html')
+  return gulp.src('misc/**/*.html')
     .pipe(gulp.dest('demo/'));
 });
 gulp.task('assets', ['assets:css', 'assets:html']);
@@ -161,7 +161,7 @@ gulp.task('webserver',['assets'], function() {
  * Launch default browser on local server url
  */
 gulp.task('open', ['webserver'],function() {
-  gulp.src('demo/index.html')
+  return gulp.src('demo/index.html')
     .pipe(browser('', {
       url: 'http://localhost:'+opt.port+'/index.html'
     }));
@@ -204,7 +204,11 @@ gulp.task('tdd', function (done) {
   return test(done, true);
 });
 
-gulp.task('dist', ['clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('env:dist', function() {
+  utils.env.dist = true;
+});
+
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify']);
 gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
