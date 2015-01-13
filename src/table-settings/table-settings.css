@@ -4,7 +4,9 @@
   position: relative;
 }
 
-.bo-TableSettings-content {
+.table[bonitable] .bo-TableSettings-content {
+  min-width: 250px;
+  overflow: visible;
   padding: .5em;
 }
 
@@ -18,15 +20,24 @@
   overflow: auto;
   list-style-type: none;
   padding-left:0;
+  text-align: left
 }
 
-.bo-TableSettings-column {
+/* .bo-TableSettings-column {
   cursor: pointer;
 }
 [as-sortable] .bo-TableSettings-column {
   cursor: inherit;
+} */
+.table[bonitable] .bo-TableSettings-columns {
+  max-height: none;
 }
-
+.table[bonitable] li.as-sortable-placeholder{
+  cursor: grabbing;
+}
+.table[bonitable] div.as-sortable-item-handle, .table[bonitable] div.as-sortable-item-handle label{
+  cursor: grab;
+}
 .bo-Text-disableSelection {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -34,4 +45,24 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+
+.table[bonitable] > thead > tr:nth-child(1) > th{
+  border: none;
+}
+.table[bonitable] > thead > tr:nth-child(2) > th {
+  border-top: none;
+}
+
+.grabHover{
+  visibility: hidden;
+  width: 0.20em;
+  overflow: hidden;
+}
+.table[bonitable] .grabHover + .grabHover{
+  margin-right: 0.3em;
+}
+.table[bonitable] div.as-sortable-item-handle:hover .grabHover, body>.bo-TableSettings-columns .grabHover{
+  visibility: visible;
 }
