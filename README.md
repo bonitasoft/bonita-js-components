@@ -15,8 +15,7 @@ This library also needs angular 1.3 to run properly.
  - [x] bo-repeatable
  - [x] table-settings 
  - [x] drag and drop
- - [ ] Resizeable (see http://bz.var.ru/comp/web/resizable.html )
- - [ ] draggable-columns
+ - [x] draggable-columns (need to add ng-sortable dependency to make it work as it is not imported by default)
 
 ## Available command
 
@@ -27,12 +26,6 @@ This library also needs angular 1.3 to run properly.
  
 ## Todo
 
- - [x] bonitable
- - [x] bonita.sortable
- - [x] bonita.selectable (bo-selectAll, bo-selector)
- - [x] bonita.repeatable (bo-repeatable, repeatable-config)
- - [x] bonita.settings (table-settings) 
- - [x] draggable-columns (within table-settings)
  - [ ] bonita.resizable (see http://bz.var.ru/comp/web/resizable.html )
 
 ## Publishing a new version
