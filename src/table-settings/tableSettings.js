@@ -125,7 +125,9 @@ angular.module('bonita.settings', [
         scope.label = attr.labelProp || 'name';
         scope.isDragging = false;
 
-        scope.sortableOptions = {};
+        scope.sortableOptions = {
+          /*containerPositioning: 'relative'*/
+        };
 
       }
     };
