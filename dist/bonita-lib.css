@@ -42,6 +42,7 @@
   text-align: inherit;
   padding:1px 0;
   white-space: nowrap;
+  text-transform: none !important;
 }
 .bo-SortButton-icon {
   visibility:hidden;
@@ -128,4 +129,7 @@
 }
 .table[bonitable] div.as-sortable-item-handle:hover .grabHover, body>.bo-TableSettings-columns .grabHover{
   visibility: visible;
+}
+.as-sortable-drag {
+    position: relative;
 }

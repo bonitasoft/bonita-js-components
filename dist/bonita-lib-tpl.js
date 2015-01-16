@@ -1316,7 +1316,7 @@ module.run(['$templateCache', function($templateCache) {
     '  </button>\n' +
     '\n' +
     '  <div class="bo-TableSettings-content dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">\n' +
-    '    <h5 class="bo-TableSettings-title" >{{\'Items per page \'| translate}}</h5>\n' +
+    '    <h5 class="bo-TableSettings-title" >{{\'Items per page\'| translate}}</h5>\n' +
     '    <div class="btn-group btn-group-justified" role="group">\n' +
     '      <div class="btn-group" role="group" ng-repeat="size in sizes">\n' +
     '        <button class="btn btn-default"\n' +
@@ -1328,13 +1328,13 @@ module.run(['$templateCache', function($templateCache) {
     '      </div>\n' +
     '    </div>\n' +
     '\n' +
-    '    <h5 class="bo-TableSettings-title" >{{\'Columns Selection\' | translate}}</h5>\n' +
+    '    <h5 class="bo-TableSettings-title" >{{\'Columns selection\' | translate}}</h5>\n' +
     '    <ul class="bo-TableSettings-columns bo-Text-disableSelection" as-sortable="sortableOptions" ng-model="columns">\n' +
     '      <li  ng-repeat="field in columns" as-sortable-item>\n' +
     '      <div as-sortable-item-handle ng>\n' +
     '      <label\n' +
     '        class="bo-TableSettings-column"\n' +
-    '        title="{{::((field.selected ? \'Hide\' : \'Show\') +\' \'+ field[label])}}"\n' +
+    '        title="{{::((field.visible ? \'Hide\' : \'Show\') +\' \'+ field[label]) | translate}}"\n' +
     '        ng-click="$event.stopPropagation()">\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
