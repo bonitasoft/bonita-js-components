@@ -1334,7 +1334,7 @@ module.run(['$templateCache', function($templateCache) {
     '      <div as-sortable-item-handle ng>\n' +
     '      <label\n' +
     '        class="bo-TableSettings-column"\n' +
-    '        title="{{::((field.visible ? \'Hide\' : \'Show\') +\' \'+ field[label]) | translate}}"\n' +
+    '        title="{{((field.visible ? \'Hide\' : \'Show\') +\' \'+ field[label]) | translate}}"\n' +
     '        ng-click="$event.stopPropagation()">\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
