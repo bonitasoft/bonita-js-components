@@ -28,7 +28,7 @@
       <div as-sortable-item-handle ng>
       <label
         class="bo-TableSettings-column"
-        title="{{::((field.visible ? 'Hide' : 'Show') +' '+ field[label]) | translate}}"
+        title="{{((field.visible ? 'Hide' : 'Show') +' '+ field[label]) | translate}}"
         ng-click="$event.stopPropagation()">
         <span class="glyphicon glyphicon-align-justify grabHover"></span>
         <span class="glyphicon glyphicon-align-justify grabHover"></span>
