@@ -66,3 +66,6 @@
 .table[bonitable] div.as-sortable-item-handle:hover .grabHover, body>.bo-TableSettings-columns .grabHover{
   visibility: visible;
 }
+.as-sortable-drag {
+    position: relative;
+}
