@@ -126,7 +126,7 @@ angular.module('bonita.settings', [
         scope.isDragging = false;
 
         scope.sortableOptions = {
-          /*containerPositioning: 'relative'*/
+          containerPositioning: 'absolute'
         };
 
       }
