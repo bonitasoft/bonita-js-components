@@ -16,9 +16,10 @@ module.exports = function(config) {
     files: [
       'test/bind-polyfill.js',
       'bower_components/jquery/dist/jquery.js',
-      'bower_components/angular/*.js',
+      'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      'bower_components/ng-sortable/dist/ng-sortable.js',
       'src/**/*.js',
       'test/**/*.js',
       'src/**/*.html'
