@@ -23,7 +23,7 @@
 
   describe('Directive boDragPolyfill', function() {
 
-    var compile, scope, rootScope, $document, $window, $timeout, dom, boDragEvent;
+    var compile, scope, rootScope, $document, $window, $timeout, dom, boDragEvent, boDragUtils;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
@@ -32,6 +32,7 @@
       $timeout    = $injector.get('$timeout');
       $window     = $injector.get('$window');
       boDragEvent = $injector.get('boDragEvent');
+      boDragUtils = $injector.get('boDragUtils');
       rootScope   = $rootScope;
       scope       = $rootScope.$new();
 
@@ -68,19 +69,19 @@
 
       });
 
-      it('should replace the div to a A if it is IE9', function() {
-        $timeout.flush();
-        expect(dom.find('.item-drag').get(0).nodeName).toBe('A');
-        expect(dom.find('.item-drag[href="#"]').get(0)).toBeDefined();
+      it('should not replace anything if it is IE9', function() {
+        expect(dom.find('.item-drag').get(0).nodeName).toBe('DIV');
       });
 
-      it('should compile for both attr, valid HTML5 or Angular', function() {
+      it('should call the polyfill for IE9', function() {
+        spyOn(boDragUtils, 'polyfillIE');
+        spyOn(document, 'querySelectorAll');
         $timeout.flush();
-        expect(dom.find('.item-drag').get(0).nodeName).toBe('A');
-        expect(dom.find('.item-drag').get(1).nodeName).toBe('A');
-        expect(dom.find('a').length).toBe(2);
+        expect(boDragUtils.polyfillIE).toHaveBeenCalled();
+        expect(document.querySelectorAll).toHaveBeenCalledWith('[bo-draggable], [data-bo-draggable]');
       });
-    });
+
+     });
 
   });
 
