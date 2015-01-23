@@ -231,6 +231,21 @@ angular.module('bonita.dragAndDrop',[])
     this.generateUniqId = function generateUniqId(key) {
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
+
+    /**
+     * Use an API from Microsoft
+     * Thanks to {@link http://stackoverflow.com/questions/5500615/internet-explorer-9-drag-and-drop-dnd}
+     * @param {NodeList}
+     */
+    this.polyfillIE = function polyfillIE(list) {
+      Array.prototype.forEach.call(list, function (el) {
+        angular.element(el).on('selectstart', function(){
+          this.dragDrop();
+          return false;
+        });
+      });
+    };
+
   })
   .directive('boDropzone', ['$document', '$parse', '$compile', 'boDragUtils', 'boDragEvent', 'boDraggableItem', function ($document, $parse, $compile, boDragUtils, boDragEvent, boDraggableItem){
 
@@ -431,7 +446,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   }])
-  .directive('boDragPolyfill', ['$window', '$timeout', '$rootScope', '$compile', 'boDragEvent', function ($window, $timeout, $rootScope, $compile, boDragEvent) {
+  .directive('boDragPolyfill', ['$window', '$timeout', 'boDragUtils', function ($window, $timeout, boDragUtils) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -442,49 +457,16 @@ angular.module('bonita.dragAndDrop',[])
      */
     'use strict';
 
-    /**
-     * Replace all node for IE9
-     * And attach their scope
-     * @param  {nodeList} list
-     * @return {void}
-     */
-    function replaceNode(list) {
-
-      var scope, newScope;
-      Array.prototype.forEach.call(list, function (el) {
-
-        // Find data for the draggable directive and copy it
-        scope         = boDragEvent.map[el.id].scope.data;
-        newScope      = $rootScope.$new(true, boDragEvent.map[el.id].scope);
-        newScope.data = scope;
-
-        // IE, where the WTF is real
-        var nodeA = document.createElement('A');
-        // Duplicate attributes
-        [].forEach.call(el.attributes, function (attr) {
-          nodeA.setAttribute(attr.name,attr.value);
-        });
-
-        nodeA.innerHTML = el.innerHTML;
-        nodeA.href = '#';
-        el.parentNode.replaceChild(nodeA,el);
-        $compile(angular.element(nodeA))(newScope);
-      });
-    }
-
     return {
       type: 'EA',
       link: function link() {
-        // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
+
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
 
           // run the polyfill after the digest, because some directive can be bind, so compile cannot see them
           $timeout(function() {
-            var elmts = document.querySelectorAll('[bo-draggable]'),
-                elmts2 = document.querySelectorAll('[data-bo-draggable]');
-            replaceNode(elmts);
-            replaceNode(elmts2);
-          });
+            boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+          },100);
 
         }
       }
@@ -1334,7 +1316,7 @@ module.run(['$templateCache', function($templateCache) {
     '      <div as-sortable-item-handle ng>\n' +
     '      <label\n' +
     '        class="bo-TableSettings-column"\n' +
-    '        title="{{::((field.visible ? \'Hide\' : \'Show\') +\' \'+ field[label]) | translate}}"\n' +
+    '        title="{{((field.visible ? \'Hide\' : \'Show\') +\' \'+ field[label]) | translate}}"\n' +
     '        ng-click="$event.stopPropagation()">\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
     '        <span class="glyphicon glyphicon-align-justify grabHover"></span>\n' +
