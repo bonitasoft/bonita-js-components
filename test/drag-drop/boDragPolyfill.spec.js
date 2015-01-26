@@ -36,6 +36,9 @@
       rootScope   = $rootScope;
       scope       = $rootScope.$new();
 
+      spyOn($document, 'on').and.callThrough();
+
+
       /**
        * Mock scope to prevent the error with event listener:
        * TypeError: 'undefined' is not an object (evaluating 'current.$$listenerCount[name]')
@@ -66,7 +69,22 @@
         dom = compile('<aside class="container-siderbar" bo-drag-polyfill><div class="item-drag" bo-draggable id="test">test</div><div class="item-drag" data-bo-draggable id="lol"></aside>')(scope);
         angular.element(document.body).append(dom);
         scope.$apply();
+      });
 
+      afterEach(function() {
+        $document.off('drop');
+      });
+
+      it('should listen to drop event', function () {
+        spyOn(boDragUtils, 'polyfillIE');
+        spyOn(document, 'querySelectorAll');
+        var e = angular.element.Event('drop');
+        e.target = dom[0];
+        e.dataTransfer = {};
+        $document.triggerHandler(e);
+        $timeout.flush();
+        expect(boDragUtils.polyfillIE).toHaveBeenCalled();
+        expect(document.querySelectorAll).toHaveBeenCalledWith('[bo-draggable], [data-bo-draggable]');
       });
 
       it('should not replace anything if it is IE9', function() {
