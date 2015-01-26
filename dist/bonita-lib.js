@@ -446,7 +446,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   }])
-  .directive('boDragPolyfill', ['$window', '$timeout', 'boDragUtils', function ($window, $timeout, boDragUtils) {
+  .directive('boDragPolyfill', ['$window', '$document', '$timeout', 'boDragUtils', function ($window, $document, $timeout, boDragUtils) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -456,6 +456,16 @@ angular.module('bonita.dragAndDrop',[])
      * Because angular create a fragment, and a fragment does not have any parents, so we cannot replace the old node by a polyfill.
      */
     'use strict';
+
+    // After a drop action, we reload the polyfill for new item
+    if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
+      $document.on('drop', function (e) {
+        e.preventDefault(); // allows us to drop
+        $timeout(function() {
+          boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+        },100);
+      });
+    }
 
     return {
       type: 'EA',
