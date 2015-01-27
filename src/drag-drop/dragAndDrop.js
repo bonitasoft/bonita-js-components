@@ -64,21 +64,51 @@ angular.module('bonita.dragAndDrop',[])
         DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
         CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
-    // Add a delegate for event detection. One event to rule them all
-    $document.on('dragover', function (e) {
-      e.preventDefault(); // allows us to drop
+    // Register some callback for the directive
+    var eventMap = {},
+        DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
+        DRAGITEM_OWN_DROPZONE    = boDragEvent.events.DRAGITEM_OWN_DROPZONE,
+        CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
+
+    $document.on('dragenter', function (e) {
+
+      var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
+          .element('#' + boDragEvent.currentDragItemId)
+          .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']').get(0);
+
+      var dropZoneInsideDragItem = !!angular
+          .element('#' + boDragEvent.currentDragItemId)
+          .find('[data-drop-id='+e.target.dataset.dropId+']').get(0);
+
+      angular
+        .element(document.querySelectorAll(DRAGITEM_OWN_DROPZONE))
+        .removeClass(DRAGITEM_OWN_DROPZONE);
+
+      // If we found a dropZone child of this dragItem
+      if( !dropZoneInsideAnotherDragItemBetweenDragItem && dropZoneInsideDragItem) {
+        e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
+      }
+
 
       // Remove all other dropZone with the className
       angular
-        .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
+        .element(document.querySelectorAll(DROPZONE_CLASSNAME_HOVER))
         .removeClass(DROPZONE_CLASSNAME_HOVER);
+
+      if(e.target.hasAttribute('data-drop-id')) {
+        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
+      }
+    });
+
+    // Add a delegate for event detection. One event to rule them all
+    $document.on('dragover', function (e) {
+      e.preventDefault(); // allows us to drop
 
       if(e.target.hasAttribute('data-drop-id')) {
 
         // IE9 does not know dataset :/
         var dragElmId = e.target.getAttribute('data-drop-id');
 
-        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
         eventMap[dragElmId].onDragOver(eventMap[dragElmId].scope, {$event: e});
         (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
 
@@ -179,6 +209,7 @@ angular.module('bonita.dragAndDrop',[])
       map: eventMap,
       events: {
         DROPZONE_CLASSNAME_HOVER: 'bo-dropzone-hover',
+        DRAGITEM_OWN_DROPZONE: 'bo-drag-dropzone-child',
         CLASSNAME_DRAG_HOVER: 'bo-drag-enter'
       },
       /**
@@ -206,6 +237,9 @@ angular.module('bonita.dragAndDrop',[])
         dragItemId      : target.id,
         isDropZoneChild : target.parentElement.hasAttribute('data-drop-id')
       }));
+
+      // Cache for the current id as the event seems to not be fast enougth
+      boDragEvent.currentDragItemId = target.id;
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
