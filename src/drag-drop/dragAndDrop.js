@@ -72,30 +72,30 @@ angular.module('bonita.dragAndDrop',[])
 
     $document.on('dragenter', function (e) {
 
-      var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
-          .element('#' + boDragEvent.currentDragItemId)
-          .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']').get(0);
-
-      var dropZoneInsideDragItem = !!angular
-          .element('#' + boDragEvent.currentDragItemId)
-          .find('[data-drop-id='+e.target.dataset.dropId+']').get(0);
-
-      angular
-        .element(document.querySelectorAll(DRAGITEM_OWN_DROPZONE))
-        .removeClass(DRAGITEM_OWN_DROPZONE);
-
-      // If we found a dropZone child of this dragItem
-      if( !dropZoneInsideAnotherDragItemBetweenDragItem && dropZoneInsideDragItem) {
-        e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
-      }
-
-
-      // Remove all other dropZone with the className
-      angular
-        .element(document.querySelectorAll(DROPZONE_CLASSNAME_HOVER))
-        .removeClass(DROPZONE_CLASSNAME_HOVER);
-
       if(e.target.hasAttribute('data-drop-id')) {
+
+        var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
+            .element('#' + boDragEvent.currentDragItemId)
+            .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']').get(0);
+
+        var dropZoneInsideDragItem = !!angular
+            .element('#' + boDragEvent.currentDragItemId)
+            .find('[data-drop-id='+e.target.dataset.dropId+']').get(0);
+
+        angular
+          .element(document.querySelectorAll('.' + DRAGITEM_OWN_DROPZONE))
+          .removeClass(DRAGITEM_OWN_DROPZONE);
+
+        // If we found a dropZone child of this dragItem
+        if( !dropZoneInsideAnotherDragItemBetweenDragItem && dropZoneInsideDragItem) {
+          e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
+        }
+
+        // Remove all other dropZone with the className
+        angular
+          .element(document.querySelectorAll('.' +  DROPZONE_CLASSNAME_HOVER))
+          .removeClass(DROPZONE_CLASSNAME_HOVER);
+
         e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
       }
     });
