@@ -7,7 +7,7 @@
 
   describe('Directove: boDropzone', function() {
 
-    var compile, scope, rootScope, $document, $window, boDragUtils, boDragEvent;
+    var compile, scope, rootScope, $document, $window, boDragUtils, boDragEvent, boDraggableItem;
 
     beforeEach(inject(function ($injector, $rootScope) {
 
@@ -15,6 +15,7 @@
       $document       = $injector.get('$document');
       $window         = $injector.get('$window');
       boDragUtils     = $injector.get('boDragUtils');
+      boDraggableItem = $injector.get('boDraggableItem');
       boDragEvent     = $injector.get('boDragEvent');
       rootScope       = $rootScope;
       scope           = $rootScope.$new();
@@ -171,6 +172,57 @@
           });
           expect(spyEvent.boDropSuccess).toHaveBeenCalled();
         });
+
+
+        describe('Remove or not a className on the body if we need', function() {
+
+          it('should call boDraggableItem.setBodyClass', function() {
+            spyOn(boDraggableItem, 'setBodyClass');
+            var newScope = rootScope.$new();
+            newScope.data = {
+              name: 'Yolo'
+            };
+            var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+            $document.find('body').append(domDrag);
+            rootScope.$apply();
+
+            triggerEvent('drop', dom[0], {
+              getData: function() {
+                return JSON.stringify({
+                  dragItemId: 'test',
+                  isDropZoneChild: true
+                });
+              }
+            });
+            expect(boDraggableItem.setBodyClass).toHaveBeenCalled();
+          });
+
+          it('should remove the body class action if we allowed it', function() {
+            document.body.className = 'bo-drag-action';
+            boDraggableItem.setBodyClass = function() {
+              return true;
+            };
+            var newScope = rootScope.$new();
+            newScope.data = {
+              name: 'Yolo'
+            };
+            var domDrag = compile('<div id="test" bo-draggable bo-draggable-data="data"></div>')(newScope);
+            $document.find('body').append(domDrag);
+            rootScope.$apply();
+            triggerEvent('drop', dom[0], {
+              getData: function() {
+                return JSON.stringify({
+                  dragItemId: 'test',
+                  isDropZoneChild: true
+                });
+              }
+            });
+
+            expect(document.body.classList.contains('bo-drag-action')).toBe(false);
+          });
+
+        });
+
 
         describe('We are not a child of a dropZone', function() {
 
