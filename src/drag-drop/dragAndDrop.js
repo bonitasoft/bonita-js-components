@@ -62,11 +62,6 @@ angular.module('bonita.dragAndDrop',[])
     // Register some callback for the directive
     var eventMap = {},
         DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
-        CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
-
-    // Register some callback for the directive
-    var eventMap = {},
-        DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
         DRAGITEM_OWN_DROPZONE    = boDragEvent.events.DRAGITEM_OWN_DROPZONE,
         CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
 
@@ -75,19 +70,19 @@ angular.module('bonita.dragAndDrop',[])
       if(e.target.hasAttribute('data-drop-id')) {
 
         var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
-            .element('#' + boDragEvent.currentDragItemId)
-            .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']').get(0);
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']').get(0);
 
         var dropZoneInsideDragItem = !!angular
-            .element('#' + boDragEvent.currentDragItemId)
-            .find('[data-drop-id='+e.target.dataset.dropId+']').get(0);
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[data-drop-id='+e.target.dataset.dropId+']').get(0);
 
         angular
           .element(document.querySelectorAll('.' + DRAGITEM_OWN_DROPZONE))
           .removeClass(DRAGITEM_OWN_DROPZONE);
 
-        // If we found a dropZone child of this dragItem
-        if( !dropZoneInsideAnotherDragItemBetweenDragItem && dropZoneInsideDragItem) {
+        // Check if the dropZone is not inside the current dragged item
+        if(dropZoneInsideAnotherDragItemBetweenDragItem || dropZoneInsideDragItem) {
           e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
         }
 
@@ -99,6 +94,7 @@ angular.module('bonita.dragAndDrop',[])
         e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
       }
     });
+
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragover', function (e) {
@@ -170,7 +166,7 @@ angular.module('bonita.dragAndDrop',[])
             .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
             .removeClass(DROPZONE_CLASSNAME_HOVER);
 
-            angular
+          angular
             .element(document.getElementsByClassName(CLASSNAME_DRAG_HOVER))
             .removeClass(CLASSNAME_DRAG_HOVER);
 
