@@ -4,7 +4,8 @@ angular.module('bonita.dragAndDrop',[])
     'use strict';
 
     var defaultConfig = {
-      cloneOnDrop: true
+      cloneOnDrop: true,
+      bodyClass: false
     };
 
     /**
@@ -17,6 +18,10 @@ angular.module('bonita.dragAndDrop',[])
       defaultConfig.cloneOnDrop = allowClone;
     };
 
+    this.activeBodyClassName = function activeBodyClassName(activeClassName) {
+      defaultConfig.bodyClass = activeClassName;
+    };
+
     this.$get = function() {
       return {
         config: function config() {
@@ -24,6 +29,9 @@ angular.module('bonita.dragAndDrop',[])
         },
         allowCloneOnDrop: function allowCloneOnDrop() {
           return this.config().cloneOnDrop || false;
+        },
+        setBodyClass: function setBodyClass() {
+          return !!this.config().bodyClass;
         }
       };
     };
@@ -116,6 +124,11 @@ angular.module('bonita.dragAndDrop',[])
     // Add a delegate for event detection. One event to rule them all
     $document.on('drop', function (e) {
       e.preventDefault(); // allows us to drop
+
+      // Remove ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).removeClass('bo-drag-action');
+      }
 
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
@@ -220,7 +233,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', function ($document, $parse, boDragEvent, boDragUtils){
+  .directive('boDraggable', function ($document, $parse, boDragEvent, boDragUtils, boDraggableItem){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
@@ -228,6 +241,11 @@ angular.module('bonita.dragAndDrop',[])
 
       var target     = e.target,
           eventData  = (e.dataTransfer || e.originalEvent.dataTransfer);
+
+      // Add a ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).addClass('bo-drag-action');
+      }
 
       eventData.effectAllowed = 'copy';
       eventData.setData('Text', JSON.stringify({

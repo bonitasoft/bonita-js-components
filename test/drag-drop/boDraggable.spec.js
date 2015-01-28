@@ -20,7 +20,7 @@
 
   describe('Directive boDraggable', function() {
 
-    var compile, scope, rootScope, $document, $window, boDragEvent;
+    var compile, scope, rootScope, $document, $window, boDragEvent, boDraggableItem;
     var dom, spyEvent = {
       boDragStart: jasmine.any(Function),
     };
@@ -30,6 +30,7 @@
       compile         = $injector.get('$compile');
       $document       = $injector.get('$document');
       $window         = $injector.get('$window');
+      boDraggableItem = $injector.get('boDraggableItem');
       boDragEvent     = $injector.get('boDragEvent');
       rootScope       = $rootScope;
       scope           = $rootScope.$new();
@@ -50,6 +51,7 @@
       };
 
       spyOn(spyEvent,'boDragStart');
+      spyOn(boDraggableItem, 'setBodyClass');
 
       dom = compile('<div class="item-drag" bo-draggable bo-draggable-data="informations" bo-drag-start="boDragStart()">test</div>')(scope);
       scope.$apply();
@@ -79,7 +81,7 @@
 
       var e;
 
-      beforeEach(function() {
+      function triggerEvent() {
         e = angular.element.Event('dragstart');
         e.target = dom[0];
         e.dataTransfer = {
@@ -87,13 +89,34 @@
         };
         spyOn(e.dataTransfer,'setData');
         $document.triggerHandler(e);
+      }
+
+      it('should call boDraggableItem.setBodyClass', function() {
+        triggerEvent();
+        expect(boDraggableItem.setBodyClass).toHaveBeenCalled();
+      });
+
+      it('should not add a class aaction to the body if the provider is not configured', function() {
+        triggerEvent();
+        expect(document.body.classList.contains('bo-drag-action')).toBe(false);
+      });
+
+      it('should add an action class if the provider is configured', function() {
+        boDraggableItem.setBodyClass = function() {
+          return true;
+        };
+        expect(document.body.classList.contains('bo-drag-action')).toBe(false);
+        triggerEvent();
+        expect(document.body.classList.contains('bo-drag-action')).toBe(true);
       });
 
       it('should trigger the callback onDragStart', function() {
+        triggerEvent();
         expect(spyEvent.boDragStart).toHaveBeenCalled();
       });
 
       it('should record some informations inside dataTransfer as a String', function() {
+        triggerEvent();
         var dataEvent = {
           dragItemId: dom[0].id,
           isDropZoneChild: false
@@ -102,6 +125,7 @@
       });
 
       it('should set the dataTransfer effectAllowed to copy', function() {
+        triggerEvent();
         expect(e.dataTransfer.effectAllowed).toBe('copy');
       });
 

@@ -23,6 +23,9 @@
       it('should enable the copy of a node on drop', function() {
         expect(service.allowCloneOnDrop()).toBe(true);
       });
+      it('should enable disable the bodyClass action', function() {
+        expect(service.setBodyClass()).toBe(false);
+      });
 
     });
 
@@ -40,6 +43,24 @@
 
       it('should disable the copy of a node on drop', function() {
         expect(service.allowCloneOnDrop()).toBe(false);
+      });
+
+    });
+
+
+    describe('Disable the body Class Action on setup', function() {
+
+      beforeEach(module('bonita.dragAndDrop', function (boDraggableItemProvider) {
+        expect(boDraggableItemProvider.activeBodyClassName).toBeDefined();
+        boDraggableItemProvider.activeBodyClassName(true);
+      }));
+
+      beforeEach(inject(function ($injector) {
+        service = $injector.get('boDraggableItem');
+      }));
+
+      it('should not add active the bodyClass', function() {
+        expect(service.setBodyClass()).toBe(true);
       });
 
     });
