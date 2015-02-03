@@ -3,7 +3,7 @@
  * @ngdoc overview
  * @name bonitable
  */
-angular.module('bonitable', [])
+angular.module('org.bonitasoft.bonitable', [])
   .controller('BonitableController', function($scope){
 
     /* bo-sortable */
@@ -139,10 +139,10 @@ angular.module('bonitable', [])
         angular
           .module('bonitableExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.templates',
-            'bonita.sortable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.sortable',
+            'org.bonitasoft.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
