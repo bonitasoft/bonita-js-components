@@ -4,7 +4,7 @@ describe('Factory boDragEvent', function() {
 
   var factory;
 
-  beforeEach(module('bonita.dragAndDrop'));
+  beforeEach(module('org.bonitasoft.dragAndDrop'));
 
   describe('There is an eventMap', function() {
 

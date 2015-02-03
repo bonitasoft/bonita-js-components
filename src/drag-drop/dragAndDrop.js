@@ -1,4 +1,4 @@
-angular.module('bonita.dragAndDrop',[])
+angular.module('org.bonitasoft.dragAndDrop',[])
   .provider('boDraggableItem', function() {
 
     'use strict';
