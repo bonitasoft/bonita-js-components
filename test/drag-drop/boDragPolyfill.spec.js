@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  beforeEach(module('bonita.dragAndDrop', function ($provide) {
+  beforeEach(module('org.bonitasoft.dragAndDrop', function ($provide) {
     // Mock EventMap
     $provide.decorator('boDragEvent', function ($delegate) {
       $delegate.map = {

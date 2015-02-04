@@ -3,7 +3,7 @@
 
   var triggerEvent;
 
-  beforeEach(module('bonita.dragAndDrop'));
+  beforeEach(module('org.bonitasoft.dragAndDrop'));
 
   describe('Directove: boDropzone', function() {
 
