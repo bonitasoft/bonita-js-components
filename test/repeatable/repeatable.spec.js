@@ -1,8 +1,8 @@
 describe('repeatable', function(){
 
-  beforeEach(module('bonitable'));
-  beforeEach(module('bonita.repeatable'));
-  beforeEach(module('bonita.templates'));
+  beforeEach(module('org.bonitasoft.bonitable'));
+  beforeEach(module('org.bonitasoft.bonitable.repeatable'));
+  beforeEach(module('org.bonitasoft.templates'));
 
   beforeEach(inject(function($httpBackend){
     $httpBackend.whenGET(/^template/).respond('');

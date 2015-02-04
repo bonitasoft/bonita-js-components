@@ -7,7 +7,7 @@
 
     describe('Default setup', function() {
 
-      beforeEach(module('bonita.dragAndDrop'));
+      beforeEach(module('org.bonitasoft.dragAndDrop'));
 
       beforeEach(inject(function ($injector) {
         service = $injector.get('boDraggableItem');
@@ -32,7 +32,7 @@
 
     describe('Disable clone node setup', function() {
 
-      beforeEach(module('bonita.dragAndDrop', function (boDraggableItemProvider) {
+      beforeEach(module('org.bonitasoft.dragAndDrop', function (boDraggableItemProvider) {
         expect(boDraggableItemProvider.cloneOnDrop).toBeDefined();
         boDraggableItemProvider.cloneOnDrop(false);
       }));
@@ -50,7 +50,7 @@
 
     describe('Disable the body Class Action on setup', function() {
 
-      beforeEach(module('bonita.dragAndDrop', function (boDraggableItemProvider) {
+      beforeEach(module('org.bonitasoft.dragAndDrop', function (boDraggableItemProvider) {
         expect(boDraggableItemProvider.activeBodyClassName).toBeDefined();
         boDraggableItemProvider.activeBodyClassName(true);
       }));
