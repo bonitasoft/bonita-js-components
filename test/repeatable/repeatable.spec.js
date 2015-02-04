@@ -1,7 +1,7 @@
 describe('repeatable', function(){
 
   beforeEach(module('org.bonitasoft.bonitable'));
-  beforeEach(module('org.bonitasoft.repeatable'));
+  beforeEach(module('org.bonitasoft.bonitable.repeatable'));
   beforeEach(module('org.bonitasoft.templates'));
 
   beforeEach(inject(function($httpBackend){

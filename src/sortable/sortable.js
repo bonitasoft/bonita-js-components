@@ -1,5 +1,5 @@
 angular
-  .module('org.bonitasoft.sortable',['org.bonitasoft.bonitable'])
+  .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @module bonita.sortable
@@ -46,7 +46,7 @@ angular
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
             'org.bonitasoft.templates',
-            'org.bonitasoft.sortable'
+            'org.bonitasoft.bonitable.sortable'
           ])
           .run(function($rootScope){
             $rootScope.users = [

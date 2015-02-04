@@ -2,7 +2,7 @@
 /**
  *
  */
-angular.module('org.bonitasoft.settings', [
+angular.module('org.bonitasoft.bonitable.settings', [
   'ui.bootstrap.dropdown',
   'ui.bootstrap.buttons'
   ])
@@ -66,7 +66,7 @@ angular.module('org.bonitasoft.settings', [
    *     angular
    *       .module('settingsExample', [
    *         'org.bonitasoft.bonitable',
-   *         'org.bonitasoft.settings',
+   *         'org.bonitasoft.bonitable.settings',
    *         'org.bonitasoft.templates',
    *         'ui.bootstrap.tpls'
    *       ])
