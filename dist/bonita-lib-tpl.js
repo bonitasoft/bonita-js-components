@@ -3,7 +3,7 @@
  * @ngdoc overview
  * @name bonitable
  */
-angular.module('bonitable', [])
+angular.module('org.bonitasoft.bonitable', [])
   .controller('BonitableController', ['$scope', function($scope){
 
     /* bo-sortable */
@@ -139,10 +139,10 @@ angular.module('bonitable', [])
         angular
           .module('bonitableExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.templates',
-            'bonita.sortable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.sortable',
+            'org.bonitasoft.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -190,7 +190,7 @@ angular.module('bonitable', [])
     };
   });
 
-angular.module('bonita.dragAndDrop',[])
+angular.module('org.bonitasoft.dragAndDrop',[])
   .provider('boDraggableItem', function() {
 
     'use strict';
@@ -536,7 +536,7 @@ angular.module('bonita.dragAndDrop',[])
 /* jshint sub:true*/
 (function () {
   'use strict';
-  angular.module('org.bonita.services.topurl', [])
+  angular.module('org.bonitasoft.services.topurl', [])
     .service('manageTopUrl', ['$window', function ($window) {
       var manageTopUrlService = {};
       manageTopUrlService.getCurrentPageToken = function() {
@@ -610,7 +610,7 @@ angular.module('bonita.dragAndDrop',[])
 })();
 
 angular
-  .module('bonita.selectable',['bonitable'])
+  .module('org.bonitasoft.selectable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @name bonita.selectable:boSelectall
@@ -661,8 +661,8 @@ angular
         angular
           .module('selectableExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -745,8 +745,8 @@ angular
         angular
           .module('selectorExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -800,7 +800,7 @@ angular
   });
 
 angular
-  .module('bonita.repeatable', ['bonitable'])
+  .module('org.bonitasoft.repeatable', ['org.bonitasoft.bonitable'])
   .service('domAttributes', function(){
     this.copy = function(source, destination, needRemove) {
       [].slice.call(source.attributes).forEach(function (attr) {
@@ -877,9 +877,9 @@ angular
    * ```javascript
    *   angular
    *     .module('boRepeaterExample', [
-   *       'bonitable',
-   *       'bonita.repeatable',
-   *       'bonita.templates'
+   *       'org.bonitasoft.bonitable',
+   *       'org.bonitasoft.repeatable',
+   *       'org.bonitasoft.templates'
    *     ])
    *     .run(function($scope){
    *       $scope.users = [
@@ -1019,9 +1019,9 @@ angular
       <file name="script.js">
         angular
           .module('boRepeatConfigExample', [
-            'bonitable',
-            'bonita.repeatable',
-            'bonita.templates'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.repeatable',
+            'org.bonitasoft.templates'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -1057,7 +1057,7 @@ angular
   });
 
 angular
-  .module('bonita.sortable',['bonitable'])
+  .module('org.bonitasoft.sortable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @module bonita.sortable
@@ -1102,9 +1102,9 @@ angular
         angular
           .module('sorterExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.templates',
-            'bonita.sortable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.sortable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -1190,7 +1190,7 @@ angular
 /**
  *
  */
-angular.module('bonita.settings', [
+angular.module('org.bonitasoft.settings', [
   'ui.bootstrap.dropdown',
   'ui.bootstrap.buttons'
   ])
@@ -1253,9 +1253,9 @@ angular.module('bonita.settings', [
    * ```javascript
    *     angular
    *       .module('settingsExample', [
-   *         'bonitable',
-   *         'bonita.settings',
-   *         'bonita.templates',
+   *         'org.bonitasoft.bonitable',
+   *         'org.bonitasoft.settings',
+   *         'org.bonitasoft.templates',
    *         'ui.bootstrap.tpls'
    *       ])
    *       .filter('slice', function() {
@@ -1321,9 +1321,9 @@ angular.module('bonita.settings', [
 
 (function(module) {
 try {
-  module = angular.module('bonita.templates');
+  module = angular.module('org.bonitasoft.templates');
 } catch (e) {
-  module = angular.module('bonita.templates', []);
+  module = angular.module('org.bonitasoft.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('template/sortable/sorter.tpl.html',
@@ -1339,9 +1339,9 @@ module.run(['$templateCache', function($templateCache) {
 
 (function(module) {
 try {
-  module = angular.module('bonita.templates');
+  module = angular.module('org.bonitasoft.templates');
 } catch (e) {
-  module = angular.module('bonita.templates', []);
+  module = angular.module('org.bonitasoft.templates', []);
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('template/table-settings/tableSettings.tpl.html',
