@@ -141,8 +141,8 @@ angular.module('org.bonitasoft.bonitable', [])
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
             'org.bonitasoft.templates',
-            'org.bonitasoft.sortable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.sortable',
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [

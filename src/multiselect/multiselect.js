@@ -1,5 +1,5 @@
 angular
-  .module('org.bonitasoft.selectable',['org.bonitasoft.bonitable'])
+  .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @name bonita.selectable:boSelectall
@@ -51,7 +51,7 @@ angular
           .module('selectableExample', [
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -135,7 +135,7 @@ angular
           .module('selectorExample', [
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [

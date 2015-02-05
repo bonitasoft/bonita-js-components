@@ -23,7 +23,7 @@ describe('TableSettings', function(){
 
 
   beforeEach(module('org.bonitasoft.bonitable'));
-  beforeEach(module('org.bonitasoft.settings'));
+  beforeEach(module('org.bonitasoft.bonitable.settings'));
   beforeEach(module('org.bonitasoft.templates'));
 
   beforeEach(module(function($filterProvider){

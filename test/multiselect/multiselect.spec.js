@@ -7,7 +7,7 @@ describe('multiselect directive', function(){
   var tags =  tags = [{label:'blue'},{label:'red'}, {label:'green'}];
 
   beforeEach(module('org.bonitasoft.bonitable'));
-  beforeEach(module('org.bonitasoft.selectable'));
+  beforeEach(module('org.bonitasoft.bonitable.selectable'));
   beforeEach(module('org.bonitasoft.templates'));
 
   beforeEach(inject(function($rootScope, $compile, $httpBackend, $document) {
