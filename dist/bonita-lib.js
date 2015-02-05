@@ -141,8 +141,8 @@ angular.module('org.bonitasoft.bonitable', [])
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
             'org.bonitasoft.templates',
-            'org.bonitasoft.sortable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.sortable',
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -610,7 +610,7 @@ angular.module('org.bonitasoft.dragAndDrop',[])
 })();
 
 angular
-  .module('org.bonitasoft.selectable',['org.bonitasoft.bonitable'])
+  .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @name bonita.selectable:boSelectall
@@ -662,7 +662,7 @@ angular
           .module('selectableExample', [
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -746,7 +746,7 @@ angular
           .module('selectorExample', [
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
-            'org.bonitasoft.selectable'
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -800,7 +800,7 @@ angular
   });
 
 angular
-  .module('org.bonitasoft.repeatable', ['org.bonitasoft.bonitable'])
+  .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
   .service('domAttributes', function(){
     this.copy = function(source, destination, needRemove) {
       [].slice.call(source.attributes).forEach(function (attr) {
@@ -878,7 +878,7 @@ angular
    *   angular
    *     .module('boRepeaterExample', [
    *       'org.bonitasoft.bonitable',
-   *       'org.bonitasoft.repeatable',
+   *       'org.bonitasoft.bonitable.repeatable',
    *       'org.bonitasoft.templates'
    *     ])
    *     .run(function($scope){
@@ -1020,7 +1020,7 @@ angular
         angular
           .module('boRepeatConfigExample', [
             'org.bonitasoft.bonitable',
-            'org.bonitasoft.repeatable',
+            'org.bonitasoft.bonitable.repeatable',
             'org.bonitasoft.templates'
           ])
           .run(function($rootScope){
@@ -1057,7 +1057,7 @@ angular
   });
 
 angular
-  .module('org.bonitasoft.sortable',['org.bonitasoft.bonitable'])
+  .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @module bonita.sortable
@@ -1104,7 +1104,7 @@ angular
             'ui.bootstrap.tpls',
             'org.bonitasoft.bonitable',
             'org.bonitasoft.templates',
-            'org.bonitasoft.sortable'
+            'org.bonitasoft.bonitable.sortable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -1190,7 +1190,7 @@ angular
 /**
  *
  */
-angular.module('org.bonitasoft.settings', [
+angular.module('org.bonitasoft.bonitable.settings', [
   'ui.bootstrap.dropdown',
   'ui.bootstrap.buttons'
   ])
@@ -1254,7 +1254,7 @@ angular.module('org.bonitasoft.settings', [
    *     angular
    *       .module('settingsExample', [
    *         'org.bonitasoft.bonitable',
-   *         'org.bonitasoft.settings',
+   *         'org.bonitasoft.bonitable.settings',
    *         'org.bonitasoft.templates',
    *         'ui.bootstrap.tpls'
    *       ])
