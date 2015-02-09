@@ -79,11 +79,11 @@ angular.module('org.bonitasoft.dragAndDrop',[])
 
         var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
               .element('#' + boDragEvent.currentDragItemId)
-              .find('[draggable] [data-drop-id='+e.target.dataset.dropId+']')[0];
+              .find('[draggable] [data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
 
         var dropZoneInsideDragItem = !!angular
               .element('#' + boDragEvent.currentDragItemId)
-              .find('[data-drop-id='+e.target.dataset.dropId+']')[0];
+              .find('[data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
 
 
         angular
