@@ -41,6 +41,7 @@ Create draggable items and as many dropzone you wish.
 These directives can add some classNames to the dom for some events:
 - **bo-dropzone-hover**: When you are hover a dropZone
 - **bo-drag-enter**: When you hover an element
+- **bo-drag-dropzone-child**: When the current dropzone is inside or the current dragged item
 
 Ex: One col and two dropzones.
 ```html
