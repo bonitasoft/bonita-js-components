@@ -254,6 +254,22 @@ angular.module('org.bonitasoft.dragAndDrop',[])
       });
     };
 
+    /**
+     * Try to find the node that initiate the dragEvent
+     * @param  {Node} node the event.target node
+     * @return {Node}      the found node or null
+     */
+    this.getDragInitiatorNode = function getDragInitiatorNode(node) {
+      var currentNode = node;
+      while(currentNode.parentNode) {
+        if (currentNode.getAttribute('draggable') === 'true') {
+          return currentNode;
+        }
+        currentNode = currentNode.parentNode;
+      }
+      return null;
+    };
+
   })
   .directive('boDropzone', ['$document', '$parse', '$compile', 'boDragUtils', 'boDragEvent', 'boDraggableItem', function ($document, $parse, $compile, boDragUtils, boDragEvent, boDraggableItem){
 
@@ -431,7 +447,7 @@ angular.module('org.bonitasoft.dragAndDrop',[])
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
-      var target     = e.target,
+      var target     = boDragUtils.getDragInitiatorNode(e.target),
           eventData  = (e.dataTransfer || e.originalEvent.dataTransfer);
 
       // Add a ClassName to the body when a drag action is running
