@@ -35,6 +35,30 @@
       });
 
     });
+    describe('getDragInitiator', function() {
+      var doc;
+      beforeEach(inject(function ($document) {
+        $document.find("body").append('<p>not draggable</p><div class="container" draggable="true"><div draggable="true"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" /></div></div>');
+        doc =  $document[0];
+      }));
+
+      it('should return null if element is not draggable and has no draggable parent', function(){
+        var node = doc.querySelector('p');
+        expect(utils.getDragInitiatorNode(node)).toBe(null);
+      });
+
+      it('should return the node if has a draggable=true parameter', function(){
+        var node = doc.querySelector('div[draggable]');
+        expect(utils.getDragInitiatorNode(node)).toBe(node)
+      });
+
+      it('should return the parent node if has a draggable=true parameter', function(){
+        var node = doc.querySelector('div[draggable]');
+        var targetNode = doc.querySelector('div[draggable] img');
+        expect(utils.getDragInitiatorNode(node)).toBe(node)
+        expect(utils.getDragInitiatorNode(node)).toBe(node)
+      });
+    });
 
   });
 
