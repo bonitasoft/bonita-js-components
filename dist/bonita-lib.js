@@ -3,7 +3,7 @@
  * @ngdoc overview
  * @name bonitable
  */
-angular.module('bonitable', [])
+angular.module('org.bonitasoft.bonitable', [])
   .controller('BonitableController', ['$scope', function($scope){
 
     /* bo-sortable */
@@ -139,10 +139,10 @@ angular.module('bonitable', [])
         angular
           .module('bonitableExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.templates',
-            'bonita.sortable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.bonitable.sortable',
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -190,13 +190,14 @@ angular.module('bonitable', [])
     };
   });
 
-angular.module('bonita.dragAndDrop',[])
+angular.module('org.bonitasoft.dragAndDrop',[])
   .provider('boDraggableItem', function() {
 
     'use strict';
 
     var defaultConfig = {
-      cloneOnDrop: true
+      cloneOnDrop: true,
+      bodyClass: false
     };
 
     /**
@@ -209,6 +210,10 @@ angular.module('bonita.dragAndDrop',[])
       defaultConfig.cloneOnDrop = allowClone;
     };
 
+    this.activeBodyClassName = function activeBodyClassName(activeClassName) {
+      defaultConfig.bodyClass = activeClassName;
+    };
+
     this.$get = function() {
       return {
         config: function config() {
@@ -216,6 +221,9 @@ angular.module('bonita.dragAndDrop',[])
         },
         allowCloneOnDrop: function allowCloneOnDrop() {
           return this.config().cloneOnDrop || false;
+        },
+        setBodyClass: function setBodyClass() {
+          return !!this.config().bodyClass;
         }
       };
     };
@@ -231,6 +239,37 @@ angular.module('bonita.dragAndDrop',[])
     this.generateUniqId = function generateUniqId(key) {
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
+
+    /**
+     * Use an API from Microsoft
+     * Thanks to {@link http://stackoverflow.com/questions/5500615/internet-explorer-9-drag-and-drop-dnd}
+     * @param {NodeList}
+     */
+    this.polyfillIE = function polyfillIE(list) {
+      Array.prototype.forEach.call(list, function (el) {
+        angular.element(el).on('selectstart', function(){
+          this.dragDrop();
+          return false;
+        });
+      });
+    };
+
+    /**
+     * Try to find the node that initiate the dragEvent
+     * @param  {Node} node the event.target node
+     * @return {Node}      the found node or null
+     */
+    this.getDragInitiatorNode = function getDragInitiatorNode(node) {
+      var currentNode = node;
+      while(currentNode.parentNode) {
+        if (currentNode.getAttribute('draggable') === 'true') {
+          return currentNode;
+        }
+        currentNode = currentNode.parentNode;
+      }
+      return null;
+    };
+
   })
   .directive('boDropzone', ['$document', '$parse', '$compile', 'boDragUtils', 'boDragEvent', 'boDraggableItem', function ($document, $parse, $compile, boDragUtils, boDragEvent, boDraggableItem){
 
@@ -239,23 +278,50 @@ angular.module('bonita.dragAndDrop',[])
     // Register some callback for the directive
     var eventMap = {},
         DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
+        DRAGITEM_OWN_DROPZONE    = boDragEvent.events.DRAGITEM_OWN_DROPZONE,
         CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
+
+    $document.on('dragenter', function (e) {
+
+      if(e.target.hasAttribute('data-drop-id')) {
+
+        var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[draggable] [data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
+
+        var dropZoneInsideDragItem = !!angular
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
+
+
+        angular
+          .element(document.querySelectorAll('.' + DRAGITEM_OWN_DROPZONE))
+          .removeClass(DRAGITEM_OWN_DROPZONE);
+
+        // Check if the dropZone is not inside the current dragged item
+        if(dropZoneInsideAnotherDragItemBetweenDragItem || dropZoneInsideDragItem) {
+          e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
+        }
+
+        // Remove all other dropZone with the className
+        angular
+          .element(document.querySelectorAll('.' +  DROPZONE_CLASSNAME_HOVER))
+          .removeClass(DROPZONE_CLASSNAME_HOVER);
+
+        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
+      }
+    });
+
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragover', function (e) {
       e.preventDefault(); // allows us to drop
-
-      // Remove all other dropZone with the className
-      angular
-        .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
-        .removeClass(DROPZONE_CLASSNAME_HOVER);
 
       if(e.target.hasAttribute('data-drop-id')) {
 
         // IE9 does not know dataset :/
         var dragElmId = e.target.getAttribute('data-drop-id');
 
-        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
         eventMap[dragElmId].onDragOver(eventMap[dragElmId].scope, {$event: e});
         (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
 
@@ -266,6 +332,11 @@ angular.module('bonita.dragAndDrop',[])
     // Add a delegate for event detection. One event to rule them all
     $document.on('drop', function (e) {
       e.preventDefault(); // allows us to drop
+
+      // Remove ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).removeClass('bo-drag-action');
+      }
 
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
@@ -317,7 +388,7 @@ angular.module('bonita.dragAndDrop',[])
             .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
             .removeClass(DROPZONE_CLASSNAME_HOVER);
 
-            angular
+          angular
             .element(document.getElementsByClassName(CLASSNAME_DRAG_HOVER))
             .removeClass(CLASSNAME_DRAG_HOVER);
 
@@ -356,6 +427,7 @@ angular.module('bonita.dragAndDrop',[])
       map: eventMap,
       events: {
         DROPZONE_CLASSNAME_HOVER: 'bo-dropzone-hover',
+        DRAGITEM_OWN_DROPZONE: 'bo-drag-dropzone-child',
         CLASSNAME_DRAG_HOVER: 'bo-drag-enter'
       },
       /**
@@ -369,20 +441,28 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', ['$document', '$parse', 'boDragEvent', 'boDragUtils', function ($document, $parse, boDragEvent, boDragUtils){
+  .directive('boDraggable', ['$document', '$parse', 'boDragEvent', 'boDragUtils', 'boDraggableItem', function ($document, $parse, boDragEvent, boDragUtils, boDraggableItem){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
-      var target     = e.target,
+      var target     = boDragUtils.getDragInitiatorNode(e.target),
           eventData  = (e.dataTransfer || e.originalEvent.dataTransfer);
+
+      // Add a ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).addClass('bo-drag-action');
+      }
 
       eventData.effectAllowed = 'copy';
       eventData.setData('Text', JSON.stringify({
         dragItemId      : target.id,
         isDropZoneChild : target.parentElement.hasAttribute('data-drop-id')
       }));
+
+      // Cache for the current id as the event seems to not be fast enougth
+      boDragEvent.currentDragItemId = target.id;
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
@@ -431,7 +511,7 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   }])
-  .directive('boDragPolyfill', ['$window', '$timeout', '$rootScope', '$compile', 'boDragEvent', function ($window, $timeout, $rootScope, $compile, boDragEvent) {
+  .directive('boDragPolyfill', ['$window', '$document', '$timeout', 'boDragUtils', function ($window, $document, $timeout, boDragUtils) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -442,49 +522,26 @@ angular.module('bonita.dragAndDrop',[])
      */
     'use strict';
 
-    /**
-     * Replace all node for IE9
-     * And attach their scope
-     * @param  {nodeList} list
-     * @return {void}
-     */
-    function replaceNode(list) {
-
-      var scope, newScope;
-      Array.prototype.forEach.call(list, function (el) {
-
-        // Find data for the draggable directive and copy it
-        scope         = boDragEvent.map[el.id].scope.data;
-        newScope      = $rootScope.$new(true, boDragEvent.map[el.id].scope);
-        newScope.data = scope;
-
-        // IE, where the WTF is real
-        var nodeA = document.createElement('A');
-        // Duplicate attributes
-        [].forEach.call(el.attributes, function (attr) {
-          nodeA.setAttribute(attr.name,attr.value);
-        });
-
-        nodeA.innerHTML = el.innerHTML;
-        nodeA.href = '#';
-        el.parentNode.replaceChild(nodeA,el);
-        $compile(angular.element(nodeA))(newScope);
+    // After a drop action, we reload the polyfill for new item
+    if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
+      $document.on('drop', function (e) {
+        e.preventDefault(); // allows us to drop
+        $timeout(function() {
+          boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+        },100);
       });
     }
 
     return {
       type: 'EA',
       link: function link() {
-        // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
+
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
 
           // run the polyfill after the digest, because some directive can be bind, so compile cannot see them
           $timeout(function() {
-            var elmts = document.querySelectorAll('[bo-draggable]'),
-                elmts2 = document.querySelectorAll('[data-bo-draggable]');
-            replaceNode(elmts);
-            replaceNode(elmts2);
-          });
+            boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+          },100);
 
         }
       }
@@ -495,7 +552,7 @@ angular.module('bonita.dragAndDrop',[])
 /* jshint sub:true*/
 (function () {
   'use strict';
-  angular.module('org.bonita.services.topurl', [])
+  angular.module('org.bonitasoft.services.topurl', [])
     .service('manageTopUrl', ['$window', function ($window) {
       var manageTopUrlService = {};
       manageTopUrlService.getCurrentPageToken = function() {
@@ -569,7 +626,7 @@ angular.module('bonita.dragAndDrop',[])
 })();
 
 angular
-  .module('bonita.selectable',['bonitable'])
+  .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @name bonita.selectable:boSelectall
@@ -620,8 +677,8 @@ angular
         angular
           .module('selectableExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -704,8 +761,8 @@ angular
         angular
           .module('selectorExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.selectable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.bonitable.selectable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -759,7 +816,7 @@ angular
   });
 
 angular
-  .module('bonita.repeatable', ['bonitable'])
+  .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
   .service('domAttributes', function(){
     this.copy = function(source, destination, needRemove) {
       [].slice.call(source.attributes).forEach(function (attr) {
@@ -836,9 +893,9 @@ angular
    * ```javascript
    *   angular
    *     .module('boRepeaterExample', [
-   *       'bonitable',
-   *       'bonita.repeatable',
-   *       'bonita.templates'
+   *       'org.bonitasoft.bonitable',
+   *       'org.bonitasoft.bonitable.repeatable',
+   *       'org.bonitasoft.templates'
    *     ])
    *     .run(function($scope){
    *       $scope.users = [
@@ -978,9 +1035,9 @@ angular
       <file name="script.js">
         angular
           .module('boRepeatConfigExample', [
-            'bonitable',
-            'bonita.repeatable',
-            'bonita.templates'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.bonitable.repeatable',
+            'org.bonitasoft.templates'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -1016,7 +1073,7 @@ angular
   });
 
 angular
-  .module('bonita.sortable',['bonitable'])
+  .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
    * @module bonita.sortable
@@ -1061,9 +1118,9 @@ angular
         angular
           .module('sorterExample', [
             'ui.bootstrap.tpls',
-            'bonitable',
-            'bonita.templates',
-            'bonita.sortable'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.bonitable.sortable'
           ])
           .run(function($rootScope){
             $rootScope.users = [
@@ -1149,7 +1206,7 @@ angular
 /**
  *
  */
-angular.module('bonita.settings', [
+angular.module('org.bonitasoft.bonitable.settings', [
   'ui.bootstrap.dropdown',
   'ui.bootstrap.buttons'
   ])
@@ -1212,9 +1269,9 @@ angular.module('bonita.settings', [
    * ```javascript
    *     angular
    *       .module('settingsExample', [
-   *         'bonitable',
-   *         'bonita.settings',
-   *         'bonita.templates',
+   *         'org.bonitasoft.bonitable',
+   *         'org.bonitasoft.bonitable.settings',
+   *         'org.bonitasoft.templates',
    *         'ui.bootstrap.tpls'
    *       ])
    *       .filter('slice', function() {

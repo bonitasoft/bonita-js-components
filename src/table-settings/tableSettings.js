@@ -2,7 +2,7 @@
 /**
  *
  */
-angular.module('bonita.settings', [
+angular.module('org.bonitasoft.bonitable.settings', [
   'ui.bootstrap.dropdown',
   'ui.bootstrap.buttons'
   ])
@@ -65,9 +65,9 @@ angular.module('bonita.settings', [
    * ```javascript
    *     angular
    *       .module('settingsExample', [
-   *         'bonitable',
-   *         'bonita.settings',
-   *         'bonita.templates',
+   *         'org.bonitasoft.bonitable',
+   *         'org.bonitasoft.bonitable.settings',
+   *         'org.bonitasoft.templates',
    *         'ui.bootstrap.tpls'
    *       ])
    *       .filter('slice', function() {

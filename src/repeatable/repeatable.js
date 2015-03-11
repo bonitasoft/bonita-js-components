@@ -1,5 +1,5 @@
 angular
-  .module('bonita.repeatable', ['bonitable'])
+  .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
   .service('domAttributes', function(){
     this.copy = function(source, destination, needRemove) {
       [].slice.call(source.attributes).forEach(function (attr) {
@@ -76,9 +76,9 @@ angular
    * ```javascript
    *   angular
    *     .module('boRepeaterExample', [
-   *       'bonitable',
-   *       'bonita.repeatable',
-   *       'bonita.templates'
+   *       'org.bonitasoft.bonitable',
+   *       'org.bonitasoft.bonitable.repeatable',
+   *       'org.bonitasoft.templates'
    *     ])
    *     .run(function($scope){
    *       $scope.users = [
@@ -218,9 +218,9 @@ angular
       <file name="script.js">
         angular
           .module('boRepeatConfigExample', [
-            'bonitable',
-            'bonita.repeatable',
-            'bonita.templates'
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.bonitable.repeatable',
+            'org.bonitasoft.templates'
           ])
           .run(function($rootScope){
             $rootScope.users = [
