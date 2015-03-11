@@ -10,28 +10,32 @@
   </button>
 
   <div class="bo-TableSettings-content dropdown-menu pull-right" role="menu" aria-labelledby="aria-tablesettings">
-    <h5 class="bo-TableSettings-title" >{{'Items per page '| translate}}</h5>
+    <h5 class="bo-TableSettings-title" >{{'Items per page'| translate}}</h5>
     <div class="btn-group btn-group-justified" role="group">
       <div class="btn-group" role="group" ng-repeat="size in sizes">
         <button class="btn btn-default"
           type="button"
           ng-model="$parent.pageSize" btn-radio="{{::size}}"
-          ng-change="updatePageSize({size:size})" tabindex="0">
+          ng-click="updatePageSize({size:size})" tabindex="0">
           {{size}}
         </button>
       </div>
     </div>
 
-    <h5 class="bo-TableSettings-title" >{{'Columns Selection' | translate}}</h5>
-    <ul class="bo-TableSettings-columns">
-      <li  ng-repeat="field in columns">
+    <h5 class="bo-TableSettings-title" >{{'Columns selection' | translate}}</h5>
+    <ul class="bo-TableSettings-columns bo-Text-disableSelection" as-sortable="sortableOptions" ng-model="columns">
+      <li  ng-repeat="field in columns" as-sortable-item>
+      <div as-sortable-item-handle ng>
       <label
         class="bo-TableSettings-column"
-        title="{{::((field.selected ? 'Hide' : 'Show') +' '+ field[label])}}"
+        title="{{((field.visible ? 'Hide' : 'Show') +' '+ field[label]) | translate}}"
         ng-click="$event.stopPropagation()">
+        <span class="glyphicon glyphicon-align-justify grabHover"></span>
+        <span class="glyphicon glyphicon-align-justify grabHover"></span>
         <input type="checkbox" ng-model="field[visible]" ng-change="updateVisibility({field:field})">
         {{::field[label]}}
       </label>
+      </div>
       </li>
     </ul>
   </div>

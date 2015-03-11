@@ -5,8 +5,8 @@
   describe('manage top url service', function () {
 
     var manageTopUrl, mockedWindow;
+    beforeEach(module('org.bonitasoft.services.topurl'));
 
-    beforeEach(module('org.bonita.services.topurl'));
     beforeEach(function(){
       mockedWindow = {
         top : {

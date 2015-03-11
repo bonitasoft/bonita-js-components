@@ -16,9 +16,9 @@ describe('sortable directive', function(){
   };
 
 
-  beforeEach(module('bonitable'));
-  beforeEach(module('bonita.sortable'));
-  beforeEach(module('bonita.templates'));
+  beforeEach(module('org.bonitasoft.bonitable'));
+  beforeEach(module('org.bonitasoft.bonitable.sortable'));
+  beforeEach(module('org.bonitasoft.templates'));
 
   beforeEach(inject(function($rootScope, $compile, $httpBackend, $document) {
     scope = $rootScope.$new();

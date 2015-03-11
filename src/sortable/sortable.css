@@ -6,6 +6,7 @@
   text-align: inherit;
   padding:1px 0;
   white-space: nowrap;
+  text-transform: none !important;
 }
 .bo-SortButton-icon {
   visibility:hidden;

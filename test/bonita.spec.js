@@ -5,7 +5,7 @@ describe('bonitable directive', function(){
   var scope;
   var $timeout;
 
-  beforeEach(module('bonitable'));
+  beforeEach(module('org.bonitasoft.bonitable'));
 
   beforeEach(inject(function($rootScope, $compile, $document) {
     scope = $rootScope.$new();
@@ -68,6 +68,15 @@ describe('bonitable directive', function(){
       setChecked: function (val) {
         this.value = val === true;
       }
+    }, item2 = {
+      data: 2,
+      value: true,
+      isChecked:function(){
+        return this.value;
+      },
+      setChecked: function (val) {
+        this.value = val === true;
+      }
     };
 
 
@@ -109,6 +118,12 @@ describe('bonitable directive', function(){
         controller.registerSelector(item);
         item.setChecked(true);
         expect(fakeScope.$selectedItems.length).toBe(1);
+        item2.setChecked(true);
+        controller.registerSelector(item2);
+        expect(fakeScope.$selectedItems.length).toBe(2);
+        controller.unregisterSelector(item);
+        expect(fakeScope.$selectedItems.length).toBe(1);
+        expect(fakeScope.$selectedItems ).toEqual([item2.data]);
       });
 
       it('should expose $allSelected', function(){

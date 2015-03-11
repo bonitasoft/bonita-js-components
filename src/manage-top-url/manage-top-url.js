@@ -1,7 +1,7 @@
 /* jshint sub:true*/
 (function () {
   'use strict';
-  angular.module('org.bonita.services.topurl', [])
+  angular.module('org.bonitasoft.services.topurl', [])
     .service('manageTopUrl', ['$window', function ($window) {
       var manageTopUrlService = {};
 

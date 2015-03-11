@@ -1,4 +1,42 @@
-angular.module('bonita.dragAndDrop',[])
+angular.module('org.bonitasoft.dragAndDrop',[])
+  .provider('boDraggableItem', function() {
+
+    'use strict';
+
+    var defaultConfig = {
+      cloneOnDrop: true,
+      bodyClass: false
+    };
+
+    /**
+     * Allow the creation of a new node when we drag the item
+     * Default is true;
+     * @param  {Boolean} allowClone
+     * @return {void}
+     */
+    this.cloneOnDrop = function cloneOnDrop(allowClone) {
+      defaultConfig.cloneOnDrop = allowClone;
+    };
+
+    this.activeBodyClassName = function activeBodyClassName(activeClassName) {
+      defaultConfig.bodyClass = activeClassName;
+    };
+
+    this.$get = function() {
+      return {
+        config: function config() {
+          return angular.copy(defaultConfig);
+        },
+        allowCloneOnDrop: function allowCloneOnDrop() {
+          return this.config().cloneOnDrop || false;
+        },
+        setBodyClass: function setBodyClass() {
+          return !!this.config().bodyClass;
+        }
+      };
+    };
+
+  })
   .service('boDragUtils', function() {
     'use strict';
     /**
@@ -9,21 +47,92 @@ angular.module('bonita.dragAndDrop',[])
     this.generateUniqId = function generateUniqId(key) {
       return (key || 'drag-') + Math.random().toString(36).substring(7);
     };
+
+    /**
+     * Use an API from Microsoft
+     * Thanks to {@link http://stackoverflow.com/questions/5500615/internet-explorer-9-drag-and-drop-dnd}
+     * @param {NodeList}
+     */
+    this.polyfillIE = function polyfillIE(list) {
+      Array.prototype.forEach.call(list, function (el) {
+        angular.element(el).on('selectstart', function(){
+          this.dragDrop();
+          return false;
+        });
+      });
+    };
+
+    /**
+     * Try to find the node that initiate the dragEvent
+     * @param  {Node} node the event.target node
+     * @return {Node}      the found node or null
+     */
+    this.getDragInitiatorNode = function getDragInitiatorNode(node) {
+      var currentNode = node;
+      while(currentNode.parentNode) {
+        if (currentNode.getAttribute('draggable') === 'true') {
+          return currentNode;
+        }
+        currentNode = currentNode.parentNode;
+      }
+      return null;
+    };
+
   })
-  .directive('boDropzone', function ($document, $compile, boDragUtils, boDragEvent){
+  .directive('boDropzone', function ($document, $parse, $compile, boDragUtils, boDragEvent, boDraggableItem){
 
     'use strict';
 
     // Register some callback for the directive
-    var eventMap = {};
+    var eventMap = {},
+        DROPZONE_CLASSNAME_HOVER = boDragEvent.events.DROPZONE_CLASSNAME_HOVER,
+        DRAGITEM_OWN_DROPZONE    = boDragEvent.events.DRAGITEM_OWN_DROPZONE,
+        CLASSNAME_DRAG_HOVER     = boDragEvent.events.CLASSNAME_DRAG_HOVER;
+
+    $document.on('dragenter', function (e) {
+
+      if(e.target.hasAttribute('data-drop-id')) {
+
+        var dropZoneInsideAnotherDragItemBetweenDragItem = !!angular
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[draggable] [data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
+
+        var dropZoneInsideDragItem = !!angular
+              .element('#' + boDragEvent.currentDragItemId)
+              .find('[data-drop-id='+e.target.getAttribute('data-drop-id')+']')[0];
+
+
+        angular
+          .element(document.querySelectorAll('.' + DRAGITEM_OWN_DROPZONE))
+          .removeClass(DRAGITEM_OWN_DROPZONE);
+
+        // Check if the dropZone is not inside the current dragged item
+        if(dropZoneInsideAnotherDragItemBetweenDragItem || dropZoneInsideDragItem) {
+          e.target.className += ' ' + DRAGITEM_OWN_DROPZONE;
+        }
+
+        // Remove all other dropZone with the className
+        angular
+          .element(document.querySelectorAll('.' +  DROPZONE_CLASSNAME_HOVER))
+          .removeClass(DROPZONE_CLASSNAME_HOVER);
+
+        e.target.className += ' ' + DROPZONE_CLASSNAME_HOVER;
+      }
+    });
+
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragover', function (e) {
       e.preventDefault(); // allows us to drop
 
       if(e.target.hasAttribute('data-drop-id')) {
-        eventMap[e.target.getAttribute('data-drop-id')].onDragOver.apply(this,[angular.element(e.target).scope()]);
-        e.dataTransfer.dropEffect = 'copy';
+
+        // IE9 does not know dataset :/
+        var dragElmId = e.target.getAttribute('data-drop-id');
+
+        eventMap[dragElmId].onDragOver(eventMap[dragElmId].scope, {$event: e});
+        (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';
+
         return false;
       }
     });
@@ -32,26 +141,40 @@ angular.module('bonita.dragAndDrop',[])
     $document.on('drop', function (e) {
       e.preventDefault(); // allows us to drop
 
+      // Remove ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).removeClass('bo-drag-action');
+      }
+
       // Drop only in dropZone container
       if(e.target.hasAttribute('data-drop-id')) {
+
+        // IE9 does not know dataset :/
+        var dragElmId = e.target.getAttribute('data-drop-id');
+
         /**
          * Defines in the directive boDraggable inside the listener of dragStart
-         * Format: element.id:(true|false)
-         * So after a split, [0] is drag element id and [1] is is it a child of a dropZone
+         * Format: JSON string
+         *   - dragItemId: draggable item id
+         *   - isDropZoneChild: Boolean
          */
-        var dragData = e.dataTransfer.getData('Text').split(':');
+        var eventData = JSON.parse((e.dataTransfer || e.originalEvent.dataTransfer).getData('Text'));
+
         // Grab the drag element
-        var el       = document.getElementById(dragData[0]);
-        var newScope = angular.element(e.target).scope().$new();
-        var scope    = angular.element(el).scope();
+        var el              = document.getElementById(eventData.dragItemId),
+            targetScope     = eventMap[dragElmId].scope,
+            currentDragItem = boDragEvent.map[eventData.dragItemId],
+            scopeData       = currentDragItem.data;
 
         // Was it a child of a dropzone ? If not then create a copy
-        if('false' === dragData[1]) {
+        if(eventData.isDropZoneChild) {
+          e.target.appendChild(el);
+        }else {
           var surrogate = el.cloneNode(true);
           surrogate.id = boDragUtils.generateUniqId();
 
           // Update the event map reference
-          boDragEvent.copy(dragData[0], surrogate.id);
+          boDragEvent.copy(eventData.dragItemId, surrogate.id);
 
           try {
             surrogate.attributes.removeNamedItem('ng-repeat');
@@ -59,47 +182,62 @@ angular.module('bonita.dragAndDrop',[])
             // You're trying to delete an ghost attribute. DOMException: Failed to execute 'removeNamedItem'
           }
 
-          e.target.appendChild(surrogate);
-          newScope.data = scope.data;
+          // Default is true so we clone the node
+          if(boDraggableItem.allowCloneOnDrop()) {
+            e.target.appendChild(surrogate);
+          }
 
           // Compile a new isolate scope for the drag element
-          $compile(angular.element(surrogate))(newScope);
-
-          eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), newScope.data]);
-
-          return;
+          $compile(angular.element(surrogate))(boDragEvent.map[surrogate.id].scope);
         }
 
-        eventMap[e.target.getAttribute('data-drop-id')].onDropSuccess.apply(this,[angular.element(e.target).scope(), scope.data]);
-        e.target.appendChild(el);
+        targetScope.$apply(function() {
+          angular
+            .element(document.getElementsByClassName(DROPZONE_CLASSNAME_HOVER))
+            .removeClass(DROPZONE_CLASSNAME_HOVER);
+
+          angular
+            .element(document.getElementsByClassName(CLASSNAME_DRAG_HOVER))
+            .removeClass(CLASSNAME_DRAG_HOVER);
+
+          // Hooks
+          currentDragItem.onDropItem(targetScope,{$data: scopeData, $event: e});
+          eventMap[dragElmId].onDropSuccess(targetScope, {$data: scopeData, $event: e});
+        });
 
       }
     });
 
     return {
       type: 'A',
-      scope: {
-        onDropSuccess: '&boDropSuccess',
-        onDragOver: '&boDragOver'
-      },
       link: function(scope, el, attr) {
+
         el.addClass('bo-dropzone-container');
         attr.$set('data-drop-id',boDragUtils.generateUniqId('drop'));
 
         // Register event for this node
         eventMap[attr['data-drop-id']] = {
-          onDropSuccess: scope.$eval(scope.onDropSuccess) || angular.noop,
-          onDragOver: scope.$eval(scope.onDragOver) || angular.noop
+          scope: scope,
+          onDropSuccess: $parse(attr.boDropSuccess),
+          onDragOver: $parse(attr.boDragOver)
         };
       }
     };
 
   })
   .factory('boDragEvent',function() {
+
+    'use strict';
+
     var eventMap = {};
     return {
       // Store each cb reference for a any draggable element
       map: eventMap,
+      events: {
+        DROPZONE_CLASSNAME_HOVER: 'bo-dropzone-hover',
+        DRAGITEM_OWN_DROPZONE: 'bo-drag-dropzone-child',
+        CLASSNAME_DRAG_HOVER: 'bo-drag-enter'
+      },
       /**
        * Copy an event reference
        * @param  {String} from Identifier draggable item
@@ -111,44 +249,77 @@ angular.module('bonita.dragAndDrop',[])
       }
     };
   })
-  .directive('boDraggable', function ($document, boDragEvent, boDragUtils){
+  .directive('boDraggable', function ($document, $parse, boDragEvent, boDragUtils, boDraggableItem){
     'use strict';
 
     // Add a delegate for event detection. One event to rule them all
     $document.on('dragstart', function (e) {
 
-      var target = e.target,
-          currentScope = angular.element(target).isolateScope() || angular.element(target).scope();
+      var target     = boDragUtils.getDragInitiatorNode(e.target),
+          eventData  = (e.dataTransfer || e.originalEvent.dataTransfer);
 
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('Text', target.id + ':' + target.parentElement.hasAttribute('data-drop-id'));
+      // Add a ClassName to the body when a drag action is running
+      if(boDraggableItem.setBodyClass()) {
+        angular.element(document.body).addClass('bo-drag-action');
+      }
+
+      eventData.effectAllowed = 'copy';
+      eventData.setData('Text', JSON.stringify({
+        dragItemId      : target.id,
+        isDropZoneChild : target.parentElement.hasAttribute('data-drop-id')
+      }));
+
+      // Cache for the current id as the event seems to not be fast enougth
+      boDragEvent.currentDragItemId = target.id;
 
       // Trigger the event if we need to
       if (boDragEvent.map[target.id]){
-        boDragEvent.map[target.id].onDragStart.apply(this,[currentScope]);
+        boDragEvent.map[target.id].onDragStart(boDragEvent.map[target.id].scope);
+      }
+    });
+
+    $document.on('dragenter', function(e) {
+
+      if(e.target.className.indexOf(boDragEvent.events.CLASSNAME_DRAG_HOVER) > -1) {
+        return;
+      }
+
+      // Remove the className for previous hovered items
+      angular
+        .element(document.getElementsByClassName(boDragEvent.events.CLASSNAME_DRAG_HOVER))
+        .removeClass(boDragEvent.events.CLASSNAME_DRAG_HOVER);
+      e.target.className += ' ' + boDragEvent.events.CLASSNAME_DRAG_HOVER;
+
+    });
+
+    $document.on('dragleave', function(e) {
+      if(e.target.className.indexOf(boDragEvent.events.CLASSNAME_DRAG_HOVER) > -1) {
+        e.target.className = e.target.className.replace(' '+boDragEvent.events.CLASSNAME_DRAG_HOVER,'');
       }
     });
 
     return {
-      type: 'EA',
-      scope: {
-        data: '=boDraggableData',
-        onDragStart: '&boDragStart'
-      },
       link: function(scope, el, attr) {
+
         attr.$set('draggable',true);
         attr.$set('id',attr.id || boDragUtils.generateUniqId());
 
-        // Register event for the current node
-        if(attr.boDragStart) {
-          boDragEvent.map[attr.id] = {
-            onDragStart: scope.$eval(scope.onDragStart) || angular.noop
-          };
-        }
+        // Register event for the current node and its scope
+        boDragEvent.map[attr.id] = {
+          key         : attr.boDraggableData, // Ref key to the scope custom data
+          scope       : scope,
+          onDragStart : $parse(attr.boDragStart),
+          onDropItem  : $parse(attr.boDropItem)
+        };
+
+        // Some key in the scope are async (if it comes from directive)
+        scope.$evalAsync(function (currentScope) {
+          boDragEvent.map[attr.id].data = currentScope[attr.boDraggableData];
+        });
       }
     };
   })
-  .directive('boDragPolyfill', function ($window) {
+  .directive('boDragPolyfill', function ($window, $document, $timeout, boDragUtils) {
 
     /**
      * Before angular bind the scope to the dom, we update the dom for IE
@@ -159,26 +330,27 @@ angular.module('bonita.dragAndDrop',[])
      */
     'use strict';
 
+    // After a drop action, we reload the polyfill for new item
+    if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
+      $document.on('drop', function (e) {
+        e.preventDefault(); // allows us to drop
+        $timeout(function() {
+          boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+        },100);
+      });
+    }
+
     return {
       type: 'EA',
-      compile: function compile(element) {
+      link: function link() {
 
-        var el = element.find('[bo-draggable]')[0];
-
-        // Drag&drop API works on IE9 if the element is a <a href="#"> so replace the tag with it
         if($window.navigator.userAgent.indexOf('MSIE 9') > -1) {
 
-          // IE, where the WTF is real
-          var nodeA = document.createElement('A');
+          // run the polyfill after the digest, because some directive can be bind, so compile cannot see them
+          $timeout(function() {
+            boDragUtils.polyfillIE(document.querySelectorAll('[bo-draggable], [data-bo-draggable]'));
+          },100);
 
-          // Duplicate attributes
-          [].forEach.call(el.attributes, function (attr) {
-            nodeA.setAttribute(attr.name,attr.value);
-          });
-
-          nodeA.innerHTML = el.innerHTML;
-          nodeA.href = '#';
-          el.parentNode.replaceChild(nodeA,el);
         }
       }
     };

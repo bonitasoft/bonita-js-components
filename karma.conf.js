@@ -16,9 +16,10 @@ module.exports = function(config) {
     files: [
       'test/bind-polyfill.js',
       'bower_components/jquery/dist/jquery.js',
-      'bower_components/angular/*.js',
+      'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      'bower_components/ng-sortable/dist/ng-sortable.js',
       'src/**/*.js',
       'test/**/*.js',
       'src/**/*.html'
@@ -44,7 +45,7 @@ module.exports = function(config) {
       prependPrefix: 'template/',
       // setting this option will create only a single module that contains templates
       // from all the files, so you can load them all with module('foo')
-      moduleName: 'bonita.templates'
+      moduleName: 'org.bonitasoft.templates'
     },
 
 
