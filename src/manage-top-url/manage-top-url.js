@@ -59,11 +59,12 @@
         if(!token){
           return;
         }
+        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
         var params = '&';
         if(destination){
           angular.forEach(destination, function(value, key){
-            if(key && value && key !== 'token'){
-              params += token + key + '=' + value + '&';
+          if(key && value && key !== 'token' && key !== 'prependToken'){
+            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
             }
           });
         }

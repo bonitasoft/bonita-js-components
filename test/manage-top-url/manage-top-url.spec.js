@@ -137,6 +137,30 @@
         manageTopUrl.goTo({'token' : 'caselistingadmin', '_toto': 'tata'});
         expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&caselistingadmin_toto=tata&');
       });
+      it('should change top window\'s hash without prepending token', function(){
+
+        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
+        manageTopUrl.goTo({'token' : 'caselistingadmin',prependToken : false});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
+
+        mockedWindow.top.location.hash = '?_pf=456';
+        manageTopUrl.goTo({'token' : 'caselistingpm', prependToken : false});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingpm&_pf=456&');
+
+        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
+        manageTopUrl.goTo({'token' : 'caselistingadmin', prependToken : false});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
+
+        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
+        manageTopUrl.goTo({'token' : 'caselistingadmin', 'toto':undefined, prependToken : false});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&');
+
+        mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
+        manageTopUrl.goTo({'token' : 'caselistingadmin', 'toto': 'tata', prependToken : false});
+        expect(mockedWindow.top.location.hash).toBe('?_p=caselistingadmin&_pf=2&toto=tata&');
+        //
+      });
+
     });
   });
 })();
