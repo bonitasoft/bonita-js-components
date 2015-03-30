@@ -76,12 +76,12 @@
        */
       manageTopUrlService.goTo = function(destination){
 
-        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
         var params = '&';
 
         if(!destination) {
           throw new TypeError('You must pass an Object as argument');
         }
+        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
 
         if(!destination.token){
           throw new Error('You must set a token to define the destination page');
