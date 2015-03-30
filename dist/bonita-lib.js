@@ -632,14 +632,15 @@ angular.module('org.bonitasoft.dragAndDrop',[])
         if(!destination) {
           throw new TypeError('You must pass an Object as argument');
         }
+        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
 
         if(!destination.token){
           throw new Error('You must set a token to define the destination page');
         }
 
         angular.forEach(destination, function (value, key){
-          if(key && value && key !== 'token'){
-            params += destination.token + key + '=' + value + '&';
+          if(key && value && key !== 'token' && key !== 'prependToken'){
+            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
           }
         });
 
