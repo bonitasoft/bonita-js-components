@@ -78,8 +78,12 @@
 
         var params = '&';
 
-        if(!destination) {
+        if(angular.isUndefined(destination)) {
           throw new TypeError('You must pass an Object as argument');
+        }
+        if(typeof destination === 'string'){
+          $window.top.location.hash = '?_p='+ destination+'&' + manageTopUrlService.getCurrentProfile();
+          return;
         }
         var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
 
