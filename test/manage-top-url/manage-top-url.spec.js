@@ -205,6 +205,12 @@
         }).toThrow(new Error('You must set a token to define the destination page'));
       });
 
+      it('should use destination as token if it is a string', function() {
+        mockedWindow.top.location.hash = '?_p=sdfsdf&_pf=2';
+        manageTopUrl.goTo('caselistingadmin');
+        expect(mockedWindow.top.location.hash).toEqual('?_p=caselistingadmin&_pf=2');
+      });
+
       it('should change top window\'s hash', function(){
 
         mockedWindow.top.location.hash = '?_p=ng-caselistingadmin&_pf=2';
