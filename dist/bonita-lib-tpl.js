@@ -1396,7 +1396,7 @@ try {
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('template/table-settings/tableSettings.tpl.html',
     '<div class="bo-TableSettings pull-right" dropdown>\n' +
-    '  <button type="button"\n' +
+    '  <button dropdown-toggle type="button"\n' +
     '    id="aria-tablesettings"\n' +
     '    class="btn btn-default bo-Settings dropdown-toggle"\n' +
     '    title="{{\'Table settings\' | translate}}"\n' +
