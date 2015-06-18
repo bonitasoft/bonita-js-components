@@ -23,7 +23,8 @@ describe('repeatable', function(){
           '    <tr>'+
           '       <th data-ignore>first</th>'+
           '       <th>id</th>'+
-          '       <th>name</th>'+
+          '       <th visible="false">name</th>'+
+          '       <th visible="">content</th>'+
           '       <th data-ignore>last</th>'+
           '    </tr>'+
           '    <tr>'+
@@ -35,13 +36,14 @@ describe('repeatable', function(){
           '       <td>toto</td>'+
           '       <td title="{{tag.id}}">{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
+          '       <td>{{tag.content}}</td>'+
           '       <td>test</td>'+
           '    </tr>'+
           '  </tbody>'+
           '</table>'+
           '</div>';
 
-      scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
+      scope.tags = [{id:1, name:'blue', content: 'blue'},{id:3, name:'red', content: 'red'}, {id:2, name:'green', content: 'green'}];
       element = $compile(markup)(scope);
       innerScope = element.find('table').scope();
       $document.find('body').append(element);
@@ -73,10 +75,9 @@ describe('repeatable', function(){
       expect(test).toThrow();
     }));
 
-    it('should ignore [data-ignore] columns', function(){
+    it('should ignore [data-ignore] and not visible columns', function(){
       var th = element.find('tr:first-child th:not([data-ignore])')
-
-      expect(innerScope.$columns.length).toBe(th.length);
+      expect(innerScope.$columns.length).toBe(th.length+1);
     });
 
     it('should insert the column-template node at the correct index ', function(){
@@ -84,16 +85,16 @@ describe('repeatable', function(){
       expect(th.text().trim()).toBe('last');
     });
 
-    it('should target the correct header', function(){
+    it('should target the correct header without hidden columns', function(){
       var selector = element.find('table').attr('bo-repeatable');
       var th = element.find( selector + ' > *:not([data-ignore])' );
 
-      expect(th.length).toBe(innerScope.$columns.length);
+      expect(th.length).toBe(innerScope.$columns.length-1);
     });
 
     it('should expose a $columns object', function(){
       expect(innerScope.$columns).toBeDefined();
-      expect(innerScope.$columns.length).toBe(2);
+      expect(innerScope.$columns.length).toBe(3);
     });
 
     it('should filter visible $columns ', function(){
