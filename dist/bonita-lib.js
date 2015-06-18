@@ -851,9 +851,9 @@ angular
 
 angular
   .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
-  .service('domAttributes', function(){
+  .service('domAttributes', function() {
     this.copy = function(source, destination, needRemove) {
-      [].slice.call(source.attributes).forEach(function (attr) {
+      [].slice.call(source.attributes).forEach(function(attr) {
         destination.setAttribute(attr.name, source.getAttribute(attr.name));
         if (needRemove) {
           source.removeAttribute(attr.name);
@@ -861,11 +861,11 @@ angular
       });
     };
   })
-  .directive('columnTemplate', ['$compile', 'domAttributes', function ($compile, domAttributes) {
+  .directive('columnTemplate', ['$compile', 'domAttributes', function($compile, domAttributes) {
     return {
       restrict: 'A',
       scope: true,
-      link: function (scope, element, attr) {
+      link: function(scope, element, attr) {
 
         var template = angular.element(attr.columnTemplate);
         var wrapper = angular.element('<div></div>');
@@ -882,75 +882,75 @@ angular
       }
     };
   }])
-  /**
-   * @ngdoc directive
-   * @name bonita.repeatable:boRepeatable
-   * @module bonita.repeatable
-   *
-   * @param {String=} boRepeatable a string representing a valid css selector
-   *                  matching the thead where the columns are defined. By default the value is
-   *                  ``thead tr:last-child``
-   *
-   * @description
-   * Render table content dynamically in order to perform some columns manipulation
-   * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
-   * under the hood to perform this but allow developper to get rid of it when
-   * display the input. No need to add a generic function for cell rendering like
-   * you will do when you put 2 ng-repeat directive inside.
-   *
-   * @example
-   *
-   * ```html
-   *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
-   *     <thead>
-   *       <tr>
-   *         <td colspan="{{$columns.length}}" class="form-inline">
-   *           <pre>{{$columns|json}}</pre>
-   *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
-   *         </td>
-   *       </tr>
-   *       <tr>
-   *         <th>name</th>
-   *         <th>country</th>
-   *         <th data-ignore>action</th>
-   *       </tr>
-   *     </thead>
-   *     <tbody>
-   *       <tr ng-repeat="user in users">
-   *         <td>{{user.name}}</td>
-   *         <td>{{user.country}}</td>
-   *         <td><button>&times;</button></td>
-   *       </tr>
-   *     </tbody>
-   *   </table>
-   * ```
-   * ```javascript
-   *   angular
-   *     .module('boRepeaterExample', [
-   *       'org.bonitasoft.bonitable',
-   *       'org.bonitasoft.bonitable.repeatable',
-   *       'org.bonitasoft.templates'
-   *     ])
-   *     .run(function($scope){
-   *       $scope.users = [
-   *         {name:'Paul', country:'Uk'},
-   *         {name:'Sarah', country:'Fr'},
-   *         {name:'Jacques', country:'Us'},
-   *         {name:'Joan', country:'Al'},
-   *         {name:'Tite', country:'Jp'},
-   *       ];
-   *       $scope.colcfg =[true, false];
-   *     })
-   * ```
+/**
+ * @ngdoc directive
+ * @name bonita.repeatable:boRepeatable
+ * @module bonita.repeatable
+ *
+ * @param {String=} boRepeatable a string representing a valid css selector
+ *                  matching the thead where the columns are defined. By default the value is
+ *                  ``thead tr:last-child``
+ *
+ * @description
+ * Render table content dynamically in order to perform some columns manipulation
+ * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
+ * under the hood to perform this but allow developper to get rid of it when
+ * display the input. No need to add a generic function for cell rendering like
+ * you will do when you put 2 ng-repeat directive inside.
+ *
+ * @example
+ *
+ * ```html
+ *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+ *     <thead>
+ *       <tr>
+ *         <td colspan="{{$columns.length}}" class="form-inline">
+ *           <pre>{{$columns|json}}</pre>
+ *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
+ *         </td>
+ *       </tr>
+ *       <tr>
+ *         <th>name</th>
+ *         <th>country</th>
+ *         <th data-ignore>action</th>
+ *       </tr>
+ *     </thead>
+ *     <tbody>
+ *       <tr ng-repeat="user in users">
+ *         <td>{{user.name}}</td>
+ *         <td>{{user.country}}</td>
+ *         <td><button>&times;</button></td>
+ *       </tr>
+ *     </tbody>
+ *   </table>
+ * ```
+ * ```javascript
+ *   angular
+ *     .module('boRepeaterExample', [
+ *       'org.bonitasoft.bonitable',
+ *       'org.bonitasoft.bonitable.repeatable',
+ *       'org.bonitasoft.templates'
+ *     ])
+ *     .run(function($scope){
+ *       $scope.users = [
+ *         {name:'Paul', country:'Uk'},
+ *         {name:'Sarah', country:'Fr'},
+ *         {name:'Jacques', country:'Us'},
+ *         {name:'Joan', country:'Al'},
+ *         {name:'Tite', country:'Jp'},
+ *       ];
+ *       $scope.colcfg =[true, false];
+ *     })
+ * ```
 
-   */
-  .directive('boRepeatable', ['$interpolate', function ($interpolate) {
+ */
+.directive('boRepeatable', ['$interpolate', function($interpolate) {
     return {
-      require:'bonitable',
+      require: 'bonitable',
       restrict: 'A',
-      compile: function (elem, attr, $scope) {
+      compile: function(elem, attr, $scope) {
 
-        var thSelecter  = attr[this.name] || 'thead tr:last-child';
+        var thSelecter = attr[this.name] || 'thead tr:last-child';
         var tdSelecter = 'tr[ng-repeat]';
 
         var header = elem[0].querySelector(thSelecter);
@@ -961,10 +961,10 @@ angular
         }
 
         var columns = [];
-        var tdCells =  row.children;
+        var tdCells = row.children;
 
         var insertIndex;
-        [].some.call(header.children, function(th, index){
+        [].some.call(header.children, function(th, index) {
           insertIndex = index;
           return th.getAttribute('data-ignore') === null;
         });
@@ -975,7 +975,7 @@ angular
          * @param  {Object} item  an object containing both th and td node
          * @return {Boolean}      true id data-ignore is present
          */
-        function filterIgnoreCell(item){
+        function filterIgnoreCell(item) {
           return item.th.getAttribute('data-ignore') === null;
         }
 
@@ -991,20 +991,27 @@ angular
         var prop = attr.visibleProp || 'visible';
 
         columns = [].map.call(header.children, function(th, index) {
-            return {th: th, td: tdCells[index]};
-          })
+          return {
+            th: th,
+            td: tdCells[index]
+          };
+        })
           .filter(filterIgnoreCell)
-          .map(function(item){
-              angular.element(item.th).remove();
-              angular.element(item.td).remove();
-              var o = {
-                name: $interpolate(item.th.textContent)($scope),
-                header: item.th.outerHTML,
-                cell: item.td.outerHTML
-              };
+          .map(function(item) {
+            angular.element(item.th).remove();
+            angular.element(item.td).remove();
+            var o = {
+              name: $interpolate(item.th.textContent)($scope),
+              header: item.th.outerHTML,
+              cell: item.td.outerHTML
+            };
+            if (item.th.attributes) {
+              o[prop] = angular.isUndefined(item.th.attributes[prop]) || angular.isUndefined(item.th.attributes[prop].value) || ((item.th.attributes[prop].value === 'false') ? false : true);
+            } else {
               o[prop] = true;
-              return o;
-            });
+            }
+            return o;
+          });
 
         /**
          * create an HTMLElement for column-template which hold the ng-repeat
@@ -1025,15 +1032,16 @@ angular
         header.insertBefore(thRepeat, header.children[insertIndex]);
         row.insertBefore(tdRepeat, row.children[insertIndex]);
 
-        return function (scope) {
+        return function(scope) {
           scope.$columns = columns;
           scope.$visibilityFilter = columnFilter.bind(null, prop);
         };
       }
     };
-  }])
+  }
+])
 
-  /**
+/**
    * @ngdoc directive
    * @name bonita.repeatable:repeatableConfig
    * @module bonita.repeatable
@@ -1087,24 +1095,24 @@ angular
       </file>
     </example>
    */
-  .directive('repeatableConfig', function(){
-    return {
-      priority:1,
-      require: 'bonitable',
-      link: function(scope, elem, attr){
-        scope.$watch(attr.repeatableConfig, function(visibleConfig){
-          var prop = attr.visibleProp || 'visible';
-          if (visibleConfig.length !== scope.$columns.length) {
-            throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
-          }
+.directive('repeatableConfig', function() {
+  return {
+    priority: 1,
+    require: 'bonitable',
+    link: function(scope, elem, attr) {
+      scope.$watch(attr.repeatableConfig, function(visibleConfig) {
+        var prop = attr.visibleProp || 'visible';
+        if (visibleConfig.length !== scope.$columns.length) {
+          throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
+        }
 
-          scope.$columns.forEach(function(item, index){
-            item[prop] = visibleConfig[index];
-          });
+        scope.$columns.forEach(function(item, index) {
+          item[prop] = visibleConfig[index];
         });
-      }
-    };
-  });
+      });
+    }
+  };
+});
 
 angular
   .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
