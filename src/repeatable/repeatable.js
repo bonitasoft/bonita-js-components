@@ -141,11 +141,11 @@ angular
         var prop = attr.visibleProp || 'visible';
 
         columns = [].map.call(header.children, function(th, index) {
-          return {
-            th: th,
-            td: tdCells[index]
-          };
-        })
+            return {
+              th: th,
+              td: tdCells[index]
+            };
+          })
           .filter(filterIgnoreCell)
           .map(function(item) {
             angular.element(item.th).remove();
@@ -155,8 +155,9 @@ angular
               header: item.th.outerHTML,
               cell: item.td.outerHTML
             };
-            if (item.th.attributes) {
-              o[prop] = angular.isUndefined(item.th.attributes[prop]) || angular.isUndefined(item.th.attributes[prop].value) || ((item.th.attributes[prop].value === 'false') ? false : true);
+            if (item.th.getAttribute) {
+              o[prop] = angular.isUndefined(item.th.getAttribute(prop)) || ((item.th.getAttribute(prop) === 'false') ? false : true);
+              o.toRemoveExpression = item.th.getAttribute('remove-column');
             } else {
               o[prop] = true;
             }
@@ -183,8 +184,12 @@ angular
         row.insertBefore(tdRepeat, row.children[insertIndex]);
 
         return function(scope) {
-          scope.$columns = columns;
+          scope.$columns = columns.filter(isCellNotToRemove);
           scope.$visibilityFilter = columnFilter.bind(null, prop);
+
+          function isCellNotToRemove (item) {
+            return !(!!item.toRemoveExpression && !!$interpolate(item.toRemoveExpression)(scope));
+          }
         };
       }
     };
@@ -255,7 +260,6 @@ angular
         if (visibleConfig.length !== scope.$columns.length) {
           throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
         }
-
         scope.$columns.forEach(function(item, index) {
           item[prop] = visibleConfig[index];
         });

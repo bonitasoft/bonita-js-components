@@ -25,7 +25,8 @@ describe('repeatable', function(){
           '       <th>id</th>'+
           '       <th visible="false">name</th>'+
           '       <th visible="">content</th>'+
-          '       <th data-ignore>last</th>'+
+          '       <th remove-column="true">key</th>'+
+          '       <th data-ignore remove-column="false">last</th>'+
           '    </tr>'+
           '    <tr>'+
           '      <th colspan="4">another heading</th>'+
@@ -37,6 +38,7 @@ describe('repeatable', function(){
           '       <td title="{{tag.id}}">{{tag.id}}</td>'+
           '       <td>{{tag.name}}</td>'+
           '       <td>{{tag.content}}</td>'+
+          '       <td>{{tag.key}}</td>'+
           '       <td>test</td>'+
           '    </tr>'+
           '  </tbody>'+
