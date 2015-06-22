@@ -155,12 +155,8 @@ angular
               header: item.th.outerHTML,
               cell: item.td.outerHTML
             };
-            if (item.th.getAttribute) {
-              o[prop] = angular.isUndefined(item.th.getAttribute(prop)) || ((item.th.getAttribute(prop) === 'false') ? false : true);
-              o.toRemoveExpression = item.th.getAttribute('remove-column');
-            } else {
-              o[prop] = true;
-            }
+            o[prop] = angular.isUndefined(item.th.getAttribute) || angular.isUndefined(item.th.getAttribute(prop)) || ((item.th.getAttribute(prop) === 'false') ? false : true);
+            o.toRemoveExpression = item.th.getAttribute('remove-column');
             return o;
           });
 
