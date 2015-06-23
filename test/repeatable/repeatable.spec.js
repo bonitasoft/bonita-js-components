@@ -24,9 +24,9 @@ describe('repeatable', function(){
           '       <th data-ignore>first</th>'+
           '       <th>id</th>'+
           '       <th visible="false">name</th>'+
-          '       <th visible="">content</th>'+
-          '       <th remove-column="true">key</th>'+
-          '       <th data-ignore remove-column="false">last</th>'+
+          '       <th remove-column="false" visible="">content</th>'+
+          '       <th remove-column="{{1===1}}">key</th>'+
+          '       <th data-ignore remove-column="{{false}}">last</th>'+
           '    </tr>'+
           '    <tr>'+
           '      <th colspan="4">another heading</th>'+
