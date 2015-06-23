@@ -184,7 +184,8 @@ angular
           scope.$visibilityFilter = columnFilter.bind(null, prop);
 
           function isCellNotToRemove (item) {
-            return !(!!item.toRemoveExpression && !!$interpolate(item.toRemoveExpression)(scope));
+            console.log('interpolate', !!item.toRemoveExpression && $interpolate(item.toRemoveExpression)(scope));
+            return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)(scope) === 'true');
           }
         };
       }
