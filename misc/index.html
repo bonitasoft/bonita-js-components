@@ -20,7 +20,7 @@
       <h1>Demo page</h1>
     </div>
     <!-- <table bonitable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table"> -->
-    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table">
+    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" bo-storable class="table">
       <thead>
         <tr>
           <td colspan="{{$columns.length}}">
@@ -87,6 +87,7 @@
   <script src="angular/angular.min.js"></script>
   <script src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="ng-sortable/dist/ng-sortable.min.js"></script>
+  <script src="ngstorage/ngStorage.min.js"></script>
   <script src="bonita-lib-tpl.js"></script>
   <script>
     angular
@@ -97,6 +98,8 @@
         'org.bonitasoft.bonitable.settings',
         'org.bonitasoft.bonitable.selectable',
         'org.bonitasoft.bonitable.repeatable',
+        'org.bonitasoft.bonitable.storable',
+        'ngStorage',
         'ui.bootstrap',
         'ui.sortable'
       ])

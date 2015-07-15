@@ -93,7 +93,6 @@ angular
 
     return {
       restrict: 'A',
-      scope: true,
       require:'^bonitable',
       templateUrl: 'template/sortable/sorter.tpl.html',
       transclude: true,
@@ -101,7 +100,7 @@ angular
         $scope.property =  (attr.boSorter || attr.id || '').trim();
 
         if ($scope.property.length === 0){
-          throw new Error('bo-sorter: no id found. Please specify on wich property the sort is applied to or add an id');
+          throw new Error('bo-sorter: no id found. Please specify on which property the sort is applied to or add an id');
         }
 
         $scope.sortOptions = bonitableCtrl.getOptions();
@@ -110,7 +109,6 @@ angular
 
         // Set de default title if no title exist
         $scope.titleSortAttr = generateTitle(attr, sort);
-
         $scope.sort = function() {
           if ($scope.sortOptions.property === $scope.property){
             $scope.sortOptions.direction = !$scope.sortOptions.direction;
