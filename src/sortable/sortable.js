@@ -100,17 +100,15 @@ angular
         $scope.property =  (attr.boSorter || attr.id || '').trim();
 
         if ($scope.property.length === 0){
-          throw new Error('bo-sorter: no id found. Please specify on wich property the sort is applied to or add an id');
+          throw new Error('bo-sorter: no id found. Please specify on which property the sort is applied to or add an id');
         }
 
         $scope.sortOptions = bonitableCtrl.getOptions();
-        console.log('sortOptions', $scope.sortOptions);
 
         var sort = getDirectionSort($scope.sortOptions.direction);
 
         // Set de default title if no title exist
         $scope.titleSortAttr = generateTitle(attr, sort);
-
         $scope.sort = function() {
           if ($scope.sortOptions.property === $scope.property){
             $scope.sortOptions.direction = !$scope.sortOptions.direction;

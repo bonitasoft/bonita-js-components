@@ -179,13 +179,12 @@ angular
         header.insertBefore(thRepeat, header.children[insertIndex]);
         row.insertBefore(tdRepeat, row.children[insertIndex]);
 
-        return function(scope) {
-          scope.$columns = columns.filter(isCellNotToRemove);
-          scope.$visibilityFilter = columnFilter.bind(null, prop);
+        return function($scope) {
+          $scope.$columns = columns.filter(isCellNotToRemove);
+          $scope.$visibilityFilter = columnFilter.bind(null, prop);
 
-          console.log('columns', scope.$columns);
-          function isCellNotToRemove (item) {
-            return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)(scope) === 'true');
+          function isCellNotToRemove(item) {
+            return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)($scope) === 'true');
           }
         };
       }
