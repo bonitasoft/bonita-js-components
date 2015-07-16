@@ -183,6 +183,7 @@ angular
           scope.$columns = columns.filter(isCellNotToRemove);
           scope.$visibilityFilter = columnFilter.bind(null, prop);
 
+          console.log('columns', scope.$columns);
           function isCellNotToRemove (item) {
             return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)(scope) === 'true');
           }
@@ -248,7 +249,7 @@ angular
    */
 .directive('repeatableConfig', function() {
   return {
-    priority: 1,
+    priority: 2,
     require: 'bonitable',
     link: function(scope, elem, attr) {
       scope.$watch(attr.repeatableConfig, function(visibleConfig) {

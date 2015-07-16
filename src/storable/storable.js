@@ -75,11 +75,25 @@ angular
       scope: true,
       require:'^bonitable',
       priority: 1,
-      link: function($scope, iElm, attr, bonitableCtrl) {
+      link: function($scope, $rootScope, iElm, attr, bonitableCtrl) {
         //$scope.sortOptions = localSortrage.("sortOptions");
         //$scope.columns = localSortrage.("columns");
-        $localStorage.sortOptions = $scope.sortOptions;
-        $localStorage.columns = "Hello2";
+        console.log($scope.columns);
+
+        $scope.$watch('sortOptions', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            $localStorage.sortOptions = $scope.sortOptions;
+          }
+        });
+
+        $scope.$watch('columns', function(newValue, oldValue) {
+          console.log($scope.columns);
+          console.log('newValue: ', newValue);
+          console.log('old:', oldValue);
+          if (newValue !== oldValue) {
+            $localStorage.columns = $scope.columns;
+          }
+        });
       }
     };
   });

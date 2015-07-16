@@ -93,7 +93,6 @@ angular
 
     return {
       restrict: 'A',
-      scope: true,
       require:'^bonitable',
       templateUrl: 'template/sortable/sorter.tpl.html',
       transclude: true,
@@ -105,6 +104,7 @@ angular
         }
 
         $scope.sortOptions = bonitableCtrl.getOptions();
+        console.log('sortOptions', $scope.sortOptions);
 
         var sort = getDirectionSort($scope.sortOptions.direction);
 
