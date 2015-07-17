@@ -34,9 +34,8 @@ angular
           }
         };
 
-        scope.clearLocalStorage = function init(){
-          //TODO
-
+        scope.clearTableStorage = function clearTableStorage(){
+          delete $localStorage[storageId];
         };
 
         scope.init();
