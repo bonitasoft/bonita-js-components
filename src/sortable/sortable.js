@@ -94,6 +94,7 @@ angular
     return {
       restrict: 'A',
       require:'^bonitable',
+      scope: true,
       templateUrl: 'template/sortable/sorter.tpl.html',
       transclude: true,
       link: function($scope, iElm, attr, bonitableCtrl) {
