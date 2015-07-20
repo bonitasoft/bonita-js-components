@@ -3,7 +3,8 @@
  */
 angular
   .module('org.bonitasoft.bonitable.storable',[
-    'org.bonitasoft.bonitable'
+    'org.bonitasoft.bonitable',
+    'ngStorage'
     ])
   .directive('boStorable', function($localStorage){
     return {
@@ -34,10 +35,9 @@ angular
           }
         };
 
-        scope.clearTableStorage = function clearTableStorage(){
+        scope.clearTableStorage = function clearTableStorage(storageId){
           delete $localStorage[storageId];
         };
-
         scope.init();
 
         scope.$watch(bonitableCtrl.getOptions, function(newValue, oldValue) {
