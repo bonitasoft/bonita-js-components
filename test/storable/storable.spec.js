@@ -41,45 +41,19 @@ describe('storable directive', function(){
 
   beforeEach(inject(function($rootScope, $localStorage) {
     scope = $rootScope.$new();
+    //clean up the localstorage values
     delete $localStorage[storageId];
   }));
 
  
   it('should throw an exception when no storage id is given',inject(function($document, $compile) {
     var markup = '<div><table bonitable bo-storable></table></div>';
-
     function test() {
       $compile(markup)(scope);
       scope.$digest();
     }
     expect(test).toThrow();
   }));
-
-  it('should  call init',inject(function($document, $compile) {
-    //Given
-    var markup = '<div>'+
-        '<table bonitable bo-storable="'+storageId+'">'+
-        '  <thead>'+
-        '    <tr>'+
-        '       <th>ID</th>'+
-        '    </tr>'+
-        '  </thead>'+
-        '</table>'+
-        '</div>';
-    var tableScope;
-    function test() {
-      var elt = $compile(markup)(scope);
-      scope.$digest();
-      tableScope = elt.find('table[bonitable]').scope();
-    }
-    
-    //When
-    test();
-
-    //Then
-    //expect(tableScope.init).toHaveBeenCalled();
-  }));
-
 
   it('should init the local storage with the given id',inject(function($document, $compile,$localStorage) {
     //Given
@@ -96,7 +70,6 @@ describe('storable directive', function(){
     function test() {
 
       var elt = $compile(markup)(scope);
-      scope.$digest();
       tableScope = elt.find('table[bonitable]').scope();
     }
     
@@ -114,10 +87,10 @@ describe('storable directive', function(){
 
     $localStorage[storageId] = {};
     $localStorage[storageId].columns = localStorageContent[storageId].columns;
-    //$localStorage[storageId].sortOptions = localStorageContent[storageId].sortOptions;
+    $localStorage[storageId].sortOptions = localStorageContent[storageId].sortOptions;
     
     var markup = '<div>'+
-        '<table bonitable bo-storable="'+storageId+'">'+
+        '<table bonitable bo-storable="'+storageId+'" sort-options="sortableOptions" on-sort="sortHandler(options)">'+
         '  <thead>'+
         '    <tr>'+
         '       <th>ID</th>'+
@@ -128,8 +101,9 @@ describe('storable directive', function(){
 
     var tableScope;
     function test() {
+      scope.sortableOptions = {};
       var elt = $compile(markup)(scope);
-      scope.$digest();
+      
       tableScope = elt.find('table[bonitable]').scope();
     }
     
@@ -138,7 +112,7 @@ describe('storable directive', function(){
 
     //Then
     expect(tableScope.$columns).toEqual(localStorageContent[storageId].columns);
-
+    expect(scope.sortableOptions).toEqual(localStorageContent[storageId].sortOptions);
 
   }));
 });

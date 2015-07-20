@@ -2,43 +2,42 @@
  * Created by fabiolombardi on 15/07/2015.
  */
 angular
-  .module('org.bonitasoft.bonitable.storable',[
+  .module('org.bonitasoft.bonitable.storable', [
     'org.bonitasoft.bonitable',
     'ngStorage'
-    ])
-  .directive('boStorable', function($localStorage){
+  ])
+  .directive('boStorable', function($localStorage, $timeout) {
     return {
       restrict: 'A',
 
-      require:'^bonitable',
+      require: '^bonitable',
       priority: 1,
-      link: function(scope,elt, attr, bonitableCtrl) {
+      link: function(scope, elt, attr, bonitableCtrl) {
         var storageId = attr.boStorable;
-        if(!storageId){
+        if (!storageId) {
           throw new Error('you must set a storageId to bo-storable');
         }
 
-
-        scope.init = function init(){
-          if(!$localStorage[storageId]){
-            $localStorage[storageId] = {};
-          }
-          if($localStorage[storageId].columns){
-            scope.$columns = $localStorage[storageId].columns;
-          }else{
-            $localStorage[storageId].columns = null;
-          }
-          if($localStorage[storageId].sortOptions){
-            bonitableCtrl.setOptions($localStorage[storageId].sortOptions);
-          }else{
-            $localStorage[storageId].sortOptions = null;
-          }
-        };
-
-        scope.clearTableStorage = function clearTableStorage(storageId){
+        scope.clearTableStorage = function clearTableStorage(storageId) {
           delete $localStorage[storageId];
         };
-        scope.init();
+
+
+        if (!$localStorage[storageId]) {
+          $localStorage[storageId] = {};
+        }
+        if ($localStorage[storageId].columns) {
+          scope.$columns = $localStorage[storageId].columns;
+        } else {
+          $localStorage[storageId].columns = null;
+        }
+        if ($localStorage[storageId].sortOptions) {
+          bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
+          bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
+        } else {
+          $localStorage[storageId].sortOptions = null;
+        }
+
 
         scope.$watch(bonitableCtrl.getOptions, function(newValue, oldValue) {
           if (newValue !== oldValue) {
