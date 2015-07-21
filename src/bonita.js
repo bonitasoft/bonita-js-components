@@ -12,6 +12,11 @@ angular.module('org.bonitasoft.bonitable', [])
       return $scope.sortOptions;
     };
 
+    this.setOptions = function(options) {
+      $scope.sortOptions = options;
+    };
+
+
     this.triggerSortHandler = function(params){
       $scope.onSort({options:params});
     };

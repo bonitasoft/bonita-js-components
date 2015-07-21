@@ -43,7 +43,7 @@ describe('sortable directive', function(){
       direction:false,
       property:'name'
     };
-    scope.sortHandler = function(){}
+    scope.sortHandler = function(){};
     spyOn(scope, 'sortHandler').and.callThrough();
     element = $compile(markup)(scope);
 
@@ -57,14 +57,14 @@ describe('sortable directive', function(){
         '<table bonitable>'+
         '  <thead>'+
         '    <tr>'+
-        '       <th bo-sorter>ID</th>'
+        '       <th bo-sorter>ID</th>'+
         '    </tr>'+
         '  </thead>'+
         '</table>'+
         '</div>';
 
     function test() {
-      var el = $compile(markup)(scope);
+      $compile(markup)(scope);
       scope.$digest();
     }
 
