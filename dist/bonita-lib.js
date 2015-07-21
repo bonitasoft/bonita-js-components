@@ -195,116 +195,6 @@ angular.module('org.bonitasoft.bonitable', [])
     };
   });
 
-/* jshint sub:true*/
-(function () {
-  'use strict';
-  angular.module('org.bonitasoft.services.topurl', [])
-    .service('manageTopUrl', ['$window', function ($window) {
-      var manageTopUrlService = {};
-
-      manageTopUrlService.getCurrentPageToken = function() {
-        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/,
-          pageTokenMatches = pageTokenRegExp.exec($window.top.location.hash);
-
-        return Array.isArray(pageTokenMatches) ? pageTokenMatches[2] : '';
-      };
-
-      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
-
-        if (paramValue !== undefined && $window.self !== $window.top) {
-
-          var pageToken = manageTopUrlService.getCurrentPageToken();
-
-          if (!!$window.top.location.hash) {
-
-            var paramRegExp  = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)'),
-                paramMatches = $window.top.location.hash.match(paramRegExp);
-
-            if (!Array.isArray(paramMatches)) {
-
-              var currentHash = $window.top.location.hash;
-              if(paramValue) {
-                $window.top.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
-              }
-
-            } else {
-
-              var paramToSet = '';
-              if(paramValue){
-                paramToSet = pageToken + param + '=' + paramValue;
-              }
-
-              $window.top.location.hash = $window.top.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
-            }
-            return;
-
-          }
-
-          if(paramValue) {
-            $window.top.location.hash = '#' + pageToken + param + '=' + paramValue;
-          }
-
-        }
-      };
-
-      manageTopUrlService.getCurrentProfile = function () {
-        if ($window && $window.top && $window.top.location && $window.top.location.hash) {
-          var currentProfileMatcher = $window.top.location.hash.match(/\b_pf=\d+\b/);
-          return Array.isArray(currentProfileMatcher) ? currentProfileMatcher[0] : '';
-        }
-      };
-
-      manageTopUrlService.getPath = function () {
-        return $window.top.location.pathname;
-      };
-
-      manageTopUrlService.getSearch = function () {
-        return $window.top.location.search || '';
-      };
-
-      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
-        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
-      };
-
-      /**
-       * Update the iframe destination hash
-       * @param  {Object} destination Routing configuration for the iframe
-       * @return {void}
-       */
-      manageTopUrlService.goTo = function(destination){
-
-        var params = '&';
-
-        if(angular.isUndefined(destination)) {
-          throw new TypeError('You must pass an Object as argument');
-        }
-        if(typeof destination === 'string'){
-          $window.top.location.hash = '?_p='+ destination+'&' + manageTopUrlService.getCurrentProfile();
-          return;
-        }
-        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
-
-        if(!destination.token){
-          throw new Error('You must set a token to define the destination page');
-        }
-
-        angular.forEach(destination, function (value, key){
-          if(key && value && key !== 'token' && key !== 'prependToken'){
-            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
-          }
-        });
-
-        // Change the iframe hash only, not the current window hash
-        if($window.top.location.hash !== $window.location.hash) {
-          $window.top.location.hash = '?_p='+ destination.token+'&' + manageTopUrlService.getCurrentProfile() + params;
-        }
-      };
-
-      //cannot use module pattern or reveling since we would want to mock methods on test
-      return manageTopUrlService;
-    }]);
-})();
-
 angular.module('org.bonitasoft.dragAndDrop',[])
   .provider('boDraggableItem', function() {
 
@@ -663,6 +553,116 @@ angular.module('org.bonitasoft.dragAndDrop',[])
     };
 
   }]);
+
+/* jshint sub:true*/
+(function () {
+  'use strict';
+  angular.module('org.bonitasoft.services.topurl', [])
+    .service('manageTopUrl', ['$window', function ($window) {
+      var manageTopUrlService = {};
+
+      manageTopUrlService.getCurrentPageToken = function() {
+        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/,
+          pageTokenMatches = pageTokenRegExp.exec($window.top.location.hash);
+
+        return Array.isArray(pageTokenMatches) ? pageTokenMatches[2] : '';
+      };
+
+      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
+
+        if (paramValue !== undefined && $window.self !== $window.top) {
+
+          var pageToken = manageTopUrlService.getCurrentPageToken();
+
+          if (!!$window.top.location.hash) {
+
+            var paramRegExp  = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)'),
+                paramMatches = $window.top.location.hash.match(paramRegExp);
+
+            if (!Array.isArray(paramMatches)) {
+
+              var currentHash = $window.top.location.hash;
+              if(paramValue) {
+                $window.top.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
+              }
+
+            } else {
+
+              var paramToSet = '';
+              if(paramValue){
+                paramToSet = pageToken + param + '=' + paramValue;
+              }
+
+              $window.top.location.hash = $window.top.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
+            }
+            return;
+
+          }
+
+          if(paramValue) {
+            $window.top.location.hash = '#' + pageToken + param + '=' + paramValue;
+          }
+
+        }
+      };
+
+      manageTopUrlService.getCurrentProfile = function () {
+        if ($window && $window.top && $window.top.location && $window.top.location.hash) {
+          var currentProfileMatcher = $window.top.location.hash.match(/\b_pf=\d+\b/);
+          return Array.isArray(currentProfileMatcher) ? currentProfileMatcher[0] : '';
+        }
+      };
+
+      manageTopUrlService.getPath = function () {
+        return $window.top.location.pathname;
+      };
+
+      manageTopUrlService.getSearch = function () {
+        return $window.top.location.search || '';
+      };
+
+      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
+        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
+      };
+
+      /**
+       * Update the iframe destination hash
+       * @param  {Object} destination Routing configuration for the iframe
+       * @return {void}
+       */
+      manageTopUrlService.goTo = function(destination){
+
+        var params = '&';
+
+        if(angular.isUndefined(destination)) {
+          throw new TypeError('You must pass an Object as argument');
+        }
+        if(typeof destination === 'string'){
+          $window.top.location.hash = '?_p='+ destination+'&' + manageTopUrlService.getCurrentProfile();
+          return;
+        }
+        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
+
+        if(!destination.token){
+          throw new Error('You must set a token to define the destination page');
+        }
+
+        angular.forEach(destination, function (value, key){
+          if(key && value && key !== 'token' && key !== 'prependToken'){
+            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
+          }
+        });
+
+        // Change the iframe hash only, not the current window hash
+        if($window.top.location.hash !== $window.location.hash) {
+          $window.top.location.hash = '?_p='+ destination.token+'&' + manageTopUrlService.getCurrentProfile() + params;
+        }
+      };
+
+      //cannot use module pattern or reveling since we would want to mock methods on test
+      return manageTopUrlService;
+    }]);
+})();
 
 angular
   .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
@@ -1252,57 +1252,55 @@ angular
  * Created by fabiolombardi on 15/07/2015.
  */
 angular
-  .module('org.bonitasoft.bonitable.storable', [
-    'org.bonitasoft.bonitable',
-    'ngStorage'
-  ])
-  .directive('boStorable', ['$localStorage', function($localStorage) {
-    return {
-      restrict: 'A',
+    .module('org.bonitasoft.bonitable.storable', [
+        'org.bonitasoft.bonitable',
+        'ngStorage'
+    ])
+    .directive('boStorable', ['$localStorage', function($localStorage) {
+        return {
+            restrict: 'A',
 
-      require: '^bonitable',
-      priority: 1,
-      link: function(scope, elt, attr, bonitableCtrl) {
-        var storageId = attr.boStorable;
-        if (!storageId) {
-          throw new Error('you must set a storage identifier to bo-storable');
-        }
+            require: '^bonitable',
+            priority: 1,
+            link: function(scope, elt, attr, bonitableCtrl) {
+                var storageId = attr.boStorable;
+                if (!storageId) {
+                    throw new Error('you must set a storageId to bo-storable');
+                }
 
-        scope.clearTableStorage = function clearTableStorage(storageId) {
-          delete $localStorage[storageId];
+                scope.clearTableStorage = function clearTableStorage(storageId) {
+                    delete $localStorage[storageId];
+                };
+
+
+                if (!$localStorage[storageId]) {
+                    $localStorage[storageId] = {};
+                }
+                if ($localStorage[storageId].columns) {
+                    scope.$columns = $localStorage[storageId].columns;
+                } else {
+                    $localStorage[storageId].columns = null;
+                }
+                if ($localStorage[storageId].sortOptions) {
+                    bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
+                    bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
+                } else {
+                    $localStorage[storageId].sortOptions = null;
+                }
+
+
+                scope.$watch(bonitableCtrl.getOptions, function(newValue) {
+                    $localStorage[storageId].sortOptions = newValue;
+                }, true);
+
+                scope.$watch('$columns', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        $localStorage[storageId].columns = newValue;
+                    }
+                }, true);
+            }
         };
-
-
-        if (!$localStorage[storageId]) {
-          $localStorage[storageId] = {};
-        }
-        if ($localStorage[storageId].columns) {
-          scope.$columns = $localStorage[storageId].columns;
-        } else {
-          $localStorage[storageId].columns = null;
-        }
-        if ($localStorage[storageId].sortOptions) {
-          bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
-          bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
-        } else {
-          $localStorage[storageId].sortOptions = null;
-        }
-
-
-        scope.$watch(bonitableCtrl.getOptions, function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            $localStorage[storageId].sortOptions = newValue;
-          }
-        }, true);
-
-        scope.$watch('$columns', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            $localStorage[storageId].columns = newValue;
-          }
-        }, true);
-      }
-    };
-  }]);
+    }]);
 
 'use strict';
 /**

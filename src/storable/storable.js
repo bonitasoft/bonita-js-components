@@ -6,7 +6,7 @@ angular
         'org.bonitasoft.bonitable',
         'ngStorage'
     ])
-    .directive('boStorable', function($localStorage, $timeout) {
+    .directive('boStorable', function($localStorage) {
         return {
             restrict: 'A',
 
