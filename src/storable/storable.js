@@ -6,7 +6,7 @@ angular
     'org.bonitasoft.bonitable',
     'ngStorage'
   ])
-  .directive('boStorable', function($localStorage, $timeout) {
+  .directive('boStorable', function($localStorage) {
     return {
       restrict: 'A',
 
@@ -15,7 +15,7 @@ angular
       link: function(scope, elt, attr, bonitableCtrl) {
         var storageId = attr.boStorable;
         if (!storageId) {
-          throw new Error('you must set a storageId to bo-storable');
+          throw new Error('you must set a storage identifier to bo-storable');
         }
 
         scope.clearTableStorage = function clearTableStorage(storageId) {
