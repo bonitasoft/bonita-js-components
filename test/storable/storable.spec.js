@@ -110,6 +110,6 @@ describe('storable directive', function() {
     //Then
     expect(tableScope.$columns).toEqual(localStorageContent[storageId].columns);
     expect(scope.sortableOptions).toEqual(localStorageContent[storageId].sortOptions);
-    expect(scope.pagination.pageSize).toEqual(localStorageContent[storageId].itemsPerPage);
+    expect(scope.pagination.itemsPerPage).toEqual(localStorageContent[storageId].itemsPerPage);
   }));
 });

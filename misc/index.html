@@ -33,8 +33,8 @@
               <button class="btn btn-default" ng-click="updateConfig(small)"  ng-disabled="$selectedItems.length === 0">small config</button>
               <button class="btn btn-default" ng-click="updateConfig(all)" ng-disabled="$selectedItems.length === 0">basic config</button>
             </div>
-            <pagination total-items="pagination.total" items-per-page="pagination.pageSize" ng-model="pagination.currentPage" ></pagination>
-            <table-settings class="pull-right" columns="$columns" label-prop="name" page-size="pagination.pageSize" sizes="PAGE_SIZES" update-visibility="visibilityHandler(field)" update-page-size="pageSizeHandler(size)"></table-settings>
+            <pagination total-items="pagination.total" items-per-page="pagination.itemsPerPage" ng-model="pagination.currentPage" ></pagination>
+            <table-settings class="pull-right" columns="$columns" label-prop="name" page-size="pagination.itemsPerPage" sizes="PAGE_SIZES" update-visibility="visibilityHandler(field)" update-page-size="pageSizeHandler(size)"></table-settings>
           </th>
         </tr>
         <tr data-headers>
@@ -60,7 +60,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in items | orderBy: sortableOptions.property : sortableOptions.direction | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">
+        <tr ng-repeat="item in items | orderBy: sortableOptions.property : sortableOptions.direction | slice: (pagination.currentPage-1) * pagination.itemsPerPage | limitTo:pagination.itemsPerPage">
           <td><input type="checkbox" bo-selector="item"></td>
           <!-- <td ng-repeat="col in columns">{{item[col]}}</th> -->
 
@@ -2647,7 +2647,7 @@
         ];
 
         $rootScope.pagination = {
-          pageSize:50,
+          itemsPerPage:50,
           currentPage:1,
           total:$rootScope.items.length
         };
