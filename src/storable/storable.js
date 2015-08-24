@@ -38,7 +38,7 @@ angular
                     $localStorage[storageId].sortOptions = null;
                 }
                 if ($localStorage[storageId].itemsPerPage) {
-                  scope.pagination.pageSize = $localStorage[storageId].itemsPerPage;
+                  scope.pagination.itemsPerPage = $localStorage[storageId].itemsPerPage;
                 } else {
                   $localStorage[storageId].itemsPerPage = null;
                 }
@@ -55,7 +55,7 @@ angular
                 }, true);
 
                 scope.$watch(function() {
-                  return scope.pagination.pageSize;
+                  return scope.pagination.itemsPerPage;
                 }, function(newValue) {
                   $localStorage[storageId].itemsPerPage = newValue;
                 }, true);
