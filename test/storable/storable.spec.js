@@ -27,7 +27,8 @@ describe('storable directive', function() {
     'sortOptions': {
       'property': 'email',
       'direction': true
-    }
+    },
+    'itemsPerPage': 10
   };
 
 
@@ -74,7 +75,8 @@ describe('storable directive', function() {
     expect($localStorage[storageId]).toBeDefined();
     expect($localStorage[storageId]).toEqual({
       columns: null,
-      sortOptions: null
+      sortOptions: null,
+      itemsPerPage: null
     });
   }));
 
@@ -85,6 +87,7 @@ describe('storable directive', function() {
     $localStorage[storageId] = {};
     $localStorage[storageId].columns = localStorageContent[storageId].columns;
     $localStorage[storageId].sortOptions = localStorageContent[storageId].sortOptions;
+    $localStorage[storageId].itemsPerPage = localStorageContent[storageId].itemsPerPage;
 
     var markup = '<div>' +
       '<table bonitable bo-storable="' + storageId + '" sort-options="sortableOptions" on-sort="sortHandler(options)">' +
@@ -100,12 +103,13 @@ describe('storable directive', function() {
 
     //When
     scope.sortableOptions = {};
+    scope.pagination = {};
     var elt = $compile(markup)(scope);
     tableScope = elt.find('table[bonitable]').scope();
 
     //Then
     expect(tableScope.$columns).toEqual(localStorageContent[storageId].columns);
     expect(scope.sortableOptions).toEqual(localStorageContent[storageId].sortOptions);
-
+    expect(scope.pagination.pageSize).toEqual(localStorageContent[storageId].itemsPerPage);
   }));
 });

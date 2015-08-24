@@ -37,6 +37,11 @@ angular
                 } else {
                     $localStorage[storageId].sortOptions = null;
                 }
+                if ($localStorage[storageId].itemsPerPage) {
+                  scope.pagination.pageSize = $localStorage[storageId].itemsPerPage;
+                } else {
+                  $localStorage[storageId].itemsPerPage = null;
+                }
 
 
                 scope.$watch(bonitableCtrl.getOptions, function(newValue) {
@@ -47,6 +52,12 @@ angular
                     if (newValue !== oldValue) {
                         $localStorage[storageId].columns = newValue;
                     }
+                }, true);
+
+                scope.$watch(function() {
+                  return scope.pagination.pageSize;
+                }, function(newValue) {
+                  $localStorage[storageId].itemsPerPage = newValue;
                 }, true);
             }
         };
