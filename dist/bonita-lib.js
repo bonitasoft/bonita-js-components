@@ -16,6 +16,10 @@ angular.module('org.bonitasoft.bonitable', [])
       $scope.sortOptions = options;
     };
 
+    this.onStorageLoaded = function() {
+      return $scope.onStorageLoaded();
+    };
+
 
     this.triggerSortHandler = function(params){
       $scope.onSort({options:params});
@@ -180,7 +184,10 @@ angular.module('org.bonitasoft.bonitable', [])
         sortOptions:'=',
 
         //bo-repeatable-config
-        repeatableConfig:'='
+        repeatableConfig:'=',
+
+        //bo-storable config
+        onStorageLoaded:'&'
       },
       transclude:'element',
       controller: 'BonitableController',
@@ -1259,7 +1266,6 @@ angular
     .directive('boStorable', ['$localStorage', function($localStorage) {
         return {
             restrict: 'A',
-
             require: '^bonitable',
             priority: 1,
             link: function(scope, elt, attr, bonitableCtrl) {
@@ -1271,7 +1277,6 @@ angular
                 scope.clearTableStorage = function clearTableStorage(storageId) {
                     delete $localStorage[storageId];
                 };
-
 
                 if (!$localStorage[storageId]) {
                     $localStorage[storageId] = {};
@@ -1304,11 +1309,11 @@ angular
                     }
                 }, true);
 
-                scope.$watch(function() {
-                  return scope.pagination.itemsPerPage;
-                }, function(newValue) {
+                scope.$watch('pagination.itemsPerPage', function(newValue) {
                   $localStorage[storageId].itemsPerPage = newValue;
                 }, true);
+
+                bonitableCtrl.onStorageLoaded();
             }
         };
     }]);
