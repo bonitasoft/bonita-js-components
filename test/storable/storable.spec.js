@@ -90,7 +90,7 @@ describe('storable directive', function() {
     $localStorage[storageId].itemsPerPage = localStorageContent[storageId].itemsPerPage;
 
     var markup = '<div>' +
-      '<table bonitable bo-storable="' + storageId + '" sort-options="sortableOptions" on-sort="sortHandler(options)">' +
+      '<table bonitable bo-storable="' + storageId + '" sort-options="sortableOptions" on-sort="sortHandler(options)" on-storage-loaded="notifyStorageLoaded()">' +
       '  <thead>' +
       '    <tr>' +
       '       <th>ID</th>' +
@@ -101,15 +101,21 @@ describe('storable directive', function() {
 
     var tableScope;
 
+    scope.notifyStorageLoaded = function() {
+      scope.storageLoaded = true;
+    };
+
     //When
     scope.sortableOptions = {};
     scope.pagination = {};
     var elt = $compile(markup)(scope);
-    tableScope = elt.find('table[bonitable]').scope();
+    var tableElement = elt.find('table[bonitable]');
+    tableScope = tableElement.scope();
 
     //Then
     expect(tableScope.$columns).toEqual(localStorageContent[storageId].columns);
     expect(scope.sortableOptions).toEqual(localStorageContent[storageId].sortOptions);
     expect(scope.pagination.itemsPerPage).toEqual(localStorageContent[storageId].itemsPerPage);
+    expect(scope.storageLoaded).toBeTruthy();
   }));
 });
