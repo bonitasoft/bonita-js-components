@@ -16,6 +16,10 @@ angular.module('org.bonitasoft.bonitable', [])
       $scope.sortOptions = options;
     };
 
+    this.onStorageLoaded = function() {
+      return $scope.onStorageLoaded();
+    };
+
 
     this.triggerSortHandler = function(params){
       $scope.onSort({options:params});
@@ -180,7 +184,10 @@ angular.module('org.bonitasoft.bonitable', [])
         sortOptions:'=',
 
         //bo-repeatable-config
-        repeatableConfig:'='
+        repeatableConfig:'=',
+
+        //bo-storable config
+        onStorageLoaded:'&'
       },
       transclude:'element',
       controller: 'BonitableController',
