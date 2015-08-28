@@ -9,7 +9,6 @@ angular
     .directive('boStorable', function($localStorage) {
         return {
             restrict: 'A',
-
             require: '^bonitable',
             priority: 1,
             link: function(scope, elt, attr, bonitableCtrl) {
@@ -21,7 +20,6 @@ angular
                 scope.clearTableStorage = function clearTableStorage(storageId) {
                     delete $localStorage[storageId];
                 };
-
 
                 if (!$localStorage[storageId]) {
                     $localStorage[storageId] = {};
@@ -54,11 +52,11 @@ angular
                     }
                 }, true);
 
-                scope.$watch(function() {
-                  return scope.pagination.itemsPerPage;
-                }, function(newValue) {
+                scope.$watch('pagination.itemsPerPage', function(newValue) {
                   $localStorage[storageId].itemsPerPage = newValue;
                 }, true);
+
+                bonitableCtrl.onStorageLoaded();
             }
         };
     });

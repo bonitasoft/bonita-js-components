@@ -20,7 +20,7 @@
       <h1>Demo page</h1>
     </div>
     <!-- <table bonitable sort-options="sortableOptions" on-sort="sortHandler(options)" class="table"> -->
-    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" bo-storable="example" class="table">
+    <table bonitable bo-repeatable sort-options="sortableOptions" on-sort="sortHandler(options)" bo-storable="example" on-storage-loaded="loadContent()" class="table">
       <thead>
         <tr>
           <td colspan="{{$columns.length}}">
@@ -139,12 +139,15 @@
 
         $rootScope.config = $rootScope.small;
 
+        $rootScope.items  = [];
+
         $rootScope.updateConfig = function(config){
           $rootScope.config = config;
         };
 
-        $rootScope.items  = [
-          {
+        $rootScope.loadContent = function(){
+          $rootScope.items  = [
+            {
             "index": 0,
             "guid": "65db3bc9-5d23-4a08-8ce3-74919b373035",
             "balance": "$3,178.92",
@@ -168,8 +171,8 @@
               "reprehenderit"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 1,
             "guid": "9489169b-ee71-4722-8310-fd1615a8cace",
             "balance": "$3,049.82",
@@ -193,8 +196,8 @@
               "velit"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 2,
             "guid": "eaf7b60e-c962-4a41-b9bf-a140e8f74b71",
             "balance": "$2,053.28",
@@ -218,8 +221,8 @@
               "fugiat"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 3,
             "guid": "5e0d437f-b570-409e-adf1-65818223e26d",
             "balance": "$1,681.09",
@@ -243,8 +246,8 @@
               "commodo"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 4,
             "guid": "a9708db0-251a-4590-bc48-f311f991b4c8",
             "balance": "$2,349.25",
@@ -268,8 +271,8 @@
               "nulla"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 5,
             "guid": "57303507-f8b4-45be-85d2-41b3e4f27497",
             "balance": "$1,883.41",
@@ -293,8 +296,8 @@
               "qui"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 6,
             "guid": "87579734-185b-474c-9aa1-dee47d1dcecc",
             "balance": "$1,089.67",
@@ -318,8 +321,8 @@
               "cupidatat"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 7,
             "guid": "391ee8bc-2a59-49c3-bfcf-c4a9209887dc",
             "balance": "$3,028.01",
@@ -343,8 +346,8 @@
               "ipsum"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 8,
             "guid": "722c9514-6786-446b-abee-f72759dab446",
             "balance": "$3,869.11",
@@ -368,8 +371,8 @@
               "culpa"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 9,
             "guid": "6e09a636-65dc-4b16-b6b7-5f02bc7f76ce",
             "balance": "$2,867.70",
@@ -393,8 +396,8 @@
               "ad"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 10,
             "guid": "0a1b1bff-1d74-474d-a347-3d34c27d227a",
             "balance": "$3,023.39",
@@ -418,8 +421,8 @@
               "eiusmod"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 11,
             "guid": "d7c0fa21-fdf6-4ac3-b38d-78d4f90b2f48",
             "balance": "$1,537.39",
@@ -443,8 +446,8 @@
               "occaecat"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 12,
             "guid": "d40f847e-effb-460b-bf0a-7abdbfa22a37",
             "balance": "$2,459.82",
@@ -468,8 +471,8 @@
               "Lorem"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 13,
             "guid": "b0dfd399-25f6-4a12-8bbb-b57b4f6712cd",
             "balance": "$2,564.93",
@@ -493,8 +496,8 @@
               "nostrud"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 14,
             "guid": "c718df50-a09b-45fc-a215-f58b0f89b02e",
             "balance": "$2,522.62",
@@ -518,8 +521,8 @@
               "ad"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 15,
             "guid": "6d6587e5-8bcf-4f41-b787-26675963fe05",
             "balance": "$2,559.29",
@@ -543,8 +546,8 @@
               "dolor"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 16,
             "guid": "8512ba7e-1210-47fb-9bb3-e6a1bd598e76",
             "balance": "$1,684.56",
@@ -568,8 +571,8 @@
               "velit"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 17,
             "guid": "16ff774e-84fe-4cb2-9c23-68df3893b93a",
             "balance": "$2,155.46",
@@ -593,8 +596,8 @@
               "do"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 18,
             "guid": "70ee6f28-41ae-4c1e-883e-dae0129ec9be",
             "balance": "$1,816.18",
@@ -618,8 +621,8 @@
               "incididunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 19,
             "guid": "aacf507a-91fd-4ec0-bd28-932ba6665b8b",
             "balance": "$3,869.46",
@@ -643,8 +646,8 @@
               "amet"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 20,
             "guid": "a153de9c-df9a-4341-811a-3bb8bc2841bb",
             "balance": "$2,221.84",
@@ -668,8 +671,8 @@
               "veniam"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 21,
             "guid": "f1746236-4be2-4415-a4da-4414959d2ec5",
             "balance": "$2,301.63",
@@ -693,8 +696,8 @@
               "aliquip"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 22,
             "guid": "1783fa30-53b7-492d-87a2-0722dc46a2d1",
             "balance": "$1,901.50",
@@ -718,8 +721,8 @@
               "ullamco"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 23,
             "guid": "aab26341-8d6e-4117-8a31-e2e16b175339",
             "balance": "$2,469.46",
@@ -743,8 +746,8 @@
               "et"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 24,
             "guid": "5628aeb0-374b-46b2-83a7-84037c2f10de",
             "balance": "$2,124.82",
@@ -768,8 +771,8 @@
               "excepteur"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 25,
             "guid": "4529e135-41cd-496e-90bb-0484c9d4c36c",
             "balance": "$3,845.02",
@@ -793,8 +796,8 @@
               "culpa"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 26,
             "guid": "3e12bc5d-9348-48cd-8acb-8fde58e5c0a8",
             "balance": "$2,837.88",
@@ -818,8 +821,8 @@
               "eiusmod"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 27,
             "guid": "559656d9-8231-41f0-ac6e-c291db5bb4b5",
             "balance": "$1,608.23",
@@ -843,8 +846,8 @@
               "irure"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 28,
             "guid": "805abb67-2493-4936-9da0-6aba0712b67b",
             "balance": "$1,783.70",
@@ -868,8 +871,8 @@
               "velit"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 29,
             "guid": "4e84ccd0-e1bc-41bc-99af-23d920c032b8",
             "balance": "$1,942.26",
@@ -893,8 +896,8 @@
               "amet"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 30,
             "guid": "fbee1de4-3251-455b-8780-684f67cde6f4",
             "balance": "$2,046.47",
@@ -918,8 +921,8 @@
               "ut"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 31,
             "guid": "ff1eca28-3fd0-417a-a8f0-04263669b00e",
             "balance": "$1,425.11",
@@ -943,8 +946,8 @@
               "occaecat"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 32,
             "guid": "055e7a79-8e4d-4468-9c49-c024c270683f",
             "balance": "$1,740.26",
@@ -968,8 +971,8 @@
               "deserunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 33,
             "guid": "2b9bf77d-f1bd-4d78-968b-336253c42668",
             "balance": "$3,294.93",
@@ -993,8 +996,8 @@
               "veniam"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 34,
             "guid": "8f1f2c28-2eca-4848-99bb-d6c0f2418591",
             "balance": "$2,393.04",
@@ -1018,8 +1021,8 @@
               "ut"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 35,
             "guid": "bb334fad-6df7-40a0-8fff-78978d1986c6",
             "balance": "$3,960.60",
@@ -1043,8 +1046,8 @@
               "et"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 36,
             "guid": "cb0da091-5343-4a72-9eac-aaf26f786108",
             "balance": "$2,530.80",
@@ -1068,8 +1071,8 @@
               "dolor"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 37,
             "guid": "b45d1192-dc3d-4df3-b963-e50c19430a09",
             "balance": "$2,521.61",
@@ -1093,8 +1096,8 @@
               "adipisicing"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 38,
             "guid": "0c939810-aa31-44eb-9ead-3b9fc2aa1af2",
             "balance": "$1,777.58",
@@ -1118,8 +1121,8 @@
               "reprehenderit"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 39,
             "guid": "4d695bde-ce8a-43e8-8370-0ab6b8bda2db",
             "balance": "$3,471.74",
@@ -1143,8 +1146,8 @@
               "elit"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 40,
             "guid": "c92af25e-7f7f-4414-a8f8-a79a3c737a9a",
             "balance": "$2,353.18",
@@ -1168,8 +1171,8 @@
               "aute"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 41,
             "guid": "168b1e55-bd18-40d5-8318-b4a2f1be7a52",
             "balance": "$2,458.70",
@@ -1193,8 +1196,8 @@
               "dolore"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 42,
             "guid": "ab5503f3-bad4-4434-926d-b85d348f928b",
             "balance": "$3,997.07",
@@ -1218,8 +1221,8 @@
               "commodo"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 43,
             "guid": "3679a18b-8d86-4532-b284-07e020cb1dda",
             "balance": "$3,023.30",
@@ -1243,8 +1246,8 @@
               "excepteur"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 44,
             "guid": "bea286e2-49f0-486e-9da2-a787b136959d",
             "balance": "$3,568.12",
@@ -1268,8 +1271,8 @@
               "minim"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 45,
             "guid": "600b8e83-3d00-443e-82e0-245928d4d22f",
             "balance": "$2,256.52",
@@ -1293,8 +1296,8 @@
               "fugiat"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 46,
             "guid": "f65bcd50-b07b-4648-ace3-28113cc840b7",
             "balance": "$2,783.29",
@@ -1318,8 +1321,8 @@
               "in"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 47,
             "guid": "81dc4537-f011-449a-8c0b-1c551e61e09a",
             "balance": "$1,203.46",
@@ -1343,8 +1346,8 @@
               "esse"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 48,
             "guid": "cc5ee31c-8614-42fa-ad23-d71869a9eae4",
             "balance": "$1,851.81",
@@ -1368,8 +1371,8 @@
               "irure"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 49,
             "guid": "8128d229-2142-4979-a540-6d9e1006ecf0",
             "balance": "$3,562.93",
@@ -1393,8 +1396,8 @@
               "incididunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 50,
             "guid": "88a3595b-3080-4689-b226-639da57ec80a",
             "balance": "$1,147.24",
@@ -1418,8 +1421,8 @@
               "amet"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 51,
             "guid": "c7ade151-8806-4fb4-bbdf-3f27069ba34b",
             "balance": "$3,534.92",
@@ -1443,8 +1446,8 @@
               "enim"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 52,
             "guid": "dcee21c1-79f4-4f53-8c39-6855c2b67748",
             "balance": "$1,219.20",
@@ -1468,8 +1471,8 @@
               "dolore"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 53,
             "guid": "92346802-6dc2-4ec9-9fad-c4ffefe30fe4",
             "balance": "$3,854.56",
@@ -1493,8 +1496,8 @@
               "ex"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 54,
             "guid": "e8aaecc9-4949-43ec-bc39-e7f7b75f6568",
             "balance": "$1,484.62",
@@ -1518,8 +1521,8 @@
               "nulla"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 55,
             "guid": "43c5efa5-c487-4419-8036-a9063cf179b1",
             "balance": "$2,717.23",
@@ -1543,8 +1546,8 @@
               "est"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 56,
             "guid": "c3a2dd9c-2f6a-476b-8a2c-1028a14cf616",
             "balance": "$1,131.46",
@@ -1568,8 +1571,8 @@
               "deserunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 57,
             "guid": "dda077c9-df42-4142-8cc4-fb6e70220f53",
             "balance": "$2,088.52",
@@ -1593,8 +1596,8 @@
               "pariatur"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 58,
             "guid": "7188ed87-b10d-4b9a-84c4-855f9e1714ba",
             "balance": "$3,314.30",
@@ -1618,8 +1621,8 @@
               "nulla"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 59,
             "guid": "3a1c6b27-806c-42b5-9eec-872eb847eb4e",
             "balance": "$2,245.99",
@@ -1643,8 +1646,8 @@
               "nisi"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 60,
             "guid": "00bba102-aa43-476a-93cd-749c655e772d",
             "balance": "$1,490.64",
@@ -1668,8 +1671,8 @@
               "sunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 61,
             "guid": "27178335-c81c-4f73-a741-5b220b4e978a",
             "balance": "$1,303.35",
@@ -1693,8 +1696,8 @@
               "ea"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 62,
             "guid": "e3a4b30c-6587-41b4-88e1-a2481e9f0702",
             "balance": "$3,031.93",
@@ -1718,8 +1721,8 @@
               "occaecat"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 63,
             "guid": "274dec06-c857-439a-9dc0-59a988caeb69",
             "balance": "$1,206.66",
@@ -1743,8 +1746,8 @@
               "veniam"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 64,
             "guid": "db657df5-3ce0-4ecb-8d4c-617117a7787a",
             "balance": "$1,507.09",
@@ -1768,8 +1771,8 @@
               "incididunt"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 65,
             "guid": "daa1c811-a986-4843-8295-1fe3be46c282",
             "balance": "$2,597.64",
@@ -1793,8 +1796,8 @@
               "sint"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 66,
             "guid": "eb3d2f69-100b-4a87-ba36-aac59fb9306f",
             "balance": "$1,665.96",
@@ -1818,8 +1821,8 @@
               "esse"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 67,
             "guid": "a3a37e48-2b19-4ea8-a76f-7bb992db32da",
             "balance": "$2,138.14",
@@ -1843,8 +1846,8 @@
               "pariatur"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 68,
             "guid": "44886dce-418f-401e-9843-7d37841eadbf",
             "balance": "$2,201.17",
@@ -1868,8 +1871,8 @@
               "sunt"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 69,
             "guid": "2b2a7955-e94f-45f3-83fc-1709b1956727",
             "balance": "$3,058.55",
@@ -1893,8 +1896,8 @@
               "id"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 70,
             "guid": "0ee2b695-b087-4964-a500-a383e77c0ccf",
             "balance": "$2,320.79",
@@ -1918,8 +1921,8 @@
               "consequat"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 71,
             "guid": "7ac9e333-1c4d-4ee9-b221-50b73b769df3",
             "balance": "$2,801.36",
@@ -1943,8 +1946,8 @@
               "laborum"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 72,
             "guid": "4d8c4761-ade8-4e0a-af56-ecb8442beacf",
             "balance": "$3,671.42",
@@ -1968,8 +1971,8 @@
               "Lorem"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 73,
             "guid": "50d3f3e8-e5fd-4626-bd55-12a8e759c1bb",
             "balance": "$3,699.63",
@@ -1993,8 +1996,8 @@
               "voluptate"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 74,
             "guid": "cf1a8130-77e7-4591-9c89-80b886f68102",
             "balance": "$2,784.50",
@@ -2018,8 +2021,8 @@
               "nisi"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 75,
             "guid": "ada49b9e-915b-4788-8185-027082fc291b",
             "balance": "$3,472.30",
@@ -2043,8 +2046,8 @@
               "Lorem"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 76,
             "guid": "ac9c9638-21b1-4e48-b936-1cd6fa3ff2f2",
             "balance": "$1,224.85",
@@ -2068,8 +2071,8 @@
               "non"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 77,
             "guid": "c16ab234-d6d2-451d-9565-48cf9a9a8d4d",
             "balance": "$2,298.34",
@@ -2093,8 +2096,8 @@
               "voluptate"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 78,
             "guid": "10822a3d-c5ef-463c-9064-1fea8d1698ea",
             "balance": "$3,663.96",
@@ -2118,8 +2121,8 @@
               "consequat"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 79,
             "guid": "8ee38650-aeb1-4c4e-8bc1-97408c724be6",
             "balance": "$1,006.88",
@@ -2143,8 +2146,8 @@
               "enim"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 80,
             "guid": "0c9cf4a1-eb11-4918-97f3-3b7f309ebb56",
             "balance": "$2,022.86",
@@ -2168,8 +2171,8 @@
               "ullamco"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 81,
             "guid": "8e6d7434-9289-4f63-ba3d-e00d059dbce7",
             "balance": "$1,198.68",
@@ -2193,8 +2196,8 @@
               "laboris"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 82,
             "guid": "69481e4d-a77b-4caf-a24c-ddbc53ef4ad6",
             "balance": "$1,389.64",
@@ -2218,8 +2221,8 @@
               "aliquip"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 83,
             "guid": "bce3d75f-415e-489e-8d49-79038d28b066",
             "balance": "$1,396.84",
@@ -2243,8 +2246,8 @@
               "aliquip"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 84,
             "guid": "8c28b3b8-914f-429a-8e29-91b5bea8a9b2",
             "balance": "$1,047.41",
@@ -2268,8 +2271,8 @@
               "non"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 85,
             "guid": "85c10424-1e88-44ea-a057-7e3aee2b8512",
             "balance": "$3,662.60",
@@ -2293,8 +2296,8 @@
               "dolor"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 86,
             "guid": "391c1ec1-164f-4b8c-9604-472114ab3ca5",
             "balance": "$1,505.86",
@@ -2318,8 +2321,8 @@
               "anim"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 87,
             "guid": "8805a5ed-9612-4283-bcd3-16c05e711192",
             "balance": "$2,851.03",
@@ -2343,8 +2346,8 @@
               "incididunt"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 88,
             "guid": "de9c0e99-2a14-4d22-b20f-1ba8c376af72",
             "balance": "$1,937.54",
@@ -2368,8 +2371,8 @@
               "cupidatat"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 89,
             "guid": "92c68d91-19c3-4e4c-8708-5f3f7cf6d0c1",
             "balance": "$2,216.39",
@@ -2393,8 +2396,8 @@
               "do"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 90,
             "guid": "7bfebd5f-f180-4170-9369-be067e4e6ca3",
             "balance": "$3,828.92",
@@ -2418,8 +2421,8 @@
               "est"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 91,
             "guid": "e4d02938-db4b-4e43-8b00-921a1e2e8679",
             "balance": "$2,595.90",
@@ -2443,8 +2446,8 @@
               "anim"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 92,
             "guid": "499b6715-724f-47fe-90be-1dee4457b91c",
             "balance": "$1,584.87",
@@ -2468,8 +2471,8 @@
               "consectetur"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 93,
             "guid": "03cd8ff4-b7dd-4bef-93b8-63f81fe8d8a7",
             "balance": "$3,644.44",
@@ -2493,8 +2496,8 @@
               "est"
             ],
             "favoriteFruit": "strawberry"
-          },
-          {
+            },
+            {
             "index": 94,
             "guid": "bfbbf89c-b0ae-48c9-9edd-72ab3a15627c",
             "balance": "$1,316.60",
@@ -2518,8 +2521,8 @@
               "occaecat"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 95,
             "guid": "75751725-8ee3-4181-850c-3404053e11eb",
             "balance": "$2,591.77",
@@ -2543,8 +2546,8 @@
               "minim"
             ],
             "favoriteFruit": "banana"
-          },
-          {
+            },
+            {
             "index": 96,
             "guid": "0170c141-26f1-4866-af98-17768eab364c",
             "balance": "$1,309.48",
@@ -2568,8 +2571,8 @@
               "reprehenderit"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 97,
             "guid": "504b0dc3-9db0-485b-b820-fa9bea28056a",
             "balance": "$1,831.92",
@@ -2593,8 +2596,8 @@
               "cillum"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 98,
             "guid": "c54d148b-dfb9-4c26-b662-702d8f405abc",
             "balance": "$1,846.91",
@@ -2618,8 +2621,8 @@
               "ad"
             ],
             "favoriteFruit": "apple"
-          },
-          {
+            },
+            {
             "index": 99,
             "guid": "233f62ea-bf74-44a6-99d8-b7511367e68f",
             "balance": "$2,208.25",
@@ -2643,13 +2646,15 @@
               "cillum"
             ],
             "favoriteFruit": "banana"
-          }
-        ];
+            }
+          ];
+          $rootScope.pagination.total = $rootScope.items.length;
+        };
 
         $rootScope.pagination = {
           itemsPerPage:50,
           currentPage:1,
-          total:$rootScope.items.length
+          total:0
         };
       });
   </script>
