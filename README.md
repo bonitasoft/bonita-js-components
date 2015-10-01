@@ -6,10 +6,11 @@ bonita angular components library.
 ## requirements
 
 
-You need to have __nodejs__, __npm__ and __gulp__   
-This library also needs angular 1.3 to run properly.
+You need to have __nodejs__, __npm__ and __gulp__
+This library also needs angular 1.4.5 to run properly.
 
  - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
+ - [x] bo-storable (bo-storable="storageId" on-storage-loaded="loadContent()")
  - [x] bo-sorter (default id=key, or bo-sorter='key')
  - [x] selectAll (bo-selectable, bo-selectAll, bo-selector)
  - [x] bo-repeatable
