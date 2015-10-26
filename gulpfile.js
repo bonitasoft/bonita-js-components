@@ -25,6 +25,8 @@ var cssmin = require('gulp-csso');
 var connect = require('gulp-connect');
 var browser = require('gulp-open');
 
+var gettext = require('gulp-angular-gettext');
+
 var exec = require('child_process').exec;
 
 
@@ -68,6 +70,12 @@ gulp.task('html2js', function() {
     }))
     .pipe(concat('templates.js'))
     .pipe(gulp.dest('demo'));
+});
+
+gulp.task('pot', function () {
+  return gulp.src(['src/**/*.html', 'src/**/*.js'])
+    .pipe(gettext.extract('bonita-js-components.pot', {}))
+    .pipe(gulp.dest('po/'));
 });
 
 /**
