@@ -75,7 +75,7 @@ gulp.task('html2js', function() {
 gulp.task('pot', function () {
   return gulp.src(['src/**/*.html', 'src/**/*.js'])
     .pipe(gettext.extract('bonita-js-components.pot', {}))
-    .pipe(gulp.dest('po/'));
+    .pipe(gulp.dest('i18n/'));
 });
 
 /**
@@ -300,7 +300,7 @@ gulp.task('env:dist', function() {
   utils.env.dist = true;
 });
 
-gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify', 'pot']);
 gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
