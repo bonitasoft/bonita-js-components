@@ -25,6 +25,8 @@ var cssmin = require('gulp-csso');
 var connect = require('gulp-connect');
 var browser = require('gulp-open');
 
+var gettext = require('gulp-angular-gettext');
+
 var exec = require('child_process').exec;
 
 
@@ -68,6 +70,12 @@ gulp.task('html2js', function() {
     }))
     .pipe(concat('templates.js'))
     .pipe(gulp.dest('demo'));
+});
+
+gulp.task('pot', function () {
+  return gulp.src(['src/**/*.html', 'src/**/*.js'])
+    .pipe(gettext.extract('bonita-js-components.pot', {}))
+    .pipe(gulp.dest('i18n/'));
 });
 
 /**
@@ -292,7 +300,7 @@ gulp.task('env:dist', function() {
   utils.env.dist = true;
 });
 
-gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify']);
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify', 'pot']);
 gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);

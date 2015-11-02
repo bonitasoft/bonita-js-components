@@ -15,3 +15,6 @@ coverage
 
 #demo folder with generated content
 demo
+
+#i18n folder
+po
