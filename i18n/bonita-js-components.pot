@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: table-settings\tableSettings.tpl.html:25
+msgid "Columns selection"
+msgstr ""
+
+#: table-settings\tableSettings.tpl.html:13
+msgid "Items per page"
+msgstr ""
+
+#: table-settings\tableSettings.tpl.html:5
+#: table-settings\tableSettings.tpl.html:9
+msgid "Table settings"
+msgstr ""

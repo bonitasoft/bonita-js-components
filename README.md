@@ -44,7 +44,7 @@ $ git merge master
 $ npm run dist
 ```
 
-2. Commit the new dist files in ``release`` and tag the branch accordingly to your bower.json version number
+2. Commit the new dist files and the i18n folder in ``release`` and tag the branch accordingly to your bower.json version number
 ```console
 $ git commit -m"Release x.x.x"
 $ git tag x.x.x
