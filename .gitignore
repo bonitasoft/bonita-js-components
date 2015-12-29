@@ -5,6 +5,7 @@ bower_components/
 .idea/
 *.sublime-workspace
 *.sublime-project
+**/*.swp
 
 # Logs
 logs
