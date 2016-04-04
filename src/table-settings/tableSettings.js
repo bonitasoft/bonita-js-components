@@ -4,8 +4,7 @@
  */
 angular.module('org.bonitasoft.bonitable.settings', [
   'ui.bootstrap.dropdown',
-  'ui.bootstrap.buttons',
-  'as.sortable'
+  'ui.bootstrap.buttons'
   ])
 
   /**
