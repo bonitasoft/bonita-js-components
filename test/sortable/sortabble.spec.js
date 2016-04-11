@@ -82,10 +82,10 @@ describe('sortable directive', function(){
   describe('sortIcon', function() {
     it('should reflect sort direction', function(){
       var icon = element.find('.bo-SortButton--active .bo-SortButton-icon').get(0);
-      expect(icon.classList.contains('icon-sort-up')).toBe(true);
+      expect(icon.classList.contains('glyphicon-chevron-up')).toBe(true);
       scope.sortableOptions.direction =  true;
       scope.$digest();
-      expect(icon.classList.contains('icon-sort-down')).toBe(true);
+      expect(icon.classList.contains('glyphicon-chevron-down')).toBe(true);
     });
   });
 
@@ -110,7 +110,7 @@ describe('sortable directive', function(){
       expect(button.get(0).textContent.trim()).toEqual('Name');
 
       var icon = element.find('.bo-SortButton-icon', button);
-      expect(icon.get(0).classList.contains('icon-sort-up')).toBe(true);
+      expect(icon.get(0).classList.contains('glyphicon-chevron-up')).toBe(true);
     });
 
     it('should reflect sortOption when reverse order', function(){

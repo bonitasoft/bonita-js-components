@@ -11,6 +11,7 @@
   font-style: normal;
   font-weight: bold;
   display: inline-block;
+  font-size: 0.6em;
 }
 
 .bo-SortButton--active .bo-SortButton-icon,
