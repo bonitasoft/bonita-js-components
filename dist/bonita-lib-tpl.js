@@ -1463,7 +1463,7 @@ module.run(['$templateCache', function($templateCache) {
     '        title="{{titleSortAttr}}"\n' +
     '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
     '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
-    '  <i class="bo-SortButton-icon" ng-class="{\'icon-sort-up\': !sortOptions.direction || sortOptions.property !== property, \'icon-sort-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '  <i class="bo-SortButton-icon glyphicon" ng-class="{\'glyphicon-chevron-up\': !sortOptions.direction || sortOptions.property !== property, \'glyphicon-chevron-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
     '</button>\n' +
     '');
 }]);
@@ -1484,7 +1484,7 @@ module.run(['$templateCache', function($templateCache) {
     '    title="{{\'Table settings\' | translate}}"\n' +
     '    ng-disabled="tasks.length === 0"\n' +
     '    aria-labelledby="aria-tablesettings">\n' +
-    '    <i class="icon icon-gear"></i>\n' +
+    '    <i class="glyphicon glyphicon-cog"></i>\n' +
     '    <span class="sr-only">{{\'Table settings\' | translate}}</span>\n' +
     '  </button>\n' +
     '\n' +
