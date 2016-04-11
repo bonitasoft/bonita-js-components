@@ -2,5 +2,5 @@
         title="{{titleSortAttr}}"
         ng-class="{'bo-SortButton--active text-primary':sortOptions.property === property}" ng-click="sort()">
   <span class="bo-SortButton-label" ng-transclude></span>
-  <i class="bo-SortButton-icon" ng-class="{'icon-sort-up': !sortOptions.direction || sortOptions.property !== property, 'icon-sort-down': sortOptions.direction && sortOptions.property === property}"></i>
+  <i class="bo-SortButton-icon glyphicon" ng-class="{'glyphicon-chevron-up': !sortOptions.direction || sortOptions.property !== property, 'glyphicon-chevron-down': sortOptions.direction && sortOptions.property === property}"></i>
 </button>
