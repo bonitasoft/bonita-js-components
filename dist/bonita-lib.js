@@ -863,34 +863,24 @@ angular
 
 angular
   .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
-  .service('domAttributes', function() {
-    this.copy = function(source, destination, needRemove) {
-      [].slice.call(source.attributes).forEach(function(attr) {
-        destination.setAttribute(attr.name, source.getAttribute(attr.name));
-        if (needRemove) {
-          source.removeAttribute(attr.name);
-        }
-      });
-    };
-  })
-  .directive('columnTemplate', ['$compile', 'domAttributes', function($compile, domAttributes) {
+  .directive('columnTemplate', ['$compile', '$timeout', function($compile, $timeout) {
     return {
       restrict: 'A',
       scope: true,
       link: function(scope, element, attr) {
-
-        var template = angular.element(attr.columnTemplate);
-        var wrapper = angular.element('<div></div>');
-
-        // copying the root node attributes to the wrapper element to compile them
-        domAttributes.copy(template[0], wrapper[0], false);
-
-        //compile the element
-        var el = $compile(wrapper.append(template.contents()))(scope.$parent);
-
-        // copying the compiled attributes to the root node and remove them from the wrapper
-        domAttributes.copy(wrapper[0], element[0], true);
-        element.append(el);
+        element.html(attr.columnTemplate
+          .replace('th', 'div')
+          .replace('td', 'div'));
+        var template = element.contents();
+        $compile(template)(scope);
+        // wait digest cycle to compile template
+        $timeout(function() {
+          [].slice.call(template[0].attributes).forEach(function(attribute) {
+            element.attr(attribute.name, attribute.value);
+          });
+          element.append(template.contents());
+          template.remove();
+        }, 0);
       }
     };
   }])
