@@ -47,7 +47,7 @@ $ npm run dist
 2. Commit the new dist files in ``release`` and tag the branch accordingly to your bower.json version number
 ```console
 $ git commit -m"Release x.x.x"
-$ git tag x.x.x
+$ git tag -a x.x.x
 $ git push --follow-tags
 ```
 
