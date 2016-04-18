@@ -6,6 +6,7 @@ bower_components/
 *.sublime-workspace
 *.sublime-project
 **/*.swp
+*.iml
 
 # Logs
 logs
