@@ -153,65 +153,46 @@ describe('repeatable', function(){
 
   describe('columnTemplate directive', function(){
     var scope;
-    var createDirective;
+    var createTable;
     var $compile;
 
-    beforeEach(inject(function($rootScope, $injector){
+    beforeEach(inject(function($rootScope, $injector, $timeout) {
       $compile = $injector.get('$compile');
 
       scope = $rootScope.$new();
-      scope.tags = [{id:1, name:'blue'},{id:3, name:'red'}, {id:2, name:'green'}];
+      scope.tags = [{ id: 1, name: 'blue' }, { id: 3, name: 'red' }, { id: 2, name: 'green' }];
 
-      createDirective = function(scope, tpl){
-        var markup = angular.element('<span></span>');
-        markup.attr('column-template', tpl);
-        var element = $compile(markup.get(0).outerHTML)(scope);
+      createTable = function(scope, template) {
+        scope.template = template;
+        var table = $compile(angular.element('<table><tr><td column-template="{{ template }}"></td></tr></table>'))(scope);
         scope.$digest();
-        return element;
+        $timeout.flush();
+        return table;
       }
     }));
 
-    it('should leave attribute on the root node ', function(){
-      scope.name = "Bob";
-      var tpl = "<em data-title='{{name}}'>{{name}}</em>";
-      var element = createDirective(scope, tpl);
+    it('should preserve attribute on column', function() {
+      scope.name = 'Bob';
 
+      var element = createTable(scope, '<td data-title="{{name}}"></td>');
 
-      var dataEl = element[0].getAttribute('data-title')
-      expect(dataEl).toEqual(scope.name);
+      expect(element.find('td').attr('data-title')).toBe('Bob');
     });
 
-    it('should remove attribute on the em node ', function(){
-      var tpl = "<em data-title='{{name}}'>{{name}}</em>";
+    it('should render data using template', function() {
       scope.username = "Bob";
 
-      var element = createDirective(scope, tpl);
-      var dataEl = element[0].children[0].getAttribute('data-title')
-      expect(dataEl).toBeNull();
-    });
+      var element = createTable(scope, '<td>{{username}}</td>');
 
-    it('should render data using template', function(){
-      var tpl = "<em>{{username}}</em>";
-      scope.username = "Bob";
-
-      var element = createDirective(scope, tpl);
-      expect(element[0].textContent).toBe('Bob');
-    })
-
-    it('should render binded data using bind', function(){
-      var tpl = '<em ng-bind="username"></em>';
-      scope.username = "Bob";
-
-      var element = createDirective(scope, tpl);
       expect(element[0].textContent).toBe('Bob');
     });
 
-    it('should render a binded data with filter', function(){
-      var tpl = '<em ng-bind="username | uppercase"></em>';
-      scope.username = "bob";
+    it('should render a bound data with filter', function() {
+      scope.username = 'bob';
 
-      var element = createDirective(scope, tpl);
-      expect(element[0].textContent).toBe('BOB');
+      var element = createTable(scope, '<td ng-bind="username | uppercase"></td>');
+
+      expect(element.text()).toBe('BOB');
     });
   });
 });
