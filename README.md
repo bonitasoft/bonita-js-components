@@ -1,14 +1,26 @@
 bonita-js-components [![Build Status](https://travis-ci.org/bonitasoft/bonita-js-components.svg?branch=ag_dragdrop)](https://travis-ci.org/bonitasoft/bonita-js-components)
 ====================
 
-bonita angular components library.
+Bonita angular components library.
 
-## requirements
+## Dependencies
+Required dependencies are:
+- [AngularJS](https://angularjs.org/) 1.4.x
+- [Bootstrap CSS](http://getbootstrap.com/) 3.3.x
+- [Angular bootstrap](https://angular-ui.github.io/bootstrap/) 0.13.4
+- [ngSortable](https://github.com/a5hik/ng-sortable) 1.3.1
+- [ngStorage](https://github.com/gsklee/ngStorage) 0.3.9
 
+## Installation
+    bower install bonita-js-components --save
+Include _bonita-lib-tpl.min.js_ in your html file.
+```html
+    <script src="bower_components/bonita-js-components/dist/bonita-lib-tpl.min.js"></script>
+```
+Then you need to declare dependency to the wanted component's module, exemple:
+    angular.module('myModule', ['org.bonitasoft.bonitable']);
 
-You need to have __nodejs__, __npm__ and __gulp__
-This library also needs angular 1.4.5 to run properly.
-
+## Components
  - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
  - [x] bo-storable (bo-storable="storageId" on-storage-loaded="loadContent()")
  - [x] bo-sorter (default id=key, or bo-sorter='key')
@@ -18,18 +30,19 @@ This library also needs angular 1.4.5 to run properly.
  - [x] drag and drop
  - [x] draggable-columns (need to add ng-sortable dependency to make it work as it is not imported by default)
 
-## Available command
+## Development
+### Requirements
+You need to have __nodejs__, __npm__ and __gulp__
+This library also needs angular 1.4.5 to run properly.
+
+### Available command
 
 - ``$ npm start``: launch the developpement environnement with a local server+livreload. Also, unit tests ran in background
 - ``$ npm run dist`` : create a dist folder with minified/concatenated files. Please not that this command is only available in the _release_ branch.
 - ``$ npm test`` will run the unit test suite on PhantomJS
 - ``$ npm run documentation`` will generate the a ngdoc documentation site inside a ``./docs/ directory``
- 
-## Todo
 
- - [ ] bonita.resizable (see http://bz.var.ru/comp/web/resizable.html )
-
-## Publishing a new version
+### Publishing a new version
 
 **The master branch do not contains any dist files.**
 
@@ -55,12 +68,12 @@ $ git push --follow-tags
 
 > The code coverage is build when you run a test, you can access to it by opening the `./coverage/Phantom*/index.html` in a browser.
 
-## Documentation
+### Documentation
 To ease the documentation process
 ```console
 $ npm run documentation
 ```
 will run a local server (with livereload) and generate the docs sites each time you update the js files.
 
-## Code coverage
+### Code coverage
 The karma test suite provides code coverage through karma-istanbul. The generated coverage site is at the root of the project, in the ``/coverage/`` folder.
