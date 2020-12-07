@@ -53,5 +53,10 @@
   },
   "dependencies": {
     "gulp-ngdocs": "0.2.13"
-  }
+  },
+  "files": [
+    "dist/**",
+    "package.json",
+    "README.md"
+  ]
 }
