@@ -7,6 +7,9 @@ bonita angular components library.
 
 
 You need to have __nodejs__, __yarn__, __npm__ and __gulp__
+
+Node version 6 should be used.
+
 This library also needs angular 1.4.5 to run properly.
 
  - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
