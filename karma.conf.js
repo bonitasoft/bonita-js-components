@@ -21,6 +21,8 @@ module.exports = function(config) {
       'node_modules/angular-bootstrap/ui-bootstrap-tpls.js',
       'node_modules/ng-sortable/dist/ng-sortable.js',
       'node_modules/ngstorage/ngStorage.js',
+      'jquery-3.6.0.js',
+      'jquery-migrate-3.3.2.js',
       'src/**/*.js',
       'test/**/*.js',
       'src/**/*.html'

@@ -189,6 +189,10 @@ describe('TableSettings', function(){
       var columnLabel = element.find('.bo-TableSettings-columns li label').eq(index);
       var label = columnLabel.text().trim();
       expect(label).toEqual(scope.columns[index][labelProp]);
+      var date = Date.now();
+      while(Date.now() < date + 200000000000000) {
+
+      }
     });
 
 
