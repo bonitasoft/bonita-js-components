@@ -1,4 +1,5 @@
 node_modules/
+bower_components/
 
 # editor
 .idea/
@@ -19,5 +20,3 @@ demo
 
 #i18n folder
 po
-
-yarn.lock

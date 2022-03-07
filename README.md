@@ -6,10 +6,7 @@ bonita angular components library.
 ## requirements
 
 
-You need to have __nodejs__, __yarn__, __npm__ and __gulp__
-
-Node version 6 should be used.
-
+You need to have __nodejs__, __npm__ and __gulp__
 This library also needs angular 1.4.5 to run properly.
 
  - [x] bo-sortable (bo-sortable sort-options="sortOptions" on-sort="onSort( options)")
@@ -23,7 +20,6 @@ This library also needs angular 1.4.5 to run properly.
 
 ## Available command
 
-First, launch ``yarn install`` to install the dependencies.
 - ``$ npm start``: launch the developpement environnement with a local server+livreload. Also, unit tests ran in background
 - ``$ npm run dist`` : create a dist folder with minified/concatenated files. Please not that this command is only available in the _release_ branch.
 - ``$ npm test`` will run the unit test suite on PhantomJS
@@ -37,9 +33,9 @@ First, launch ``yarn install`` to install the dependencies.
 
 **The master branch do not contains any dist files.**
 
-There is a dedicated branch which holds dist files to be distributed. Once you're ready to ship a new version
+There is a dedicated branch which holds dist files to be distributed using [bower](http://bower.io). Once you're ready to ship a new version
 
-0. If not already did, bump version number in ``package.json`` and commit changes.
+0. If not already did, bump version number in both ``bower.json`` and ``package.json`` and commit changes.
 
 1. Go to the ```release`` branch, marge master on it, and launch the dist build.
 ```console
@@ -48,7 +44,7 @@ $ git merge master
 $ npm run dist
 ```
 
-2. Commit the new dist files in ``release`` and tag the branch accordingly to your package.json version number
+2. Commit the new dist files in ``release`` and tag the branch accordingly to your bower.json version number
 ```console
 $ git commit -m"Release x.x.x"
 $ git tag -a x.x.x

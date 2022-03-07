@@ -1,0 +1,37 @@
+{
+  "name": "bonita-js-components",
+  "version": "0.5.30",
+  "homepage": "https://github.com/bonitasoft/bonita-js-components",
+  "authors": [
+    "Vincent Elcrin <vincent.elcrin@bonitasoft.com>",
+    "Lionel Breduillieard <lionel@lumographe.fr>"
+  ],
+  "main": [
+    "dist/bonita-lib-tpl.js"
+  ],
+  "description": "Several tools leading to ease web development with Bonita",
+  "license": "GPL",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "misc",
+    "demo",
+    "src",
+    "gulpfile.js",
+    "karma.conf.js",
+    "README.md",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular": "1.4.5",
+    "bootstrap": "3.3.2",
+    "angular-bootstrap": "0.13.4",
+    "ng-sortable": "1.3.1",
+    "ngstorage": "0.3.9"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.4.5"
+  }
+}

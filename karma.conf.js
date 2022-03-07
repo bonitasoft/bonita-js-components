@@ -15,12 +15,12 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'test/bind-polyfill.js',
-      'node_modules/jquery/dist/jquery.js',
-      'node_modules/angular/angular.js',
-      'node_modules/angular-mocks/angular-mocks.js',
-      'node_modules/angular-bootstrap/ui-bootstrap-tpls.js',
-      'node_modules/ng-sortable/dist/ng-sortable.js',
-      'node_modules/ngstorage/ngStorage.js',
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      'bower_components/ng-sortable/dist/ng-sortable.js',
+      'bower_components/ngstorage/ngStorage.js',
       'src/**/*.js',
       'test/**/*.js',
       'src/**/*.html'

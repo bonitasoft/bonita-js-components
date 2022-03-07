@@ -7,6 +7,9 @@ var plumber = require('gulp-plumber');
 var rename  = require('gulp-rename');
 var del  = require('del');
 
+/* build */
+var bower  = require('gulp-bower');
+
 /* javascript */
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
@@ -32,6 +35,16 @@ var opt = {
   livereload: 31357
 };
 
+
+/**
+ * bower task
+ * Fetch bower dependencies
+ */
+gulp.task('bower', function() {
+  return bower()
+    .pipe(plumber())
+    .pipe(gulp.dest('bower_components'));
+});
 
 /**
  * JsHint
@@ -145,7 +158,7 @@ gulp.task('assets', ['assets:css', 'assets:html']);
  */
 gulp.task('webserver',['assets'], function() {
   connect.server({
-    root: ['demo', 'node_modules'],
+    root: ['demo', 'bower_components'],
     port: opt.port,
     livereload: true
   });
@@ -199,22 +212,22 @@ gulp.task('docs:css', function(){
     .pipe(gulp.dest('docs/css'));
 });
 
-gulp.task('docs:assets', function(){
+gulp.task('docs:assets', ['bower'], function(){
 
   gulp.src([
-    'node_modules/angular-bootstrap/ui-bootstrap-tpls.js',
-    'node_modules/ng-sortable/dist/ng-sortable.min.js'
+    'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+    'bower_components/ng-sortable/dist/ng-sortable.min.js'
   ]).pipe(gulp.dest('docs/js'));
 
   return gulp.src([
-    'node_modules/ng-sortable/dist/ng-sortable.min.css'
+    'bower_components/ng-sortable/dist/ng-sortable.min.css'
   ]).pipe(gulp.dest('docs/css'));
 
 });
 gulp.task('clean:docs', function(done){
   del(['docs/'], done);
 });
-gulp.task('ngdocs', ['docs:js', 'docs:css', 'docs:assets'], function () {
+gulp.task('ngdocs', ['bower', 'docs:js', 'docs:css', 'docs:assets'], function () {
   var gulpDocs = require('gulp-ngdocs');
   var options = {
     title:'bonita-js-components',
@@ -258,7 +271,7 @@ gulp.task('documentation', ['ngdocs', 'watch:docs', 'server:docs']);
  * Watch task
  * Launch a server with livereload
  */
-gulp.task('watch', ['jshint'], function() {
+gulp.task('watch', ['jshint', 'bower'], function() {
   gulp.watch(['src/**/*.js'], ['bundle:js:tpl']);
   gulp.watch(['src/**/*.html'], ['bundle:js:tpl']);
   gulp.watch(['misc/**/*.html'], ['assets:html']);
@@ -275,7 +288,7 @@ gulp.task('watch', ['jshint'], function() {
 /**
  * Testing tasks
  */
-gulp.task('test', function (done) {
+gulp.task('test', ['bower'], function (done) {
   return test(done, false);
 });
 
@@ -287,8 +300,8 @@ gulp.task('env:dist', function() {
   utils.env.dist = true;
 });
 
-gulp.task('dist', ['env:dist','clean', 'test', 'dist:css', 'uglify', 'pot']);
-gulp.task('dev', ['assets', 'bundle:js:tpl', 'watch', 'open']);
+gulp.task('dist', ['env:dist','clean', 'bower', 'test', 'dist:css', 'uglify', 'pot']);
+gulp.task('dev', ['bower', 'assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
 

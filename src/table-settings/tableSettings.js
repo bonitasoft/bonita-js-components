@@ -39,7 +39,7 @@ angular.module('org.bonitasoft.bonitable.settings', [
    *
    * the table-settings component also permit to re-order the columns from the columsn list, using drag and drop.
    * this behaviour is optionnal, so if you need that feature, you will also need to add a ``<script>`` tag
-   * to include the ng-sortable library.
+   * to include the ng-sortable library (in the bower_components dir, since __ng-sortable__ is as a bower dependency.
    *
    * @example
    *
