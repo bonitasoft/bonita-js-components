@@ -190,6 +190,7 @@ describe('repeatable', function(){
     it('should render a bound data with filter', function() {
       scope.username = 'bob';
 
+      // angular.uppercase is deprecated, will be removed in 1.7.0
       var element = createTable(scope, '<td ng-bind="username | uppercase"></td>');
 
       expect(element.text()).toBe('BOB');
