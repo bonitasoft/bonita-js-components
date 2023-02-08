@@ -561,116 +561,6 @@ angular.module('org.bonitasoft.dragAndDrop',[])
 
   }]);
 
-/* jshint sub:true*/
-(function () {
-  'use strict';
-  angular.module('org.bonitasoft.services.topurl', [])
-    .service('manageTopUrl', ['$window', function ($window) {
-      var manageTopUrlService = {};
-
-      manageTopUrlService.getCurrentPageToken = function() {
-        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/,
-          pageTokenMatches = pageTokenRegExp.exec($window.parent.location.hash);
-
-        return Array.isArray(pageTokenMatches) ? pageTokenMatches[2] : '';
-      };
-
-      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
-
-        if (paramValue !== undefined && $window.self !== $window.parent) {
-
-          var pageToken = manageTopUrlService.getCurrentPageToken();
-
-          if (!!$window.parent.location.hash) {
-
-            var paramRegExp  = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)'),
-                paramMatches = $window.parent.location.hash.match(paramRegExp);
-
-            if (!Array.isArray(paramMatches)) {
-
-              var currentHash = $window.parent.location.hash;
-              if(paramValue) {
-                $window.parent.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
-              }
-
-            } else {
-
-              var paramToSet = '';
-              if(paramValue){
-                paramToSet = pageToken + param + '=' + paramValue;
-              }
-
-              $window.parent.location.hash = $window.parent.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
-            }
-            return;
-
-          }
-
-          if(paramValue) {
-            $window.parent.location.hash = '#' + pageToken + param + '=' + paramValue;
-          }
-
-        }
-      };
-
-      manageTopUrlService.getCurrentProfile = function () {
-        if ($window && $window.parent && $window.parent.location && $window.parent.location.hash) {
-          var currentProfileMatcher = $window.parent.location.hash.match(/\b_pf=\d+\b/);
-          return Array.isArray(currentProfileMatcher) ? currentProfileMatcher[0] : '';
-        }
-      };
-
-      manageTopUrlService.getPath = function () {
-        return $window.parent.location.pathname;
-      };
-
-      manageTopUrlService.getSearch = function () {
-        return $window.parent.location.search || '';
-      };
-
-      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
-        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
-      };
-
-      /**
-       * Update the iframe destination hash
-       * @param  {Object} destination Routing configuration for the iframe
-       * @return {void}
-       */
-      manageTopUrlService.goTo = function(destination){
-
-        var params = '&';
-
-        if(angular.isUndefined(destination)) {
-          throw new TypeError('You must pass an Object as argument');
-        }
-        if(typeof destination === 'string'){
-          $window.parent.location.hash = '?_p='+ destination+'&' + manageTopUrlService.getCurrentProfile();
-          return;
-        }
-        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
-
-        if(!destination.token){
-          throw new Error('You must set a token to define the destination page');
-        }
-
-        angular.forEach(destination, function (value, key){
-          if(key && value && key !== 'token' && key !== 'prependToken'){
-            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
-          }
-        });
-
-        // Change the iframe hash only, not the current window hash
-        if($window.parent.location.hash !== $window.location.hash) {
-          $window.parent.location.hash = '?_p='+ destination.token+'&' + manageTopUrlService.getCurrentProfile() + params;
-        }
-      };
-
-      //cannot use module pattern or reveling since we would want to mock methods on test
-      return manageTopUrlService;
-    }]);
-})();
-
 angular
   .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
   /**
@@ -860,6 +750,202 @@ angular
       }
     };
   });
+
+'use strict';
+/**
+ *
+ */
+angular.module('org.bonitasoft.bonitable.settings', [
+  'ui.bootstrap.dropdown',
+  'ui.bootstrap.buttons'
+  ])
+
+  /**
+   * @ngdoc directive
+   * @name bonita.settings:tableSettings
+   * @module bonita.settings
+   *
+   * @description
+   *
+   * Table settings create a simple widget to manage table settings.
+   * ## pagination settings
+   * table settings create a small component to choose pageSize.
+   * If you do it on the client side, here how you can achieve it.
+   * simply create this slice filter
+   * ```js
+   * //Create a slice filter
+   * app.filter('slice', function() {
+   *   return function(input, start) {
+   *     start = parseInt(start,10) || 0 ;
+   *     return input.slice(start);
+   *   };
+   * })
+   * ```
+   *and add the slice filter with a limitTo filter on a ng-repeat
+   *``ng-repeat="user in users | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">``
+   *
+   * ## columns visibility
+   * If you provide a columns attributes, the component will also render a list of columns with a checkbox associated to it.
+   * the checlkbox value will represent the column visibility, so you can easily toggle their visibility.
+   *
+   * ## column reordering
+   *
+   * the table-settings component also permit to re-order the columns from the columsn list, using drag and drop.
+   * this behaviour is optionnal, so if you need that feature, you will also need to add a ``<script>`` tag
+   * to include the ng-sortable library.
+   *
+   * @example
+   *
+   * ```html
+   *     <table bonitable class="table">
+   *       <thead>
+   *         <tr>
+   *           <th colspan="2">
+   *             <table-settings page-size="pageSize" sizes="sizes" columns="columns"></table-settings>
+   *           </th>
+   *         </tr>
+   *         <tr>
+   *           <th ng-repeat="col in columns | filter: col.visible">{{col.name}}</th>
+   *         </tr>
+   *       </thead>
+   *       <tbody>
+   *         <tr ng-repeat="user in users">
+   *           <td ng-repeat="col in columns | filter: col.visible">{{user[col.name]}}</td>
+   *         </tr>
+   *       </tbody>
+   *     </table>
+   * ```
+   * ```javascript
+   *     angular
+   *       .module('settingsExample', [
+   *         'org.bonitasoft.bonitable',
+   *         'org.bonitasoft.bonitable.settings',
+   *         'org.bonitasoft.templates',
+   *         'ui.bootstrap.tpls'
+   *       ])
+   *       .filter('slice', function() {
+   *         return function(input, start) {
+   *           start = parseInt(start,10) || 0 ;
+   *           return input.slice(start);
+   *         };
+   *       })
+   *       .filter('translate', function() {
+   *         return function(input) {
+   *           return input;
+   *         };
+   *       })
+   *       .run(function($rootScope){
+   *         $rootScope.users = [
+   *           {name:'Paul', country:'Uk'},
+   *           {name:'Sarah', country:'Fr'},
+   *           {name:'Jacques', country:'Us'},
+   *           {name:'Joan', country:'Al'},
+   *           {name:'Tite', country:'Jp'},
+   *         ];
+   *         $rootScope.pageSize = 10;
+   *         $rootScope.sizes = [1, 10, 100];
+   *         $rootScope.columns = [{name:'name', visible:true},{name:'country', visible:true}];
+   *       })
+   *  ```
+   *
+   * @param {Array} columns an array of object representing the columns of the table.
+   *                        Each object should have a  ``visible`` property and a ``name`` property
+   *                          The name of these properties is customizable
+   * @param {Array} sizes an array of int, containing the different number of element per pages
+   * @param {int} pageSize the actual number per page value
+   * @param {String} labelProp the name of the property reprensenting the columns name
+   * @param {String} visibleProp the name of the property reprensenting the columns visibility
+   * @param {function} updatePageSize a handler function wich is called each time the pageSize settings changed
+   * @param {function} updateVisibility a handler function wich is called each time o columns visibility changes
+   *
+   */
+  .directive('tableSettings', function(){
+    // Runs during compile
+    return {
+      templateUrl: 'template/table-settings/tableSettings.tpl.html',
+      replace: true,
+      scope:{
+        columns: '=',
+        sizes: '=',
+        pageSize: '=',
+        labelProp:'@',
+        visibleProp:'@',
+        updatePageSize: '&',
+        updateVisibility: '&'
+      },
+      link: function(scope, elem, attr) {
+        scope.visible = attr.visibleProp || 'visible';
+        scope.label = attr.labelProp || 'name';
+        scope.isDragging = false;
+
+        scope.sortableOptions = {};
+
+      }
+    };
+  });
+
+/**
+ * Created by fabiolombardi on 15/07/2015.
+ */
+angular
+    .module('org.bonitasoft.bonitable.storable', [
+        'org.bonitasoft.bonitable',
+        'ngStorage'
+    ])
+    .directive('boStorable', ['$localStorage', function($localStorage) {
+        return {
+            restrict: 'A',
+            require: '^bonitable',
+            priority: 1,
+            link: function(scope, elt, attr, bonitableCtrl) {
+                var storageId = attr.boStorable;
+                if (!storageId) {
+                    throw new Error('you must set a storageId to bo-storable');
+                }
+
+                scope.clearTableStorage = function clearTableStorage(storageId) {
+                    delete $localStorage[storageId];
+                };
+
+                if (!$localStorage[storageId]) {
+                    $localStorage[storageId] = {};
+                }
+                if ($localStorage[storageId].columns) {
+                    scope.$columns = $localStorage[storageId].columns;
+                } else {
+                    $localStorage[storageId].columns = null;
+                }
+                if ($localStorage[storageId].sortOptions) {
+                    bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
+                    bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
+                } else {
+                    $localStorage[storageId].sortOptions = null;
+                }
+                if ($localStorage[storageId].itemsPerPage) {
+                  scope.pagination.itemsPerPage = $localStorage[storageId].itemsPerPage;
+                } else {
+                  $localStorage[storageId].itemsPerPage = null;
+                }
+
+
+                scope.$watch(bonitableCtrl.getOptions, function(newValue) {
+                    $localStorage[storageId].sortOptions = newValue;
+                }, true);
+
+                scope.$watch('$columns', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        $localStorage[storageId].columns = newValue;
+                    }
+                }, true);
+
+                scope.$watch('pagination.itemsPerPage', function(newValue) {
+                  $localStorage[storageId].itemsPerPage = newValue;
+                }, true);
+
+                bonitableCtrl.onStorageLoaded();
+            }
+        };
+    }]);
 
 angular
   .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
@@ -1245,198 +1331,112 @@ angular
     };
   });
 
-/**
- * Created by fabiolombardi on 15/07/2015.
- */
-angular
-    .module('org.bonitasoft.bonitable.storable', [
-        'org.bonitasoft.bonitable',
-        'ngStorage'
-    ])
-    .directive('boStorable', ['$localStorage', function($localStorage) {
-        return {
-            restrict: 'A',
-            require: '^bonitable',
-            priority: 1,
-            link: function(scope, elt, attr, bonitableCtrl) {
-                var storageId = attr.boStorable;
-                if (!storageId) {
-                    throw new Error('you must set a storageId to bo-storable');
-                }
+/* jshint sub:true*/
+(function () {
+  'use strict';
+  angular.module('org.bonitasoft.services.topurl', [])
+    .service('manageTopUrl', ['$window', function ($window) {
+      var manageTopUrlService = {};
 
-                scope.clearTableStorage = function clearTableStorage(storageId) {
-                    delete $localStorage[storageId];
-                };
+      manageTopUrlService.getCurrentPageToken = function() {
+        var pageTokenRegExp = /(^|[&\?])_p=([^&]*)(&|$)/,
+          pageTokenMatches = pageTokenRegExp.exec($window.parent.location.hash);
 
-                if (!$localStorage[storageId]) {
-                    $localStorage[storageId] = {};
-                }
-                if ($localStorage[storageId].columns) {
-                    scope.$columns = $localStorage[storageId].columns;
-                } else {
-                    $localStorage[storageId].columns = null;
-                }
-                if ($localStorage[storageId].sortOptions) {
-                    bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
-                    bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
-                } else {
-                    $localStorage[storageId].sortOptions = null;
-                }
-                if ($localStorage[storageId].itemsPerPage) {
-                  scope.pagination.itemsPerPage = $localStorage[storageId].itemsPerPage;
-                } else {
-                  $localStorage[storageId].itemsPerPage = null;
-                }
+        return Array.isArray(pageTokenMatches) ? pageTokenMatches[2] : '';
+      };
 
+      manageTopUrlService.addOrReplaceParam = function (param, paramValue) {
 
-                scope.$watch(bonitableCtrl.getOptions, function(newValue) {
-                    $localStorage[storageId].sortOptions = newValue;
-                }, true);
+        if (paramValue !== undefined && $window.self !== $window.parent) {
 
-                scope.$watch('$columns', function(newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        $localStorage[storageId].columns = newValue;
-                    }
-                }, true);
+          var pageToken = manageTopUrlService.getCurrentPageToken();
 
-                scope.$watch('pagination.itemsPerPage', function(newValue) {
-                  $localStorage[storageId].itemsPerPage = newValue;
-                }, true);
+          if (!!$window.parent.location.hash) {
 
-                bonitableCtrl.onStorageLoaded();
+            var paramRegExp  = new RegExp('(^|[&\\?])'+pageToken+param+'=[^&]*(&|$)'),
+                paramMatches = $window.parent.location.hash.match(paramRegExp);
+
+            if (!Array.isArray(paramMatches)) {
+
+              var currentHash = $window.parent.location.hash;
+              if(paramValue) {
+                $window.parent.location.hash += ((currentHash.indexOf('&', currentHash.length - 2) >= 0) ? '' : '&') + pageToken + param + '=' + paramValue;
+              }
+
+            } else {
+
+              var paramToSet = '';
+              if(paramValue){
+                paramToSet = pageToken + param + '=' + paramValue;
+              }
+
+              $window.parent.location.hash = $window.parent.location.hash.replace(paramRegExp, '$1'+ paramToSet + '$2');
             }
-        };
+            return;
+
+          }
+
+          if(paramValue) {
+            $window.parent.location.hash = '#' + pageToken + param + '=' + paramValue;
+          }
+
+        }
+      };
+
+      manageTopUrlService.getCurrentProfile = function () {
+        if ($window && $window.parent && $window.parent.location && $window.parent.location.hash) {
+          var currentProfileMatcher = $window.parent.location.hash.match(/\b_pf=\d+\b/);
+          return Array.isArray(currentProfileMatcher) ? currentProfileMatcher[0] : '';
+        }
+      };
+
+      manageTopUrlService.getPath = function () {
+        return $window.parent.location.pathname;
+      };
+
+      manageTopUrlService.getSearch = function () {
+        return $window.parent.location.search || '';
+      };
+
+      manageTopUrlService.getUrlToTokenAndId = function (id, token) {
+        return manageTopUrlService.getPath() + manageTopUrlService.getSearch() + '#?id=' + (id || '') + '&_p=' + (token || '') + '&' + manageTopUrlService.getCurrentProfile();
+      };
+
+      /**
+       * Update the iframe destination hash
+       * @param  {Object} destination Routing configuration for the iframe
+       * @return {void}
+       */
+      manageTopUrlService.goTo = function(destination){
+
+        var params = '&';
+
+        if(angular.isUndefined(destination)) {
+          throw new TypeError('You must pass an Object as argument');
+        }
+        if(typeof destination === 'string'){
+          $window.parent.location.hash = '?_p='+ destination+'&' + manageTopUrlService.getCurrentProfile();
+          return;
+        }
+        var prependToken = !angular.isDefined(destination.prependToken) || !!destination.prependToken;
+
+        if(!destination.token){
+          throw new Error('You must set a token to define the destination page');
+        }
+
+        angular.forEach(destination, function (value, key){
+          if(key && value && key !== 'token' && key !== 'prependToken'){
+            params += ((prependToken)?destination.token:'') + key + '=' + value + '&';
+          }
+        });
+
+        // Change the iframe hash only, not the current window hash
+        if($window.parent.location.hash !== $window.location.hash) {
+          $window.parent.location.hash = '?_p='+ destination.token+'&' + manageTopUrlService.getCurrentProfile() + params;
+        }
+      };
+
+      //cannot use module pattern or reveling since we would want to mock methods on test
+      return manageTopUrlService;
     }]);
-
-'use strict';
-/**
- *
- */
-angular.module('org.bonitasoft.bonitable.settings', [
-  'ui.bootstrap.dropdown',
-  'ui.bootstrap.buttons'
-  ])
-
-  /**
-   * @ngdoc directive
-   * @name bonita.settings:tableSettings
-   * @module bonita.settings
-   *
-   * @description
-   *
-   * Table settings create a simple widget to manage table settings.
-   * ## pagination settings
-   * table settings create a small component to choose pageSize.
-   * If you do it on the client side, here how you can achieve it.
-   * simply create this slice filter
-   * ```js
-   * //Create a slice filter
-   * app.filter('slice', function() {
-   *   return function(input, start) {
-   *     start = parseInt(start,10) || 0 ;
-   *     return input.slice(start);
-   *   };
-   * })
-   * ```
-   *and add the slice filter with a limitTo filter on a ng-repeat
-   *``ng-repeat="user in users | slice: (pagination.currentPage-1) * pagination.pageSize | limitTo:pagination.pageSize">``
-   *
-   * ## columns visibility
-   * If you provide a columns attributes, the component will also render a list of columns with a checkbox associated to it.
-   * the checlkbox value will represent the column visibility, so you can easily toggle their visibility.
-   *
-   * ## column reordering
-   *
-   * the table-settings component also permit to re-order the columns from the columsn list, using drag and drop.
-   * this behaviour is optionnal, so if you need that feature, you will also need to add a ``<script>`` tag
-   * to include the ng-sortable library.
-   *
-   * @example
-   *
-   * ```html
-   *     <table bonitable class="table">
-   *       <thead>
-   *         <tr>
-   *           <th colspan="2">
-   *             <table-settings page-size="pageSize" sizes="sizes" columns="columns"></table-settings>
-   *           </th>
-   *         </tr>
-   *         <tr>
-   *           <th ng-repeat="col in columns | filter: col.visible">{{col.name}}</th>
-   *         </tr>
-   *       </thead>
-   *       <tbody>
-   *         <tr ng-repeat="user in users">
-   *           <td ng-repeat="col in columns | filter: col.visible">{{user[col.name]}}</td>
-   *         </tr>
-   *       </tbody>
-   *     </table>
-   * ```
-   * ```javascript
-   *     angular
-   *       .module('settingsExample', [
-   *         'org.bonitasoft.bonitable',
-   *         'org.bonitasoft.bonitable.settings',
-   *         'org.bonitasoft.templates',
-   *         'ui.bootstrap.tpls'
-   *       ])
-   *       .filter('slice', function() {
-   *         return function(input, start) {
-   *           start = parseInt(start,10) || 0 ;
-   *           return input.slice(start);
-   *         };
-   *       })
-   *       .filter('translate', function() {
-   *         return function(input) {
-   *           return input;
-   *         };
-   *       })
-   *       .run(function($rootScope){
-   *         $rootScope.users = [
-   *           {name:'Paul', country:'Uk'},
-   *           {name:'Sarah', country:'Fr'},
-   *           {name:'Jacques', country:'Us'},
-   *           {name:'Joan', country:'Al'},
-   *           {name:'Tite', country:'Jp'},
-   *         ];
-   *         $rootScope.pageSize = 10;
-   *         $rootScope.sizes = [1, 10, 100];
-   *         $rootScope.columns = [{name:'name', visible:true},{name:'country', visible:true}];
-   *       })
-   *  ```
-   *
-   * @param {Array} columns an array of object representing the columns of the table.
-   *                        Each object should have a  ``visible`` property and a ``name`` property
-   *                          The name of these properties is customizable
-   * @param {Array} sizes an array of int, containing the different number of element per pages
-   * @param {int} pageSize the actual number per page value
-   * @param {String} labelProp the name of the property reprensenting the columns name
-   * @param {String} visibleProp the name of the property reprensenting the columns visibility
-   * @param {function} updatePageSize a handler function wich is called each time the pageSize settings changed
-   * @param {function} updateVisibility a handler function wich is called each time o columns visibility changes
-   *
-   */
-  .directive('tableSettings', function(){
-    // Runs during compile
-    return {
-      templateUrl: 'template/table-settings/tableSettings.tpl.html',
-      replace: true,
-      scope:{
-        columns: '=',
-        sizes: '=',
-        pageSize: '=',
-        labelProp:'@',
-        visibleProp:'@',
-        updatePageSize: '&',
-        updateVisibility: '&'
-      },
-      link: function(scope, elem, attr) {
-        scope.visible = attr.visibleProp || 'visible';
-        scope.label = attr.labelProp || 'name';
-        scope.isDragging = false;
-
-        scope.sortableOptions = {};
-
-      }
-    };
-  });
+})();
