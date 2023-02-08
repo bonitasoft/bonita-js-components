@@ -8,7 +8,7 @@ var rename  = require('gulp-rename');
 var del  = require('del');
 
 /* javascript */
-var uglify = require('gulp-uglify');
+var minify = require('gulp-minify');
 var jshint = require('gulp-jshint');
 var html2js = require('gulp-ng-html2js');
 var ngAnnotage = require('gulp-ng-annotate');
@@ -105,11 +105,13 @@ gulp.task('dist:files', ['bundle:js:tpl', 'bundle:js', 'assets:css'], function()
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('uglify', ['dist:files'], function(){
-  return gulp.src(['dist/bonita-lib.js', 'dist/bonita-lib-tpl.js'])
-    .pipe(plumber())
-    .pipe(uglify())
-    .pipe(rename({ suffix:'.min' }))
+gulp.task('minify', ['dist:files'], function(){
+  return gulp.src(['dist/*.js'])
+    .pipe(minify({
+      ext:{
+        min: '.min.js'
+      }
+    }))
     .pipe(gulp.dest('dist'));
 });
 
@@ -287,7 +289,7 @@ gulp.task('env:dist', function() {
   utils.env.dist = true;
 });
 
-gulp.task('dist', ['env:dist','clean', 'test', 'dist:css', 'uglify', 'pot']);
+gulp.task('dist', ['env:dist','clean', 'test', 'dist:css', 'minify', 'pot']);
 gulp.task('dev', ['assets', 'bundle:js:tpl', 'watch', 'open']);
 
 gulp.task('default', ['test']);
