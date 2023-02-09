@@ -1,22 +1,7 @@
 (function() {
   'use strict';
 
-    beforeEach(module('org.bonitasoft.dragAndDrop', function ($provide) {
-    // Mock EventMap
-    // $provide.decorator('boDragEvent', function ($delegate) {
-    //   $delegate.map = {
-    //     yolo: {
-    //       scope: {data: {}},
-    //       onDragStart: angular.noop
-    //     },
-    //     yolo2: {
-    //       scope: {data: {}},
-    //       onDragStart: angular.noop
-    //     }
-    //   };
-    //   return $delegate;
-    // });
-  }));
+  beforeEach(module('org.bonitasoft.dragAndDrop', function () {}));
 
   describe('Directive boDraggable', function() {
 
