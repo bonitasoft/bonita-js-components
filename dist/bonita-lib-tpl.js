@@ -202,6 +202,390 @@ angular.module('org.bonitasoft.bonitable', [])
     };
   });
 
+angular
+  .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
+  .directive('columnTemplate', ['$compile', '$timeout', function($compile, $timeout) {
+    return {
+      restrict: 'A',
+      scope: true,
+      link: function(scope, element, attr) {
+        element.html(attr.columnTemplate
+          .replace('th', 'div')
+          .replace('td', 'div'));
+        var template = element.contents();
+        $compile(template)(scope);
+        // wait digest cycle to compile template
+        $timeout(function() {
+          [].slice.call(template[0].attributes).forEach(function(attribute) {
+            element.attr(attribute.name, attribute.value);
+          });
+          element.append(template.contents());
+          template.remove();
+        }, 0);
+      }
+    };
+  }])
+/**
+ * @ngdoc directive
+ * @name bonita.repeatable:boRepeatable
+ * @module bonita.repeatable
+ *
+ * @param {String=} boRepeatable a string representing a valid css selector
+ *                  matching the thead where the columns are defined. By default the value is
+ *                  ``thead tr:last-child``
+ *
+ * @description
+ * Render table content dynamically in order to perform some columns manipulation
+ * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
+ * under the hood to perform this but allow developper to get rid of it when
+ * display the input. No need to add a generic function for cell rendering like
+ * you will do when you put 2 ng-repeat directive inside.
+ *
+ * @example
+ *
+ * ```html
+ *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+ *     <thead>
+ *       <tr>
+ *         <td colspan="{{$columns.length}}" class="form-inline">
+ *           <pre>{{$columns|json}}</pre>
+ *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
+ *         </td>
+ *       </tr>
+ *       <tr>
+ *         <th>name</th>
+ *         <th>country</th>
+ *         <th data-ignore>action</th>
+ *       </tr>
+ *     </thead>
+ *     <tbody>
+ *       <tr ng-repeat="user in users">
+ *         <td>{{user.name}}</td>
+ *         <td>{{user.country}}</td>
+ *         <td><button>&times;</button></td>
+ *       </tr>
+ *     </tbody>
+ *   </table>
+ * ```
+ * ```javascript
+ *   angular
+ *     .module('boRepeaterExample', [
+ *       'org.bonitasoft.bonitable',
+ *       'org.bonitasoft.bonitable.repeatable',
+ *       'org.bonitasoft.templates'
+ *     ])
+ *     .run(function($scope){
+ *       $scope.users = [
+ *         {name:'Paul', country:'Uk'},
+ *         {name:'Sarah', country:'Fr'},
+ *         {name:'Jacques', country:'Us'},
+ *         {name:'Joan', country:'Al'},
+ *         {name:'Tite', country:'Jp'},
+ *       ];
+ *       $scope.colcfg =[true, false];
+ *     })
+ * ```
+
+ */
+.directive('boRepeatable', ['$interpolate', function($interpolate) {
+    return {
+      require: 'bonitable',
+      restrict: 'A',
+      compile: function(elem, attr, $scope) {
+
+        var thSelecter = attr[this.name] || 'thead tr:last-child';
+        var tdSelecter = 'tr[ng-repeat]';
+
+        var header = elem[0].querySelector(thSelecter);
+        var row = elem[0].querySelector(tdSelecter);
+
+        if (!header || !row || header.children.length !== row.children.length) {
+          throw new Error('bo-repeatable th number does not correspond to td number. please verify you html table');
+        }
+
+        var columns = [];
+        var tdCells = row.children;
+
+        var insertIndex;
+        [].some.call(header.children, function(th, index) {
+          insertIndex = index;
+          return th.getAttribute('data-ignore') === null;
+        });
+
+
+        /**
+         * filter helper to test if data-ignore attribute is present on a Node
+         * @param  {Object} item  an object containing both th and td node
+         * @return {Boolean}      true id data-ignore is present
+         */
+        function filterIgnoreCell(item) {
+          return item.th.getAttribute('data-ignore') === null;
+        }
+
+        /**
+         * dynamic filter function for filtering repeated columns
+         * @param  {string}  Prop
+         * @param  {Object}  column
+         * @return {Boolean}
+         */
+        function columnFilter(prop, column) {
+          return column[prop] === true;
+        }
+        var prop = attr.visibleProp || 'visible';
+
+        columns = [].map.call(header.children, function(th, index) {
+            return {
+              th: th,
+              td: tdCells[index]
+            };
+          })
+          .filter(filterIgnoreCell)
+          .map(function(item) {
+            angular.element(item.th).remove();
+            angular.element(item.td).remove();
+            var o = {
+              name: $interpolate(item.th.textContent)($scope),
+              header: item.th.outerHTML,
+              cell: item.td.outerHTML
+            };
+            o[prop] = angular.isUndefined(item.th.getAttribute) || angular.isUndefined(item.th.getAttribute(prop)) || ((item.th.getAttribute(prop) === 'false') ? false : true);
+            o.toRemoveExpression = item.th.getAttribute('remove-column');
+            return o;
+          });
+
+        /**
+         * create an HTMLElement for column-template which hold the ng-repeat
+         * @param  {String} tagName
+         * @param  {String} template
+         * @return {HTMLElement}
+         */
+        function createNode(tagName, template) {
+          var el = document.createElement(tagName);
+          el.setAttribute('column-template', template);
+          el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
+
+          return el;
+        }
+        var thRepeat = createNode('th', '{{::column.header}}');
+        var tdRepeat = createNode('td', '{{::column.cell}}');
+
+        header.insertBefore(thRepeat, header.children[insertIndex]);
+        row.insertBefore(tdRepeat, row.children[insertIndex]);
+
+        return function($scope) {
+          $scope.$columns = columns.filter(isCellNotToRemove);
+          $scope.$visibilityFilter = columnFilter.bind(null, prop);
+
+          function isCellNotToRemove(item) {
+            return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)($scope) === 'true');
+          }
+        };
+      }
+    };
+  }
+])
+
+/**
+   * @ngdoc directive
+   * @name bonita.repeatable:repeatableConfig
+   * @module bonita.repeatable
+   *
+   * @description
+   * Allow preseting the visible property for each columns
+   *
+   * @param {String} visible-prop the name of the visible property to update in $columns arrays
+   *
+   * @example
+    <example module="boRepeatConfigExample">
+      <file name="index.html">
+        <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
+          <thead>
+            <tr >
+              <td  ng-repeat="col in $columns">
+                <span>column <strong>{{col.name}}</strong> is {{(col.visible? 'shown':'hided')}}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>name</th>
+              <th>country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users">
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('boRepeatConfigExample', [
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.bonitable.repeatable',
+            'org.bonitasoft.templates'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.colcfg =[true, false];
+
+          })
+      </file>
+    </example>
+   */
+.directive('repeatableConfig', function() {
+  return {
+    priority: 2,
+    require: 'bonitable',
+    link: function(scope, elem, attr) {
+      scope.$watch(attr.repeatableConfig, function(visibleConfig) {
+        var prop = attr.visibleProp || 'visible';
+        if (visibleConfig.length !== scope.$columns.length) {
+          throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
+        }
+        scope.$columns.forEach(function(item, index) {
+          item[prop] = visibleConfig[index];
+        });
+      });
+    }
+  };
+});
+
+angular
+  .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
+  /**
+   * @ngdoc directive
+   * @module bonita.sortable
+   * @name bonita.sortable:boSorter
+   *
+   * @description
+   * Tansforms a table heading into a button reflecting the current state of the sort
+   * (sort upon which **property**, in which **direction**)?
+   *
+   * ## Requirements
+   * To initialiaze the sort properties, you will need to set a ``sort-options`` to the
+   * {@link bonitable.bonitable bonitable}. If you want to be notified each time
+   * the sort have changed just provide a ``on-sort``  event handler to the
+   *  {@link bonitable.bonitable bonitable} directive.
+   *
+   *
+   * @param {String} boSorter the property name on which apply the sort _(optional)_
+   *                          if __bo-sorter__ is empty, it will rely on the id attribute
+   *                          to find the property name
+   *
+   * @example
+    <example module="sorterExample">
+      <file name="index.html">
+        <p>sort called {{count}} times</p>
+        <pre>{{options|json}}</pre>
+        <table bonitable sort-options="options" on-sort="sortHandler()">
+          <thead>
+            <tr>
+              <th bo-sorter="name">name</th>
+              <th bo-sorter="country">country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users | orderBy: options.property : options.direction ">
+              <td>{{user.name}}</td>
+              <td>{{user.country}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </file>
+      <file name="script.js">
+        angular
+          .module('sorterExample', [
+            'ui.bootstrap.tpls',
+            'org.bonitasoft.bonitable',
+            'org.bonitasoft.templates',
+            'org.bonitasoft.bonitable.sortable'
+          ])
+          .run(function($rootScope){
+            $rootScope.users = [
+              {name:'Paul', country:'Uk'},
+              {name:'Sarah', country:'Fr'},
+              {name:'Jacques', country:'Us'},
+              {name:'Joan', country:'Al'},
+              {name:'Tite', country:'Jp'},
+            ];
+            $rootScope.count = 0;
+            $rootScope.sortHandler = function() {
+              $rootScope.count += 1 ;
+            };
+            $rootScope.options = {
+              property: 'name',
+              direction: false
+            }
+          })
+      </file>
+    </example>
+   */
+  .directive('boSorter', function(){
+
+    /**
+     * Translate the boolean direction for the order of the sort
+     * @param  {Boolean} isDesc
+     * @return {Strinc}
+     */
+    function getDirectionSort(isDesc) {
+      return isDesc ? 'DESC' : 'ASC';
+    }
+
+    /**
+     * Find the attribute title for the directive for desc mode or asc mode (default one)
+     * @param  {Object} attr Angular directive attr
+     * @param  {String} sort cf {@link getDirectionSort}
+     * @return {String}
+     */
+    function generateTitle(attr, sort) {
+      // Add a suffix with ucFirst
+      var key = 'boSorterTitle' + sort.charAt() + sort.substring(1).toLowerCase();
+      return attr[key] || 'Sort by ' + sort;
+    }
+
+    return {
+      restrict: 'A',
+      require:'^bonitable',
+      scope: true,
+      templateUrl: 'template/sortable/sorter.tpl.html',
+      transclude: true,
+      link: function($scope, iElm, attr, bonitableCtrl) {
+        $scope.property =  (attr.boSorter || attr.id || '').trim();
+
+        if ($scope.property.length === 0){
+          throw new Error('bo-sorter: no id found. Please specify on which property the sort is applied to or add an id');
+        }
+
+        $scope.sortOptions = bonitableCtrl.getOptions();
+
+        var sort = getDirectionSort($scope.sortOptions.direction);
+
+        // Set de default title if no title exist
+        $scope.titleSortAttr = generateTitle(attr, sort);
+        $scope.sort = function() {
+          if ($scope.sortOptions.property === $scope.property){
+            $scope.sortOptions.direction = !$scope.sortOptions.direction;
+          } else {
+            $scope.sortOptions.property = $scope.property;
+            $scope.sortOptions.direction = false;
+          }
+
+          sort = getDirectionSort($scope.sortOptions.direction);
+          $scope.titleSortAttr = generateTitle(attr, sort);
+
+          bonitableCtrl.triggerSortHandler($scope.sortOptions);
+        };
+      }
+    };
+  });
+
 angular.module('org.bonitasoft.dragAndDrop',[])
   .provider('boDraggableItem', function() {
 
@@ -672,324 +1056,6 @@ angular.module('org.bonitasoft.dragAndDrop',[])
 })();
 
 angular
-  .module('org.bonitasoft.bonitable.repeatable', ['org.bonitasoft.bonitable'])
-  .directive('columnTemplate', ['$compile', '$timeout', function($compile, $timeout) {
-    return {
-      restrict: 'A',
-      scope: true,
-      link: function(scope, element, attr) {
-        element.html(attr.columnTemplate
-          .replace('th', 'div')
-          .replace('td', 'div'));
-        var template = element.contents();
-        $compile(template)(scope);
-        // wait digest cycle to compile template
-        $timeout(function() {
-          [].slice.call(template[0].attributes).forEach(function(attribute) {
-            element.attr(attribute.name, attribute.value);
-          });
-          element.append(template.contents());
-          template.remove();
-        }, 0);
-      }
-    };
-  }])
-/**
- * @ngdoc directive
- * @name bonita.repeatable:boRepeatable
- * @module bonita.repeatable
- *
- * @param {String=} boRepeatable a string representing a valid css selector
- *                  matching the thead where the columns are defined. By default the value is
- *                  ``thead tr:last-child``
- *
- * @description
- * Render table content dynamically in order to perform some columns manipulation
- * like show/hide or re-ordering. The directive will reconstruct a ng-repeat
- * under the hood to perform this but allow developper to get rid of it when
- * display the input. No need to add a generic function for cell rendering like
- * you will do when you put 2 ng-repeat directive inside.
- *
- * @example
- *
- * ```html
- *   <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
- *     <thead>
- *       <tr>
- *         <td colspan="{{$columns.length}}" class="form-inline">
- *           <pre>{{$columns|json}}</pre>
- *           <label ng-repeat="col in $columns"><input type="checkbox" ng-model="col.visible"/>{{col.name}}</label>
- *         </td>
- *       </tr>
- *       <tr>
- *         <th>name</th>
- *         <th>country</th>
- *         <th data-ignore>action</th>
- *       </tr>
- *     </thead>
- *     <tbody>
- *       <tr ng-repeat="user in users">
- *         <td>{{user.name}}</td>
- *         <td>{{user.country}}</td>
- *         <td><button>&times;</button></td>
- *       </tr>
- *     </tbody>
- *   </table>
- * ```
- * ```javascript
- *   angular
- *     .module('boRepeaterExample', [
- *       'org.bonitasoft.bonitable',
- *       'org.bonitasoft.bonitable.repeatable',
- *       'org.bonitasoft.templates'
- *     ])
- *     .run(function($scope){
- *       $scope.users = [
- *         {name:'Paul', country:'Uk'},
- *         {name:'Sarah', country:'Fr'},
- *         {name:'Jacques', country:'Us'},
- *         {name:'Joan', country:'Al'},
- *         {name:'Tite', country:'Jp'},
- *       ];
- *       $scope.colcfg =[true, false];
- *     })
- * ```
-
- */
-.directive('boRepeatable', ['$interpolate', function($interpolate) {
-    return {
-      require: 'bonitable',
-      restrict: 'A',
-      compile: function(elem, attr, $scope) {
-
-        var thSelecter = attr[this.name] || 'thead tr:last-child';
-        var tdSelecter = 'tr[ng-repeat]';
-
-        var header = elem[0].querySelector(thSelecter);
-        var row = elem[0].querySelector(tdSelecter);
-
-        if (!header || !row || header.children.length !== row.children.length) {
-          throw new Error('bo-repeatable th number does not correspond to td number. please verify you html table');
-        }
-
-        var columns = [];
-        var tdCells = row.children;
-
-        var insertIndex;
-        [].some.call(header.children, function(th, index) {
-          insertIndex = index;
-          return th.getAttribute('data-ignore') === null;
-        });
-
-
-        /**
-         * filter helper to test if data-ignore attribute is present on a Node
-         * @param  {Object} item  an object containing both th and td node
-         * @return {Boolean}      true id data-ignore is present
-         */
-        function filterIgnoreCell(item) {
-          return item.th.getAttribute('data-ignore') === null;
-        }
-
-        /**
-         * dynamic filter function for filtering repeated columns
-         * @param  {string}  Prop
-         * @param  {Object}  column
-         * @return {Boolean}
-         */
-        function columnFilter(prop, column) {
-          return column[prop] === true;
-        }
-        var prop = attr.visibleProp || 'visible';
-
-        columns = [].map.call(header.children, function(th, index) {
-            return {
-              th: th,
-              td: tdCells[index]
-            };
-          })
-          .filter(filterIgnoreCell)
-          .map(function(item) {
-            angular.element(item.th).remove();
-            angular.element(item.td).remove();
-            var o = {
-              name: $interpolate(item.th.textContent)($scope),
-              header: item.th.outerHTML,
-              cell: item.td.outerHTML
-            };
-            o[prop] = angular.isUndefined(item.th.getAttribute) || angular.isUndefined(item.th.getAttribute(prop)) || ((item.th.getAttribute(prop) === 'false') ? false : true);
-            o.toRemoveExpression = item.th.getAttribute('remove-column');
-            return o;
-          });
-
-        /**
-         * create an HTMLElement for column-template which hold the ng-repeat
-         * @param  {String} tagName
-         * @param  {String} template
-         * @return {HTMLElement}
-         */
-        function createNode(tagName, template) {
-          var el = document.createElement(tagName);
-          el.setAttribute('column-template', template);
-          el.setAttribute('ng-repeat', 'column in $columns | filter:$visibilityFilter');
-
-          return el;
-        }
-        var thRepeat = createNode('th', '{{::column.header}}');
-        var tdRepeat = createNode('td', '{{::column.cell}}');
-
-        header.insertBefore(thRepeat, header.children[insertIndex]);
-        row.insertBefore(tdRepeat, row.children[insertIndex]);
-
-        return function($scope) {
-          $scope.$columns = columns.filter(isCellNotToRemove);
-          $scope.$visibilityFilter = columnFilter.bind(null, prop);
-
-          function isCellNotToRemove(item) {
-            return !(!!item.toRemoveExpression && $interpolate(item.toRemoveExpression)($scope) === 'true');
-          }
-        };
-      }
-    };
-  }
-])
-
-/**
-   * @ngdoc directive
-   * @name bonita.repeatable:repeatableConfig
-   * @module bonita.repeatable
-   *
-   * @description
-   * Allow preseting the visible property for each columns
-   *
-   * @param {String} visible-prop the name of the visible property to update in $columns arrays
-   *
-   * @example
-    <example module="boRepeatConfigExample">
-      <file name="index.html">
-        <table bonitable bo-repeatable repeatable-config="colcfg" class="table">
-          <thead>
-            <tr >
-              <td  ng-repeat="col in $columns">
-                <span>column <strong>{{col.name}}</strong> is {{(col.visible? 'shown':'hided')}}</span>
-              </td>
-            </tr>
-            <tr>
-              <th>name</th>
-              <th>country</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="user in users">
-              <td>{{user.name}}</td>
-              <td>{{user.country}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </file>
-      <file name="script.js">
-        angular
-          .module('boRepeatConfigExample', [
-            'org.bonitasoft.bonitable',
-            'org.bonitasoft.bonitable.repeatable',
-            'org.bonitasoft.templates'
-          ])
-          .run(function($rootScope){
-            $rootScope.users = [
-              {name:'Paul', country:'Uk'},
-              {name:'Sarah', country:'Fr'},
-              {name:'Jacques', country:'Us'},
-              {name:'Joan', country:'Al'},
-              {name:'Tite', country:'Jp'},
-            ];
-            $rootScope.colcfg =[true, false];
-
-          })
-      </file>
-    </example>
-   */
-.directive('repeatableConfig', function() {
-  return {
-    priority: 2,
-    require: 'bonitable',
-    link: function(scope, elem, attr) {
-      scope.$watch(attr.repeatableConfig, function(visibleConfig) {
-        var prop = attr.visibleProp || 'visible';
-        if (visibleConfig.length !== scope.$columns.length) {
-          throw new Error('repeatable-config size differ from $columns size. Please check your config attr');
-        }
-        scope.$columns.forEach(function(item, index) {
-          item[prop] = visibleConfig[index];
-        });
-      });
-    }
-  };
-});
-
-/**
- * Created by fabiolombardi on 15/07/2015.
- */
-angular
-    .module('org.bonitasoft.bonitable.storable', [
-        'org.bonitasoft.bonitable',
-        'ngStorage'
-    ])
-    .directive('boStorable', ['$localStorage', function($localStorage) {
-        return {
-            restrict: 'A',
-            require: '^bonitable',
-            priority: 1,
-            link: function(scope, elt, attr, bonitableCtrl) {
-                var storageId = attr.boStorable;
-                if (!storageId) {
-                    throw new Error('you must set a storageId to bo-storable');
-                }
-
-                scope.clearTableStorage = function clearTableStorage(storageId) {
-                    delete $localStorage[storageId];
-                };
-
-                if (!$localStorage[storageId]) {
-                    $localStorage[storageId] = {};
-                }
-                if ($localStorage[storageId].columns) {
-                    scope.$columns = $localStorage[storageId].columns;
-                } else {
-                    $localStorage[storageId].columns = null;
-                }
-                if ($localStorage[storageId].sortOptions) {
-                    bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
-                    bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
-                } else {
-                    $localStorage[storageId].sortOptions = null;
-                }
-                if ($localStorage[storageId].itemsPerPage) {
-                  scope.pagination.itemsPerPage = $localStorage[storageId].itemsPerPage;
-                } else {
-                  $localStorage[storageId].itemsPerPage = null;
-                }
-
-
-                scope.$watch(bonitableCtrl.getOptions, function(newValue) {
-                    $localStorage[storageId].sortOptions = newValue;
-                }, true);
-
-                scope.$watch('$columns', function(newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        $localStorage[storageId].columns = newValue;
-                    }
-                }, true);
-
-                scope.$watch('pagination.itemsPerPage', function(newValue) {
-                  $localStorage[storageId].itemsPerPage = newValue;
-                }, true);
-
-                bonitableCtrl.onStorageLoaded();
-            }
-        };
-    }]);
-
-angular
   .module('org.bonitasoft.bonitable.selectable',['org.bonitasoft.bonitable'])
   /**
    * @ngdoc directive
@@ -1312,152 +1378,68 @@ angular.module('org.bonitasoft.bonitable.settings', [
     };
   });
 
+/**
+ * Created by fabiolombardi on 15/07/2015.
+ */
 angular
-  .module('org.bonitasoft.bonitable.sortable',['org.bonitasoft.bonitable'])
-  /**
-   * @ngdoc directive
-   * @module bonita.sortable
-   * @name bonita.sortable:boSorter
-   *
-   * @description
-   * Tansforms a table heading into a button reflecting the current state of the sort
-   * (sort upon which **property**, in which **direction**)?
-   *
-   * ## Requirements
-   * To initialiaze the sort properties, you will need to set a ``sort-options`` to the
-   * {@link bonitable.bonitable bonitable}. If you want to be notified each time
-   * the sort have changed just provide a ``on-sort``  event handler to the
-   *  {@link bonitable.bonitable bonitable} directive.
-   *
-   *
-   * @param {String} boSorter the property name on which apply the sort _(optional)_
-   *                          if __bo-sorter__ is empty, it will rely on the id attribute
-   *                          to find the property name
-   *
-   * @example
-    <example module="sorterExample">
-      <file name="index.html">
-        <p>sort called {{count}} times</p>
-        <pre>{{options|json}}</pre>
-        <table bonitable sort-options="options" on-sort="sortHandler()">
-          <thead>
-            <tr>
-              <th bo-sorter="name">name</th>
-              <th bo-sorter="country">country</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="user in users | orderBy: options.property : options.direction ">
-              <td>{{user.name}}</td>
-              <td>{{user.country}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </file>
-      <file name="script.js">
-        angular
-          .module('sorterExample', [
-            'ui.bootstrap.tpls',
-            'org.bonitasoft.bonitable',
-            'org.bonitasoft.templates',
-            'org.bonitasoft.bonitable.sortable'
-          ])
-          .run(function($rootScope){
-            $rootScope.users = [
-              {name:'Paul', country:'Uk'},
-              {name:'Sarah', country:'Fr'},
-              {name:'Jacques', country:'Us'},
-              {name:'Joan', country:'Al'},
-              {name:'Tite', country:'Jp'},
-            ];
-            $rootScope.count = 0;
-            $rootScope.sortHandler = function() {
-              $rootScope.count += 1 ;
-            };
-            $rootScope.options = {
-              property: 'name',
-              direction: false
+    .module('org.bonitasoft.bonitable.storable', [
+        'org.bonitasoft.bonitable',
+        'ngStorage'
+    ])
+    .directive('boStorable', ['$localStorage', function($localStorage) {
+        return {
+            restrict: 'A',
+            require: '^bonitable',
+            priority: 1,
+            link: function(scope, elt, attr, bonitableCtrl) {
+                var storageId = attr.boStorable;
+                if (!storageId) {
+                    throw new Error('you must set a storageId to bo-storable');
+                }
+
+                scope.clearTableStorage = function clearTableStorage(storageId) {
+                    delete $localStorage[storageId];
+                };
+
+                if (!$localStorage[storageId]) {
+                    $localStorage[storageId] = {};
+                }
+                if ($localStorage[storageId].columns) {
+                    scope.$columns = $localStorage[storageId].columns;
+                } else {
+                    $localStorage[storageId].columns = null;
+                }
+                if ($localStorage[storageId].sortOptions) {
+                    bonitableCtrl.getOptions().property = $localStorage[storageId].sortOptions.property;
+                    bonitableCtrl.getOptions().direction = $localStorage[storageId].sortOptions.direction;
+                } else {
+                    $localStorage[storageId].sortOptions = null;
+                }
+                if ($localStorage[storageId].itemsPerPage) {
+                  scope.pagination.itemsPerPage = $localStorage[storageId].itemsPerPage;
+                } else {
+                  $localStorage[storageId].itemsPerPage = null;
+                }
+
+
+                scope.$watch(bonitableCtrl.getOptions, function(newValue) {
+                    $localStorage[storageId].sortOptions = newValue;
+                }, true);
+
+                scope.$watch('$columns', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        $localStorage[storageId].columns = newValue;
+                    }
+                }, true);
+
+                scope.$watch('pagination.itemsPerPage', function(newValue) {
+                  $localStorage[storageId].itemsPerPage = newValue;
+                }, true);
+
+                bonitableCtrl.onStorageLoaded();
             }
-          })
-      </file>
-    </example>
-   */
-  .directive('boSorter', function(){
-
-    /**
-     * Translate the boolean direction for the order of the sort
-     * @param  {Boolean} isDesc
-     * @return {Strinc}
-     */
-    function getDirectionSort(isDesc) {
-      return isDesc ? 'DESC' : 'ASC';
-    }
-
-    /**
-     * Find the attribute title for the directive for desc mode or asc mode (default one)
-     * @param  {Object} attr Angular directive attr
-     * @param  {String} sort cf {@link getDirectionSort}
-     * @return {String}
-     */
-    function generateTitle(attr, sort) {
-      // Add a suffix with ucFirst
-      var key = 'boSorterTitle' + sort.charAt() + sort.substring(1).toLowerCase();
-      return attr[key] || 'Sort by ' + sort;
-    }
-
-    return {
-      restrict: 'A',
-      require:'^bonitable',
-      scope: true,
-      templateUrl: 'template/sortable/sorter.tpl.html',
-      transclude: true,
-      link: function($scope, iElm, attr, bonitableCtrl) {
-        $scope.property =  (attr.boSorter || attr.id || '').trim();
-
-        if ($scope.property.length === 0){
-          throw new Error('bo-sorter: no id found. Please specify on which property the sort is applied to or add an id');
-        }
-
-        $scope.sortOptions = bonitableCtrl.getOptions();
-
-        var sort = getDirectionSort($scope.sortOptions.direction);
-
-        // Set de default title if no title exist
-        $scope.titleSortAttr = generateTitle(attr, sort);
-        $scope.sort = function() {
-          if ($scope.sortOptions.property === $scope.property){
-            $scope.sortOptions.direction = !$scope.sortOptions.direction;
-          } else {
-            $scope.sortOptions.property = $scope.property;
-            $scope.sortOptions.direction = false;
-          }
-
-          sort = getDirectionSort($scope.sortOptions.direction);
-          $scope.titleSortAttr = generateTitle(attr, sort);
-
-          bonitableCtrl.triggerSortHandler($scope.sortOptions);
         };
-      }
-    };
-  });
-
-(function(module) {
-try {
-  module = angular.module('org.bonitasoft.templates');
-} catch (e) {
-  module = angular.module('org.bonitasoft.templates', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('template/sortable/sorter.tpl.html',
-    '<button class="bo-SortButton"\n' +
-    '        title="{{titleSortAttr}}"\n' +
-    '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
-    '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
-    '  <i class="bo-SortButton-icon glyphicon" ng-class="{\'glyphicon-chevron-up\': !sortOptions.direction || sortOptions.property !== property, \'glyphicon-chevron-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
-    '</button>\n' +
-    '');
-}]);
-})();
+    }]);
 
 (function(module) {
 try {
@@ -1509,6 +1491,24 @@ module.run(['$templateCache', function($templateCache) {
     '    </ul>\n' +
     '  </div>\n' +
     '</div>\n' +
+    '');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('org.bonitasoft.templates');
+} catch (e) {
+  module = angular.module('org.bonitasoft.templates', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('template/sortable/sorter.tpl.html',
+    '<button class="bo-SortButton"\n' +
+    '        title="{{titleSortAttr}}"\n' +
+    '        ng-class="{\'bo-SortButton--active text-primary\':sortOptions.property === property}" ng-click="sort()">\n' +
+    '  <span class="bo-SortButton-label" ng-transclude></span>\n' +
+    '  <i class="bo-SortButton-icon glyphicon" ng-class="{\'glyphicon-chevron-up\': !sortOptions.direction || sortOptions.property !== property, \'glyphicon-chevron-down\': sortOptions.direction && sortOptions.property === property}"></i>\n' +
+    '</button>\n' +
     '');
 }]);
 })();
